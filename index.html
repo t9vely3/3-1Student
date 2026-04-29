@@ -358,16 +358,24 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
 .matrix-toolbar strong { color: var(--text-primary); font-weight: 800; }
 .matrix-toolbar-actions { display: flex; gap: 6px; }
 .matrix-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 11px; }
-.matrix-table th, .matrix-table td { border: 1px solid var(--border); padding: 4px; text-align: center; vertical-align: middle; background: var(--bg-surface); }
-.matrix-table th { background: var(--bg-soft); font-weight: 700; color: var(--text-secondary); font-size: 10px; padding: 8px 4px; position: sticky; top: 0; z-index: 2; }
-.matrix-table th:first-child { width: 95px; background: var(--bg-muted); }
-.matrix-table td:first-child { background: var(--bg-soft); font-weight: 700; color: var(--text-primary); padding: 6px; font-size: 10px; }
-.matrix-cell { height: 52px; cursor: pointer; position: relative; transition: all .12s; min-width: 92px; }
-.matrix-cell:hover { background: var(--brand-soft); }
-.matrix-cell.drag-over { background: var(--brand-soft); box-shadow: inset 0 0 0 2px var(--brand); }
-.matrix-subj-pill { display: inline-flex; align-items: center; gap: 4px; background: var(--brand-soft); color: var(--brand-text); border: 1px solid var(--brand-border); border-radius: 4px; padding: 2px 6px; font-size: 10px; font-weight: 700; margin: 1px; cursor: grab; user-select: none; }
+.matrix-table th, .matrix-table td { border: 1px solid var(--border); padding: 2px; text-align: center; vertical-align: middle; background: var(--bg-surface); }
+.matrix-table thead th { background: var(--bg-soft); font-weight: 700; color: var(--text-secondary); font-size: 11px; padding: 6px 4px; position: sticky; top: 0; z-index: 2; min-width: 88px; }
+.matrix-table thead th.time-col { background: var(--bg-muted); width: 110px; min-width: 110px; }
+.matrix-table td.time-col { background: var(--bg-soft); font-weight: 700; color: var(--text-primary); padding: 4px 6px; font-size: 10px; text-align: center; white-space: nowrap; width: 110px; }
+.matrix-cell { height: 38px; cursor: pointer; position: relative; transition: all .12s; padding: 1px !important; }
+.matrix-cell:hover { box-shadow: inset 0 0 0 1px var(--brand-border); }
+.matrix-cell.drag-over { box-shadow: inset 0 0 0 2px var(--brand); background: var(--brand-soft) !important; }
+
+/* 셀 상태별 배경 */
+.matrix-cell.state-empty { background: var(--bg-surface); }
+.matrix-cell.state-partial { background: #FFFBEB; }   /* 노랑 - 배정만 됨 (미확정) */
+.matrix-cell.state-confirmed { background: #ECFDF5; } /* 초록 - 모두 확정 */
+
+.matrix-subj-pill { display: inline-flex; align-items: center; gap: 4px; background: var(--bg-surface); color: var(--text-primary); border: 1px solid var(--warning-border); border-radius: 4px; padding: 3px 5px; font-size: 10px; font-weight: 700; margin: 1px; cursor: grab; user-select: none; max-width: 100%; }
+.matrix-subj-pill .pill-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 60px; }
 .matrix-subj-pill.confirmed { background: var(--success-bg); color: var(--success); border-color: var(--success-border); }
-.matrix-subj-pill .del-x { cursor: pointer; color: var(--text-tertiary); font-size: 10px; padding: 0 2px; border-radius: 2px; }
+.matrix-subj-pill input[type="checkbox"] { margin: 0; width: 14px; height: 14px; accent-color: var(--success); cursor: pointer; flex-shrink: 0; }
+.matrix-subj-pill .del-x { cursor: pointer; color: var(--text-tertiary); font-size: 12px; padding: 0 2px; border-radius: 2px; line-height: 1; flex-shrink: 0; }
 .matrix-subj-pill .del-x:hover { background: rgba(0,0,0,.08); color: var(--danger); }
 
 .palette-container { background: var(--bg-soft); border: 1px solid var(--border); border-radius: var(--r-md); padding: 12px; margin-top: 16px; position: relative; }
@@ -650,9 +658,9 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
           <div class="card-body">
             <div class="form-grid">
               <div class="form-group"><label class="form-label">원서번호</label><input type="text" class="form-control" id="appNum" oninput="markDirty()"></div>
-              <div class="form-group"><label class="form-label">생년월일</label><input type="text" class="form-control" id="birth" placeholder="99-01-01" maxlength="8" oninput="markDirty()"></div>
-              <div class="form-group"><label class="form-label">연락처</label><input type="text" class="form-control" id="contact" placeholder="010-0000-0000" maxlength="13" oninput="onProfileChange()"></div>
-              <div class="form-group"><label class="form-label">등록일</label><input type="text" class="form-control" id="regDate" placeholder="YYYY-MM-DD" maxlength="10" oninput="markDirty()"></div>
+              <div class="form-group"><label class="form-label">생년월일</label><input type="text" class="form-control" id="birth" placeholder="92-01-12" maxlength="8" oninput="formatBirthInput(this); markDirty()"></div>
+              <div class="form-group"><label class="form-label">연락처</label><input type="text" class="form-control" id="contact" placeholder="010-0000-0000" maxlength="13" oninput="formatPhoneInput(this); onProfileChange()"></div>
+              <div class="form-group"><label class="form-label">등록일</label><input type="text" class="form-control" id="regDate" placeholder="26-01-12" maxlength="8" oninput="formatBirthInput(this); markDirty()"></div>
               <div class="form-group"><label class="form-label">담당 멘토</label>
                 <input type="text" class="form-control" id="mentor" list="mentorList" oninput="onProfileChange()">
                 <datalist id="mentorList"></datalist>
@@ -774,7 +782,7 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
               <div class="form-group"><label class="form-label">관계</label>
                 <select class="form-control" id="emRel" onchange="updateEmerSummary();markDirty()"><option value="-">-</option><option>부모님</option><option>가족 외</option><option>친구</option><option>연인</option></select>
               </div>
-              <div class="form-group span-3"><label class="form-label">연락처</label><input type="text" class="form-control" id="emContact" placeholder="010-0000-0000" maxlength="13" oninput="updateEmerSummary();markDirty()"></div>
+              <div class="form-group span-3"><label class="form-label">연락처</label><input type="text" class="form-control" id="emContact" placeholder="010-0000-0000" maxlength="13" oninput="formatPhoneInput(this); updateEmerSummary(); markDirty()"></div>
             </div>
           </div>
         </div>
@@ -1244,7 +1252,7 @@ function seedDataIfEmpty() {
     {
       id: 's1', name: '김도윤', appNum: 'A2026-001', birth: '99-03-15', contact: '010-1234-5678',
       mentor: '김태욱', subMentor: '', course: '모션/영상', purpose: '취업',
-      regDate: '2026-03-02', durationStart: '3월, 4월, 5월',
+      regDate: '26-03-02', durationStart: '3월, 4월, 5월',
       paidCourse: 6, freeCourse: 1, paymentStatus: '완납',
       ddazua: '평생', acp: '2과목', regMethod: 'N+N',
       baseTuition: 2700000, discountRate: '', directDiscount: 250000, totalTuition: 2450000,
@@ -1264,7 +1272,7 @@ function seedDataIfEmpty() {
     {
       id: 's2', name: '박서연', appNum: 'A2026-002', birth: '00-07-22', contact: '010-2345-6789',
       mentor: '김민영', course: '시각편집', purpose: '취업',
-      regDate: '2026-03-10', durationStart: '3월, 4월',
+      regDate: '26-03-10', durationStart: '3월, 4월',
       paidCourse: 4, freeCourse: 0, paymentStatus: 'COD',
       ddazua: '없음', acp: '없음', regMethod: 'PERCENT',
       baseTuition: 1800000, discountRate: 10, directDiscount: 0, totalTuition: 1620000,
@@ -1275,7 +1283,7 @@ function seedDataIfEmpty() {
     {
       id: 's3', name: '이하은', appNum: 'A2026-003', birth: '01-11-05', contact: '010-3456-7890',
       mentor: '최봉경', course: '마야/CG', purpose: '입시',
-      regDate: '2026-02-15', paidCourse: 5, freeCourse: 1, paymentStatus: '완납',
+      regDate: '26-02-15', paidCourse: 5, freeCourse: 1, paymentStatus: '완납',
       ddazua: '3년', acp: '1과목', regMethod: 'N+N',
       baseTuition: 2300000, totalTuition: 2300000,
       requiresCare: false, isOnLeave: true, isCompleted: false, isRefunded: false,
@@ -1284,7 +1292,7 @@ function seedDataIfEmpty() {
     {
       id: 's4', name: '정민호', appNum: 'A2025-098', birth: '98-05-12', contact: '010-4567-8901',
       mentor: '조용준', course: '건축/인테리어', purpose: '취업',
-      regDate: '2025-09-01', paidCourse: 8, freeCourse: 2, paymentStatus: '완납',
+      regDate: '25-09-01', paidCourse: 8, freeCourse: 2, paymentStatus: '완납',
       ddazua: '평생', acp: '3과목', regMethod: 'N+N',
       baseTuition: 3500000, totalTuition: 3500000,
       requiresCare: false, isOnLeave: false, isCompleted: true, isRefunded: false,
@@ -1293,7 +1301,7 @@ function seedDataIfEmpty() {
     {
       id: 's5', name: '최예진', appNum: 'A2026-005', birth: '02-09-30', contact: '010-5678-9012',
       mentor: '김민영', course: '웹/웹디자인', purpose: '취미',
-      regDate: '2026-04-01', paidCourse: 3, freeCourse: 0, paymentStatus: 'COD',
+      regDate: '26-04-01', paidCourse: 3, freeCourse: 0, paymentStatus: 'COD',
       ddazua: '없음', acp: '없음', regMethod: 'N+N',
       baseTuition: 1500000, totalTuition: 1500000,
       requiresCare: false, isOnLeave: false, isCompleted: false, isRefunded: false,
@@ -1406,6 +1414,58 @@ function renderStudentList(list) {
   }).join('');
 }
 function escapeHTML(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+/* =================================================================
+   AUTO FORMAT (전화번호 / 날짜)
+================================================================= */
+// 전화번호: 010-0000-0000 형식으로 자동 변환
+function formatPhoneInput(el) {
+  const cursorPos = el.selectionStart;
+  const oldLen = el.value.length;
+  let v = el.value.replace(/[^\d]/g, '');
+  if (v.length > 11) v = v.slice(0, 11);
+  let formatted = '';
+  if (v.length === 0) formatted = '';
+  else if (v.length < 4) formatted = v;
+  else if (v.length < 8) {
+    // 010-1234 형식 (시작이 02면 02-1234)
+    if (v.startsWith('02')) formatted = v.slice(0, 2) + '-' + v.slice(2);
+    else formatted = v.slice(0, 3) + '-' + v.slice(3);
+  } else {
+    // 010-1234-5678 또는 010-123-4567 (10자리/11자리 모두 처리)
+    if (v.startsWith('02')) {
+      // 02-XXXX-XXXX 또는 02-XXX-XXXX
+      if (v.length <= 9) formatted = v.slice(0, 2) + '-' + v.slice(2, 5) + '-' + v.slice(5);
+      else formatted = v.slice(0, 2) + '-' + v.slice(2, 6) + '-' + v.slice(6);
+    } else if (v.length === 10) {
+      formatted = v.slice(0, 3) + '-' + v.slice(3, 6) + '-' + v.slice(6);
+    } else {
+      formatted = v.slice(0, 3) + '-' + v.slice(3, 7) + '-' + v.slice(7);
+    }
+  }
+  el.value = formatted;
+  // 커서 위치 보정 (하이픈이 추가되면 한 칸씩 밀리도록)
+  const newLen = formatted.length;
+  const newCursor = cursorPos + (newLen - oldLen);
+  try { el.setSelectionRange(newCursor, newCursor); } catch (e) {}
+}
+
+// 날짜: YY-MM-DD (생년월일/등록일 공통)
+function formatBirthInput(el) {
+  const cursorPos = el.selectionStart;
+  const oldLen = el.value.length;
+  let v = el.value.replace(/[^\d]/g, '');
+  if (v.length > 6) v = v.slice(0, 6);
+  let formatted = '';
+  if (v.length === 0) formatted = '';
+  else if (v.length <= 2) formatted = v;
+  else if (v.length <= 4) formatted = v.slice(0, 2) + '-' + v.slice(2);
+  else formatted = v.slice(0, 2) + '-' + v.slice(2, 4) + '-' + v.slice(4);
+  el.value = formatted;
+  const newLen = formatted.length;
+  const newCursor = cursorPos + (newLen - oldLen);
+  try { el.setSelectionRange(newCursor, newCursor); } catch (e) {}
+}
 function toggleSelectAll(chk) { document.querySelectorAll('.stu-chk').forEach(c => c.checked = chk.checked); }
 function deleteSelectedStudents() {
   const ids = [...document.querySelectorAll('.stu-chk:checked')].map(c => c.dataset.id);
@@ -1544,6 +1604,11 @@ function doResetForm() {
   updateQuickStats();
   renderAssignmentMatrix();
   document.querySelectorAll('.student-item').forEach(i => i.classList.remove('active'));
+  // 기본정보 탭으로 강제 전환
+  const infoTabBtn = document.querySelector('.main-tab-btn[data-tab="tab-info"]');
+  if (infoTabBtn && !document.getElementById('tab-info').classList.contains('active')) {
+    switchMainTab('tab-info', infoTabBtn);
+  }
   clearDirty();
   showToast('새 학생 등록 모드');
 }
@@ -1554,6 +1619,13 @@ function loadStudentDetail(id) {
 function doLoadStudentDetail(id) {
   const s = globalStudentData.find(x => x.id === id);
   if (!s) { customAlert('학생 정보를 찾을 수 없습니다.'); return; }
+
+  // 기본정보 탭으로 자동 전환 (다른 탭에서 클릭 시에도 정보가 보이도록)
+  const infoTabBtn = document.querySelector('.main-tab-btn[data-tab="tab-info"]');
+  if (infoTabBtn && !document.getElementById('tab-info').classList.contains('active')) {
+    switchMainTab('tab-info', infoTabBtn);
+  }
+
   document.getElementById('studentId').value = s.id;
   document.getElementById('originalMentor').value = s.mentor || '';
   ['name','appNum','birth','contact','mentor','subMentor','course','purpose','regDate','durationStart','paidCourse','freeCourse','baseTuition','discountRate','directDiscount','emRel','emContact'].forEach(k => {
@@ -1568,7 +1640,7 @@ function doLoadStudentDetail(id) {
   setRadio('ddazua', s.ddazua || '없음');
   setRadio('acp', s.acp || '없음');
   setRadio('regMethod', s.regMethod || 'N+N');
-  try { currentMemos = JSON.parse(s.memo || '[]'); } catch { currentMemos = []; }
+  try { currentMemos = JSON.parse(s.memo || '[]'); if (!Array.isArray(currentMemos)) currentMemos = []; } catch { currentMemos = []; }
   updateMemoView();
   assignedClasses = (s.assignedClasses || []).map(a => ({...a}));
   initialAssignedClasses = JSON.parse(JSON.stringify(assignedClasses));
@@ -1580,6 +1652,7 @@ function doLoadStudentDetail(id) {
   onProfileChange();
   updateQuickStats();
   renderAssignmentMatrix();
+  // filterList 호출 시 active 표시가 다시 그려지도록 - 단 폼 값은 보존됨
   filterList();
   clearDirty();
 }
@@ -1787,22 +1860,29 @@ function renderAssignmentMatrix() {
     return;
   }
   const months = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
-  let html = '<div style="overflow-x:auto;"><table class="matrix-table"><thead><tr><th>월/시간</th>';
-  ALL_TIMES_LIST.forEach(t => html += `<th>${t}</th>`);
+  // 행 = 시간대, 열 = 월
+  let html = '<div style="overflow-x:auto;"><table class="matrix-table"><thead><tr><th class="time-col">시간/월</th>';
+  months.forEach(m => html += `<th>${m}</th>`);
   html += '</tr></thead><tbody>';
-  months.forEach(m => {
-    html += `<tr><td>${m}</td>`;
-    ALL_TIMES_LIST.forEach(t => {
+  ALL_TIMES_LIST.forEach(t => {
+    html += `<tr><td class="time-col">${t}</td>`;
+    months.forEach(m => {
       const items = assignedClasses.filter(a => a.month === m && a.time === t);
+      // 셀 상태: empty / partial(노랑) / confirmed(초록)
+      let cellState = 'empty';
+      if (items.length > 0) {
+        const allConfirmed = items.every(a => a.confirmed);
+        cellState = allConfirmed ? 'confirmed' : 'partial';
+      }
       let cellHtml = '';
       items.forEach(a => {
         cellHtml += `<span class="matrix-subj-pill ${a.confirmed ? 'confirmed' : ''}" draggable="true" ondragstart="startMatrixDrag(event, '${m}', '${t}', '${a.subject}', '${a.id}')">
-          <input type="checkbox" ${a.confirmed ? 'checked' : ''} onclick="event.stopPropagation(); toggleConfirmMatrixItem('${a.id}', this.checked)" style="margin:0; width:9px; height:9px; accent-color:var(--success);">
-          ${escapeHTML(a.subject)}
+          <input type="checkbox" ${a.confirmed ? 'checked' : ''} onclick="event.stopPropagation(); toggleConfirmMatrixItem('${a.id}', this.checked)">
+          <span class="pill-text">${escapeHTML(a.subject)}</span>
           <span class="del-x" onclick="event.stopPropagation(); deleteSpecificMatrixItem(event, '${a.id}')">×</span>
         </span>`;
       });
-      html += `<td class="matrix-cell" onclick="openAssignModal('${m}', '${t}')" ondragover="allowDrop(event, this)" ondragleave="leaveDrop(event, this)" ondrop="handleDrop(event, '${m}', '${t}', this)">${cellHtml}</td>`;
+      html += `<td class="matrix-cell state-${cellState}" onclick="openAssignModal('${m}', '${t}')" ondragover="allowDrop(event, this)" ondragleave="leaveDrop(event, this)" ondrop="handleDrop(event, '${m}', '${t}', this)">${cellHtml}</td>`;
     });
     html += '</tr>';
   });
@@ -1810,6 +1890,23 @@ function renderAssignmentMatrix() {
   container.innerHTML = html;
   renderPalette();
   updateAllSubjectsDatalist();
+  // 상단 월별 통계 실시간 갱신
+  updateMonthlyStatsInline();
+}
+
+// 현재 학생의 매트릭스 변경에 따라 상단 월 카드를 즉시 갱신
+function updateMonthlyStatsInline() {
+  // updateDashboard는 globalStudentData 기준이므로,
+  // 현재 편집 중 학생의 변경 사항을 임시 반영하려면 globalStudentData 일부 동기화 필요.
+  const id = document.getElementById('studentId').value;
+  if (id) {
+    const idx = globalStudentData.findIndex(s => s.id === id);
+    if (idx >= 0) {
+      // 실제 저장은 안 하고 메모리 상의 통계만 정확히 반영되도록 임시 클론
+      globalStudentData[idx].assignedClasses = assignedClasses.map(a => ({...a}));
+    }
+  }
+  updateDashboard();
 }
 function updateAllSubjectsDatalist() {
   const all = [];
@@ -2370,6 +2467,10 @@ function convertRow(row, mapping) {
   // 생년월일: "Mon Sep 14 1998 ..." → "98-09-14"
   if (out.birth) {
     out.birth = parseBirthDate(out.birth);
+  }
+  // 등록일: 다양한 형식 → "26-03-02"
+  if (out.regDate) {
+    out.regDate = parseBirthDate(out.regDate);
   }
 
   // 숫자 필드: 콤마 제거 후 정수
