@@ -108,6 +108,9 @@ button { outline: none; cursor: pointer; }
 .search-wrap .search-icon-left { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--text-soft); pointer-events: none; }
 .sidebar-search input { width: 100%; height: 36px; padding: 0 36px 0 32px; border: 1px solid var(--border); border-radius: var(--r-md); background: var(--bg-soft); color: var(--text-primary); outline: none; transition: all .15s; }
 .sidebar-search input:focus { border-color: var(--brand); background: var(--bg-surface); box-shadow: var(--shadow-glow); }
+/* type=search 기본 X 버튼 숨기기 (자체 검색 키보드 단축키만 사용) */
+.sidebar-search input::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; }
+.cmd-input::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; }
 .search-kbd { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); font-size: 10px; font-weight: 700; color: var(--text-soft); background: var(--bg-surface); border: 1px solid var(--border); border-radius: 4px; padding: 1px 6px; pointer-events: none; }
 
 .sidebar-mentors { padding: 4px 14px 10px; }
@@ -404,6 +407,8 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
 /* MODALS */
 .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(15,23,42,.55); backdrop-filter: blur(4px); z-index: 100; align-items: center; justify-content: center; padding: 20px; }
 .modal-overlay.show { display: flex; animation: fadeIn .2s; }
+/* alert/confirm은 다른 모달 위에 떠야 함 (모달 위에서 작업할 때 alert/confirm 사용 가능하도록) */
+#customAlert.modal-overlay, #customConfirm.modal-overlay { z-index: 250; }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 .modal-content { background: var(--bg-surface); border-radius: var(--r-lg); padding: 24px; width: 100%; max-width: 460px; max-height: 88vh; overflow-y: auto; box-shadow: var(--shadow-lg); animation: slideUp .25s ease; }
 .modal-content.wide { max-width: 760px; }
@@ -411,7 +416,7 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
 .modal-content h3 { font-size: 16px; font-weight: 700; margin: 0 0 18px; display: flex; align-items: center; justify-content: space-between; }
 .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px; }
 
-.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--text-primary); color: #fff; padding: 12px 20px; border-radius: var(--r-md); font-size: 13px; font-weight: 700; box-shadow: var(--shadow-md); opacity: 0; transition: all .25s ease; z-index: 200; pointer-events: none; display: inline-flex; align-items: center; gap: 8px; }
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--text-primary); color: #fff; padding: 12px 20px; border-radius: var(--r-md); font-size: 13px; font-weight: 700; box-shadow: var(--shadow-md); opacity: 0; transition: all .25s ease; z-index: 300; pointer-events: none; display: inline-flex; align-items: center; gap: 8px; }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 .toast.success { background: var(--success); }
 .toast.error { background: var(--danger); }
@@ -480,7 +485,7 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
     <div class="sidebar-search">
       <div class="search-wrap">
         <svg class="icon icon-sm search-icon-left" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="text" id="searchInput" placeholder="이름·연락처 검색" onkeyup="filterList()" autocomplete="off" data-form-type="other" data-lpignore="true">
+        <input type="search" id="searchInput" name="sidebar-search-x9k2" placeholder="이름·연락처 검색" onkeyup="filterList()" autocomplete="new-password" data-form-type="other" data-lpignore="true" role="combobox" aria-autocomplete="none">
         <span class="search-kbd">/</span>
       </div>
     </div>
@@ -962,7 +967,7 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
   <div class="cmd-box">
     <div class="cmd-input-wrap">
       <svg class="icon icon-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <input type="text" class="cmd-input" id="cmdInput" placeholder="학생 이름·연락처로 빠른 검색..." onkeyup="updateCmdResults(event)" autocomplete="off" data-form-type="other" data-lpignore="true">
+      <input type="search" class="cmd-input" id="cmdInput" name="cmd-search-p3m7" placeholder="학생 이름·연락처로 빠른 검색..." onkeyup="updateCmdResults(event)" autocomplete="new-password" data-form-type="other" data-lpignore="true" role="combobox" aria-autocomplete="none">
     </div>
     <div class="cmd-list" id="cmdList"></div>
   </div>
@@ -2707,6 +2712,15 @@ document.addEventListener('DOMContentLoaded', () => {
   loadFromStorage();
   seedDataIfEmpty();
   renderAllMentorUIs();
+
+  // 브라우저 자동완성 방지 - 검색창들 강제 초기화
+  setTimeout(() => {
+    const si = document.getElementById('searchInput');
+    const ci = document.getElementById('cmdInput');
+    if (si && si.value) si.value = '';
+    if (ci && ci.value) ci.value = '';
+  }, 100);
+
   filterList();
   toggleRegMethod();
   updateRewardsSummary();
