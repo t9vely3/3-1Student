@@ -480,7 +480,7 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
     <div class="sidebar-search">
       <div class="search-wrap">
         <svg class="icon icon-sm search-icon-left" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="text" id="searchInput" placeholder="이름·연락처 검색" onkeyup="filterList()">
+        <input type="text" id="searchInput" placeholder="이름·연락처 검색" onkeyup="filterList()" autocomplete="off" data-form-type="other" data-lpignore="true">
         <span class="search-kbd">/</span>
       </div>
     </div>
@@ -607,7 +607,7 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
   </div>
 
   <div class="content">
-    <form id="studentForm" onsubmit="event.preventDefault();">
+    <form id="studentForm" onsubmit="event.preventDefault();" autocomplete="off">
       <input type="hidden" id="studentId">
       <input type="hidden" id="pdfSubjects">
       <input type="hidden" id="originalMentor">
@@ -617,7 +617,7 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
         <div class="profile-hero">
           <div class="profile-avatar-lg" id="profileAvatar">+</div>
           <div class="profile-main">
-            <input type="text" class="profile-name-input" id="name" placeholder="학생 이름 입력" oninput="onProfileChange()">
+            <input type="text" class="profile-name-input" id="name" placeholder="학생 이름 입력" oninput="onProfileChange()" autocomplete="off" data-form-type="other" data-lpignore="true">
             <div class="profile-meta">
               <span class="profile-meta-item"><svg class="icon icon-sm" viewBox="0 0 24 24" style="color:var(--brand);"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/></svg><span id="subCourse">과정 미선택</span></span>
               <span class="profile-meta-dot"></span>
@@ -659,7 +659,7 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
             <div class="form-grid">
               <div class="form-group"><label class="form-label">원서번호</label><input type="text" class="form-control" id="appNum" oninput="markDirty()"></div>
               <div class="form-group"><label class="form-label">생년월일</label><input type="text" class="form-control" id="birth" placeholder="92-01-12" maxlength="8" oninput="formatBirthInput(this); markDirty()"></div>
-              <div class="form-group"><label class="form-label">연락처</label><input type="text" class="form-control" id="contact" placeholder="010-0000-0000" maxlength="13" oninput="formatPhoneInput(this); onProfileChange()"></div>
+              <div class="form-group"><label class="form-label">연락처</label><input type="text" class="form-control" id="contact" placeholder="010-0000-0000" maxlength="13" oninput="formatPhoneInput(this); onProfileChange()" autocomplete="off" data-form-type="other" data-lpignore="true"></div>
               <div class="form-group"><label class="form-label">등록일</label><input type="text" class="form-control" id="regDate" placeholder="26-01-12" maxlength="8" oninput="formatBirthInput(this); markDirty()"></div>
               <div class="form-group"><label class="form-label">담당 멘토</label>
                 <input type="text" class="form-control" id="mentor" list="mentorList" oninput="onProfileChange()">
@@ -782,7 +782,7 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
               <div class="form-group"><label class="form-label">관계</label>
                 <select class="form-control" id="emRel" onchange="updateEmerSummary();markDirty()"><option value="-">-</option><option>부모님</option><option>가족 외</option><option>친구</option><option>연인</option></select>
               </div>
-              <div class="form-group span-3"><label class="form-label">연락처</label><input type="text" class="form-control" id="emContact" placeholder="010-0000-0000" maxlength="13" oninput="formatPhoneInput(this); updateEmerSummary(); markDirty()"></div>
+              <div class="form-group span-3"><label class="form-label">연락처</label><input type="text" class="form-control" id="emContact" placeholder="010-0000-0000" maxlength="13" oninput="formatPhoneInput(this); updateEmerSummary(); markDirty()" autocomplete="off" data-form-type="other" data-lpignore="true"></div>
             </div>
           </div>
         </div>
@@ -940,7 +940,7 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
     </p>
 
     <div style="display:flex; gap:6px; margin-bottom:14px;">
-      <input type="text" class="form-control" id="newMentorInput" placeholder="추가할 멘토 이름" onkeydown="if(event.key==='Enter')addMentor()">
+      <input type="text" class="form-control" id="newMentorInput" placeholder="추가할 멘토 이름" onkeydown="if(event.key==='Enter')addMentor()" autocomplete="off" data-form-type="other" data-lpignore="true">
       <button class="btn btn-brand" onclick="addMentor()">
         <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         추가
@@ -962,7 +962,7 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
   <div class="cmd-box">
     <div class="cmd-input-wrap">
       <svg class="icon icon-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <input type="text" class="cmd-input" id="cmdInput" placeholder="학생 이름·연락처로 빠른 검색..." onkeyup="updateCmdResults(event)">
+      <input type="text" class="cmd-input" id="cmdInput" placeholder="학생 이름·연락처로 빠른 검색..." onkeyup="updateCmdResults(event)" autocomplete="off" data-form-type="other" data-lpignore="true">
     </div>
     <div class="cmd-list" id="cmdList"></div>
   </div>
@@ -2616,13 +2616,34 @@ function executeImport() {
     return;
   }
 
-  let added = 0, updated = 0;
+  // 1단계: 새 멘토 후보 수집
   const newMentorsFound = new Set();
-
   pendingImportData.forEach(s => {
-    // 새 멘토 자동 등록 후보 수집
     if (s.mentor && !MENTORS.includes(s.mentor)) newMentorsFound.add(s.mentor);
     if (s.subMentor && !MENTORS.includes(s.subMentor)) newMentorsFound.add(s.subMentor);
+  });
+
+  // 2단계: 새 멘토가 있으면 확인 받기
+  if (newMentorsFound.size > 0) {
+    const list = [...newMentorsFound].join(', ');
+    const msg = `CSV에 등록되지 않은 멘토 ${newMentorsFound.size}명이 발견되었습니다:\n\n${list}\n\n이 멘토들을 자동 등록할까요?\n\n• 확인: 멘토 목록에 추가하고 가져오기 진행\n• 취소: 멘토 추가 없이 진행 (해당 학생들은 멘토 칸이 비어있게 됨)`;
+    customConfirm(msg, addMentors => {
+      doExecuteImport(addMentors ? newMentorsFound : new Set());
+    });
+    return;
+  }
+
+  // 새 멘토가 없으면 바로 진행
+  doExecuteImport(new Set());
+}
+
+function doExecuteImport(mentorsToAdd) {
+  let added = 0, updated = 0;
+
+  pendingImportData.forEach(s => {
+    // 멘토 추가 안 하기로 한 경우 학생의 mentor/subMentor가 등록 안 된 멘토면 비우기
+    if (s.mentor && !MENTORS.includes(s.mentor) && !mentorsToAdd.has(s.mentor)) s.mentor = '';
+    if (s.subMentor && !MENTORS.includes(s.subMentor) && !mentorsToAdd.has(s.subMentor)) s.subMentor = '';
 
     if (s.appNum) {
       const idx = globalStudentData.findIndex(x => x.appNum === s.appNum);
@@ -2640,9 +2661,9 @@ function executeImport() {
     added++;
   });
 
-  // 새 멘토 자동 추가
-  if (newMentorsFound.size > 0) {
-    newMentorsFound.forEach(m => MENTORS.push(m));
+  // 멘토 추가
+  if (mentorsToAdd.size > 0) {
+    mentorsToAdd.forEach(m => MENTORS.push(m));
     saveMentorsToStorage();
     renderAllMentorUIs();
   }
@@ -2651,7 +2672,7 @@ function executeImport() {
   filterList();
   document.getElementById('importModal').classList.remove('show');
   pendingImportData = null;
-  const mentorMsg = newMentorsFound.size > 0 ? ` · 신규 멘토 ${newMentorsFound.size}명 자동 등록` : '';
+  const mentorMsg = mentorsToAdd.size > 0 ? ` · 신규 멘토 ${mentorsToAdd.size}명 등록` : '';
   showToast(`<svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> 신규 ${added}명, 덮어쓰기 ${updated}명 완료${mentorMsg}`, 'success');
 }
 
