@@ -129,6 +129,13 @@ body:not(.auth-checked) > .sidebar, body:not(.auth-checked) > .main { visibility
 .user-badge-logout { width: 22px; height: 22px; border: 0; background: transparent; color: var(--text-tertiary); border-radius: 4px; display: flex; align-items: center; justify-content: center; transition: all .12s; }
 .user-badge-logout:hover { color: var(--danger); background: var(--danger-bg); }
 
+/* 동기화 상태 */
+.sync-status { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 999px; border: 1px solid; transition: all .15s; white-space: nowrap; }
+.sync-status.syncing { color: var(--brand-text); background: var(--brand-soft); border-color: var(--brand-border); }
+.sync-status.synced { color: var(--success); background: var(--success-bg); border-color: var(--success-border); }
+.sync-status.error { color: var(--danger); background: var(--danger-bg); border-color: var(--danger-border); }
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
 input, select, textarea, button { font-family: inherit; letter-spacing: inherit; font-size: inherit; }
 button { outline: none; cursor: pointer; }
 ::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -688,6 +695,11 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
         저장 <span class="kbd">⌘S</span>
       </button>
 
+      <span class="sync-status" id="syncStatus" style="display:none;"></span>
+      <button class="btn btn-outline btn-sm btn-icon-only" onclick="refreshFromFirestore()" title="Firestore 새로고침" id="refreshBtn" style="display:none;">
+        <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+      </button>
+
       <div class="user-badge" id="userBadge" style="display:none;">
         <div class="user-badge-avatar" id="userBadgeAvatar">?</div>
         <span class="user-badge-email" id="userBadgeEmail">-</span>
@@ -1213,6 +1225,9 @@ function showMainScreen(user) {
   badge.style.display = '';
   document.getElementById('userBadgeEmail').innerText = user.email;
   document.getElementById('userBadgeAvatar').innerText = (user.email || '?').charAt(0).toUpperCase();
+  // 새로고침 버튼도 표시
+  const ref = document.getElementById('refreshBtn');
+  if (ref) ref.style.display = '';
 }
 
 // 인증 상태 감지 - 페이지 로드 시 자동 호출
@@ -1222,6 +1237,8 @@ if (firebaseAuth) {
     if (user) {
       console.log('[Auth] 로그인 됨:', user.email);
       showMainScreen(user);
+      // 로그인 후 Firestore 데이터 로드
+      loadFromFirestore();
     } else {
       console.log('[Auth] 로그아웃 상태');
       showAuthScreen();
@@ -1232,6 +1249,302 @@ if (firebaseAuth) {
   console.warn('[Firebase] 사용 불가 — 로컬 모드로 실행');
   document.body.classList.add('auth-checked');
   document.getElementById('authScreen').classList.remove('show');
+}
+
+/* =================================================================
+   FIRESTORE SYNC LAYER
+   - students, mentors, subjects, trash 4개 컬렉션
+   - 메모리 → Firestore: 비동기 미러링 (UI 안 막힘)
+   - Firestore → 메모리: 로그인 시 1회 + 수동 새로고침
+================================================================= */
+
+// 동기 큐 - 동시에 여러 쓰기 작업 발생 시 순차 처리
+let syncQueue = Promise.resolve();
+let pendingWriteCount = 0;
+
+function showSyncStatus(state, msg) {
+  const el = document.getElementById('syncStatus');
+  if (!el) return;
+  if (state === 'syncing') {
+    el.style.display = 'inline-flex';
+    el.className = 'sync-status syncing';
+    el.innerHTML = `<svg class="icon icon-sm" viewBox="0 0 24 24" style="animation: spin 1s linear infinite;"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> ${msg || '동기화 중...'}`;
+  } else if (state === 'synced') {
+    el.style.display = 'inline-flex';
+    el.className = 'sync-status synced';
+    el.innerHTML = `<svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> ${msg || '동기화 완료'}`;
+    setTimeout(() => { if (pendingWriteCount === 0) el.style.display = 'none'; }, 1500);
+  } else if (state === 'error') {
+    el.style.display = 'inline-flex';
+    el.className = 'sync-status error';
+    el.innerHTML = `<svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> ${msg || '동기화 실패'}`;
+  } else {
+    el.style.display = 'none';
+  }
+}
+
+function enqueueSync(operationName, fn) {
+  if (!firebaseDB || !currentUser) return Promise.resolve();
+  pendingWriteCount++;
+  showSyncStatus('syncing', operationName);
+  syncQueue = syncQueue.then(async () => {
+    try {
+      await fn();
+      pendingWriteCount--;
+      if (pendingWriteCount === 0) showSyncStatus('synced');
+    } catch (e) {
+      console.error('[Firestore] ' + operationName + ' 실패:', e);
+      pendingWriteCount--;
+      showSyncStatus('error', operationName + ' 실패');
+      showToast(operationName + ' 동기화 실패: ' + (e.message || ''), 'error');
+    }
+  });
+  return syncQueue;
+}
+
+// 학생 1명을 Firestore에 저장 (upsert)
+async function syncStudentToFirestore(student) {
+  if (!firebaseDB || !currentUser || !student || !student.id) return;
+  return enqueueSync('학생 저장', async () => {
+    // assignedClasses는 array of object → Firestore 배열 그대로 저장 OK
+    await firebaseDB.collection('students').doc(student.id).set({
+      ...student,
+      _updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      _updatedBy: currentUser.email || ''
+    });
+  });
+}
+
+// 학생 1명을 Firestore에서 삭제
+async function deleteStudentFromFirestore(studentId) {
+  if (!firebaseDB || !currentUser || !studentId) return;
+  return enqueueSync('학생 삭제', async () => {
+    await firebaseDB.collection('students').doc(studentId).delete();
+  });
+}
+
+// 휴지통에 학생 1명 저장
+async function syncTrashToFirestore(student) {
+  if (!firebaseDB || !currentUser || !student || !student.id) return;
+  return enqueueSync('휴지통 저장', async () => {
+    await firebaseDB.collection('trash').doc(student.id).set({
+      ...student,
+      _updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      _updatedBy: currentUser.email || ''
+    });
+  });
+}
+
+// 휴지통에서 학생 1명 삭제
+async function deleteTrashFromFirestore(studentId) {
+  if (!firebaseDB || !currentUser || !studentId) return;
+  return enqueueSync('휴지통 비우기', async () => {
+    await firebaseDB.collection('trash').doc(studentId).delete();
+  });
+}
+
+// 멘토 목록 전체 저장 (전체 덮어쓰기 - 멘토는 양이 적어서 단일 문서에 배열로 저장)
+async function syncMentorsToFirestore() {
+  if (!firebaseDB || !currentUser) return;
+  return enqueueSync('멘토 목록 저장', async () => {
+    await firebaseDB.collection('config').doc('mentors').set({
+      list: MENTORS,
+      _updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      _updatedBy: currentUser.email || ''
+    });
+  });
+}
+
+// 과목 목록 전체 저장 (단일 문서)
+async function syncSubjectsToFirestore() {
+  if (!firebaseDB || !currentUser) return;
+  return enqueueSync('과목 목록 저장', async () => {
+    await firebaseDB.collection('config').doc('subjects').set({
+      data: COURSE_SUBJECTS,
+      _updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      _updatedBy: currentUser.email || ''
+    });
+  });
+}
+
+// 학생 일괄 저장 (CSV 가져오기, 마이그레이션 등)
+async function bulkSyncStudentsToFirestore(students) {
+  if (!firebaseDB || !currentUser || !students || students.length === 0) return;
+  // Firestore batch는 한 번에 500개까지
+  const chunks = [];
+  for (let i = 0; i < students.length; i += 400) {
+    chunks.push(students.slice(i, i + 400));
+  }
+  for (let chunkIdx = 0; chunkIdx < chunks.length; chunkIdx++) {
+    const chunk = chunks[chunkIdx];
+    pendingWriteCount++;
+    showSyncStatus('syncing', `학생 일괄 저장 ${chunkIdx + 1}/${chunks.length}`);
+    try {
+      const batch = firebaseDB.batch();
+      chunk.forEach(s => {
+        if (!s.id) return;
+        const ref = firebaseDB.collection('students').doc(s.id);
+        batch.set(ref, {
+          ...s,
+          _updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+          _updatedBy: currentUser.email || ''
+        });
+      });
+      await batch.commit();
+      pendingWriteCount--;
+    } catch (e) {
+      pendingWriteCount--;
+      console.error('[Firestore] 일괄 저장 실패:', e);
+      showSyncStatus('error', '일괄 저장 실패');
+      throw e;
+    }
+  }
+  showSyncStatus('synced', `학생 ${students.length}명 저장 완료`);
+}
+
+// 로그인 시 Firestore에서 모든 데이터 로드
+async function loadFromFirestore() {
+  if (!firebaseDB || !currentUser) return;
+  showSyncStatus('syncing', '데이터 불러오는 중...');
+  try {
+    // 1. 학생 데이터
+    const studentsSnap = await firebaseDB.collection('students').get();
+    const firestoreStudents = [];
+    studentsSnap.forEach(doc => {
+      const d = doc.data();
+      delete d._updatedAt;
+      delete d._updatedBy;
+      firestoreStudents.push(d);
+    });
+
+    // 2. 휴지통
+    const trashSnap = await firebaseDB.collection('trash').get();
+    const firestoreTrash = [];
+    trashSnap.forEach(doc => {
+      const d = doc.data();
+      delete d._updatedAt;
+      delete d._updatedBy;
+      firestoreTrash.push(d);
+    });
+
+    // 3. 멘토 목록
+    const mentorsDoc = await firebaseDB.collection('config').doc('mentors').get();
+    let firestoreMentors = null;
+    if (mentorsDoc.exists) {
+      const d = mentorsDoc.data();
+      if (Array.isArray(d.list) && d.list.length > 0) firestoreMentors = d.list;
+    }
+
+    // 4. 과목 목록
+    const subjectsDoc = await firebaseDB.collection('config').doc('subjects').get();
+    let firestoreSubjects = null;
+    if (subjectsDoc.exists) {
+      const d = subjectsDoc.data();
+      if (d.data && typeof d.data === 'object') firestoreSubjects = d.data;
+    }
+
+    // === 마이그레이션 판단 ===
+    // Firestore가 비어있는데 localStorage에 데이터가 있으면 마이그레이션 권유
+    const localHasData = globalStudentData && globalStudentData.length > 0;
+    const cloudIsEmpty = firestoreStudents.length === 0;
+
+    if (cloudIsEmpty && localHasData) {
+      // 마이그레이션 모달
+      showSyncStatus('synced', 'Firestore가 비어있음');
+      offerMigration(firestoreStudents, firestoreTrash, firestoreMentors, firestoreSubjects);
+      return;
+    }
+
+    // 정상 로드: Firestore 데이터로 메모리 + localStorage 갱신
+    globalStudentData = firestoreStudents;
+    saveToStorage();
+
+    saveTrashedStudents(firestoreTrash);
+
+    if (firestoreMentors) {
+      MENTORS = firestoreMentors;
+      saveMentorsToStorage();
+    }
+    if (firestoreSubjects) {
+      COURSE_SUBJECTS = firestoreSubjects;
+      saveSubjectsToStorage();
+    }
+
+    // UI 갱신
+    renderAllMentorUIs();
+    filterList();
+    renderPalette();
+    renderMasterSchedule();
+
+    showSyncStatus('synced', `학생 ${globalStudentData.length}명 로드 완료`);
+    console.log('[Firestore] 로드 완료:', globalStudentData.length, '명');
+  } catch (e) {
+    console.error('[Firestore] 로드 실패:', e);
+    showSyncStatus('error', '데이터 로드 실패');
+    showToast('Firestore 로드 실패: ' + (e.message || ''), 'error');
+  }
+}
+
+// 마이그레이션 안내 모달
+function offerMigration(firestoreStudents, firestoreTrash, firestoreMentors, firestoreSubjects) {
+  const local = globalStudentData.length;
+  const localTrash = getTrashedStudents().length;
+
+  customConfirm(
+    `Firestore가 비어있습니다.\n\n현재 이 브라우저에 저장된 데이터:\n• 학생 ${local}명\n• 휴지통 ${localTrash}명\n• 멘토 ${MENTORS.length}명\n• 과목 카테고리 ${Object.keys(COURSE_SUBJECTS).length}개\n\n이 데이터를 Firestore로 업로드할까요?\n(이후부터 모든 사람이 이 데이터를 공유합니다)`,
+    async ok => {
+      if (ok) {
+        await runMigration();
+      } else {
+        // 마이그레이션 거부 — 일단 메모리는 그대로 두고 진행
+        showToast('마이그레이션을 건너뛰었습니다. (헤더에서 다시 시도 가능)', 'brand');
+      }
+    }
+  );
+}
+
+async function runMigration() {
+  try {
+    showSyncStatus('syncing', '마이그레이션 시작...');
+
+    // 1. 학생 일괄 업로드
+    if (globalStudentData.length > 0) {
+      await bulkSyncStudentsToFirestore(globalStudentData);
+    }
+
+    // 2. 휴지통 일괄 업로드
+    const trash = getTrashedStudents();
+    if (trash.length > 0) {
+      const trashBatch = firebaseDB.batch();
+      trash.forEach(s => {
+        if (s.id) trashBatch.set(firebaseDB.collection('trash').doc(s.id), {
+          ...s,
+          _updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+          _updatedBy: currentUser.email || ''
+        });
+      });
+      await trashBatch.commit();
+    }
+
+    // 3. 멘토
+    await syncMentorsToFirestore();
+
+    // 4. 과목
+    await syncSubjectsToFirestore();
+
+    showSyncStatus('synced', '마이그레이션 완료');
+    showToast(`<svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> 마이그레이션 완료: 학생 ${globalStudentData.length}명, 휴지통 ${trash.length}명`, 'success');
+  } catch (e) {
+    console.error('[Migration] 실패:', e);
+    showSyncStatus('error', '마이그레이션 실패');
+    customAlert('마이그레이션 실패: ' + (e.message || '') + '\n\nFirestore 보안 규칙이 올바른지 확인해주세요.');
+  }
+}
+
+// 헤더의 새로고침 버튼 (다른 사람이 수정한 데이터 가져오기)
+async function refreshFromFirestore() {
+  if (!currentUser) { customAlert('로그인이 필요합니다.'); return; }
+  await loadFromFirestore();
 }
 const ROOMS_LIST = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S'];
 const WEEKDAY_TIMES = ['09:30-11:30','11:30-13:30','14:00-16:00','16:00-18:00','18:00-20:00','20:00-22:00'];
@@ -1412,6 +1725,7 @@ function addMentor() {
   if (MENTORS.includes(name)) { customAlert('이미 존재하는 멘토입니다.'); return; }
   MENTORS.push(name);
   saveMentorsToStorage();
+  syncMentorsToFirestore();
   inp.value = '';
   renderMentorManageList();
   renderAllMentorUIs();
@@ -1434,21 +1748,32 @@ function commitMentorRename(idx) {
 
   // 모든 학생 데이터에서 mentor / subMentor 갱신
   let affected = 0;
+  const changedStudents = [];
   globalStudentData.forEach(s => {
-    if (s.mentor === oldName) { s.mentor = newName; affected++; }
-    if (s.subMentor === oldName) { s.subMentor = newName; affected++; }
+    let changed = false;
+    if (s.mentor === oldName) { s.mentor = newName; affected++; changed = true; }
+    if (s.subMentor === oldName) { s.subMentor = newName; affected++; changed = true; }
+    if (changed) changedStudents.push(s);
   });
   // 휴지통도 동기화
   let trash = getTrashedStudents();
+  const changedTrash = [];
   trash.forEach(s => {
-    if (s.mentor === oldName) s.mentor = newName;
-    if (s.subMentor === oldName) s.subMentor = newName;
+    let changed = false;
+    if (s.mentor === oldName) { s.mentor = newName; changed = true; }
+    if (s.subMentor === oldName) { s.subMentor = newName; changed = true; }
+    if (changed) changedTrash.push(s);
   });
   saveTrashedStudents(trash);
 
   MENTORS[idx] = newName;
   saveMentorsToStorage();
   saveToStorage();
+
+  // Firestore: 멘토 목록 + 변경된 학생만 일괄 업데이트
+  syncMentorsToFirestore();
+  if (changedStudents.length > 0) bulkSyncStudentsToFirestore(changedStudents);
+  changedTrash.forEach(s => syncTrashToFirestore(s));
 
   // 현재 선택 멘토 동기화
   if (currentSelectedMentor === oldName) currentSelectedMentor = newName;
@@ -1480,20 +1805,31 @@ function deleteMentor(idx) {
   customConfirm(msg, ok => {
     if (!ok) return;
     let affected = 0;
+    const changedStudents = [];
     globalStudentData.forEach(s => {
-      if (s.mentor === name) { s.mentor = ''; affected++; }
-      if (s.subMentor === name) { s.subMentor = ''; affected++; }
+      let changed = false;
+      if (s.mentor === name) { s.mentor = ''; affected++; changed = true; }
+      if (s.subMentor === name) { s.subMentor = ''; affected++; changed = true; }
+      if (changed) changedStudents.push(s);
     });
     let trash = getTrashedStudents();
+    const changedTrash = [];
     trash.forEach(s => {
-      if (s.mentor === name) s.mentor = '';
-      if (s.subMentor === name) s.subMentor = '';
+      let changed = false;
+      if (s.mentor === name) { s.mentor = ''; changed = true; }
+      if (s.subMentor === name) { s.subMentor = ''; changed = true; }
+      if (changed) changedTrash.push(s);
     });
     saveTrashedStudents(trash);
 
     MENTORS.splice(idx, 1);
     saveMentorsToStorage();
     saveToStorage();
+
+    // Firestore: 멘토 목록 + 변경된 학생들만 일괄 업데이트
+    syncMentorsToFirestore();
+    if (changedStudents.length > 0) bulkSyncStudentsToFirestore(changedStudents);
+    changedTrash.forEach(s => syncTrashToFirestore(s));
 
     if (currentSelectedMentor === name) currentSelectedMentor = '';
     const mentorInput = document.getElementById('mentor');
@@ -1735,12 +2071,24 @@ function deleteSelectedStudents() {
   customConfirm(`선택된 ${ids.length}명을 휴지통으로 이동할까요?`, ok => {
     if (!ok) return;
     const trash = getTrashedStudents();
+    const movedStudents = [];
     ids.forEach(id => {
       const idx = globalStudentData.findIndex(s => s.id === id);
-      if (idx >= 0) { const s = globalStudentData[idx]; s.deletedAt = new Date().toISOString(); trash.push(s); globalStudentData.splice(idx, 1); }
+      if (idx >= 0) {
+        const s = globalStudentData[idx];
+        s.deletedAt = new Date().toISOString();
+        trash.push(s);
+        movedStudents.push(s);
+        globalStudentData.splice(idx, 1);
+      }
     });
     saveToStorage();
     saveTrashedStudents(trash);
+    // Firestore: students에서 삭제 + trash에 일괄 추가
+    movedStudents.forEach(s => {
+      deleteStudentFromFirestore(s.id);
+      syncTrashToFirestore(s);
+    });
     if (ids.includes(document.getElementById('studentId').value)) resetForm();
     filterList();
     showToast(`${ids.length}명 삭제 완료`, 'success');
@@ -1960,6 +2308,9 @@ function submitForm() {
   if (idx >= 0) globalStudentData[idx] = { ...globalStudentData[idx], ...data };
   else globalStudentData.push(data);
   saveToStorage();
+  // Firestore 동기화 - 저장된 학생 1명만
+  const finalStudent = globalStudentData.find(s => s.id === id);
+  if (finalStudent) syncStudentToFirestore(finalStudent);
   document.getElementById('studentId').value = id;
   initialAssignedClasses = JSON.parse(JSON.stringify(assignedClasses));
   filterList();
@@ -1980,6 +2331,9 @@ function deleteCurrentStudent() {
     saveTrashedStudents(trash);
     globalStudentData = globalStudentData.filter(x => x.id !== id);
     saveToStorage();
+    // Firestore: students에서 삭제 + trash에 추가
+    deleteStudentFromFirestore(id);
+    syncTrashToFirestore(s);
     doResetForm();
     filterList();
     showToast('삭제 완료', 'success');
@@ -2252,6 +2606,7 @@ function deletePaletteSubject(cat, subj) {
     if (!ok) return;
     COURSE_SUBJECTS[cat] = COURSE_SUBJECTS[cat].filter(s => s !== subj);
     saveSubjectsToStorage();
+    syncSubjectsToFirestore();
     showPaletteSubjects(cat);
   });
 }
@@ -2275,6 +2630,7 @@ function saveCustomSubject() {
   if (COURSE_SUBJECTS[cat].includes(name)) { customAlert('이미 존재하는 과목입니다.'); return; }
   COURSE_SUBJECTS[cat].push(name);
   saveSubjectsToStorage();
+  syncSubjectsToFirestore();
   document.getElementById('subjectManageModal').classList.remove('show');
   currentPaletteTab = cat;
   renderPalette();
@@ -2295,6 +2651,7 @@ function saveCustomCategory() {
   if (COURSE_SUBJECTS[name]) { customAlert('이미 존재하는 카테고리입니다.'); return; }
   COURSE_SUBJECTS[name] = [];
   saveSubjectsToStorage();
+  syncSubjectsToFirestore();
   document.getElementById('subjectManageModal').classList.remove('show');
   currentPaletteTab = name;
   renderPalette();
@@ -2466,6 +2823,9 @@ function restoreStudent(id) {
   globalStudentData.push(s);
   saveTrashedStudents(trash);
   saveToStorage();
+  // Firestore: trash에서 삭제 + students에 추가
+  deleteTrashFromFirestore(id);
+  syncStudentToFirestore(s);
   renderTrashList(trash);
   filterList();
   showToast('복원 완료', 'success');
@@ -2476,6 +2836,8 @@ function permanentDelete(id) {
     let trash = getTrashedStudents();
     trash = trash.filter(x => x.id !== id);
     saveTrashedStudents(trash);
+    // Firestore: trash에서 삭제
+    deleteTrashFromFirestore(id);
     renderTrashList(trash);
     showToast('완전 삭제됨', 'error');
   });
@@ -2928,9 +3290,14 @@ function doExecuteImport(mentorsToAdd) {
     mentorsToAdd.forEach(m => MENTORS.push(m));
     saveMentorsToStorage();
     renderAllMentorUIs();
+    syncMentorsToFirestore();
   }
 
   saveToStorage();
+  // Firestore: 가져온 학생 일괄 업로드
+  if (pendingImportData.length > 0) {
+    bulkSyncStudentsToFirestore([...pendingImportData]);
+  }
   filterList();
   document.getElementById('importModal').classList.remove('show');
   pendingImportData = null;
