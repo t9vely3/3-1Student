@@ -213,11 +213,31 @@ button { outline: none; cursor: pointer; }
 .select-all input { margin: 0; accent-color: var(--brand); }
 
 .student-list { list-style: none; margin: 0; padding: 8px 8px 12px; flex: 1; overflow-y: auto; }
-.student-item { display: flex; align-items: center; gap: 10px; padding: 9px 10px; margin-bottom: 4px; border-radius: var(--r-md); cursor: pointer; transition: all .12s; border: 1px solid transparent; }
+.student-item { display: flex; align-items: center; gap: 10px; padding: 9px 10px; margin-bottom: 4px; border-radius: var(--r-md); cursor: pointer; transition: all .12s; border: 1px solid transparent; position: relative; }
 .student-item:hover { background: var(--bg-muted); }
 .student-item.active { background: var(--brand-soft); border-color: var(--brand-border); }
 .student-item.active .student-name { color: var(--brand-text); }
 .student-item input[type="checkbox"] { margin: 0; accent-color: var(--brand); flex-shrink: 0; }
+
+/* 학생 카드 상태별 색상 (왼쪽 4px 액센트 바 + 옅은 배경) */
+.student-item.state-default { border-left: 4px solid #BFDBFE; background: rgba(219, 234, 254, .25); }
+.student-item.state-default:hover { background: rgba(219, 234, 254, .55); }
+.student-item.state-care { border-left: 4px solid #EF4444; background: rgba(254, 226, 226, .35); }
+.student-item.state-care:hover { background: rgba(254, 226, 226, .65); }
+.student-item.state-care .student-name { color: #B91C1C; }
+.student-item.state-leave { border-left: 4px solid #A78BFA; background: rgba(237, 233, 254, .4); }
+.student-item.state-leave:hover { background: rgba(237, 233, 254, .7); }
+.student-item.state-leave .student-name { color: #6D28D9; }
+.student-item.state-completed { border-left: 4px solid #F59E0B; background: rgba(254, 243, 199, .45); }
+.student-item.state-completed:hover { background: rgba(254, 243, 199, .75); }
+.student-item.state-completed .student-name { color: #92400E; }
+.student-item.state-refunded { background: #1F2937; border-color: #111827; }
+.student-item.state-refunded:hover { background: #111827; }
+.student-item.state-refunded .student-name { color: #fff; }
+.student-item.state-refunded .student-meta { color: #9CA3AF; }
+.student-item.state-refunded .student-avatar { box-shadow: 0 0 0 2px rgba(255,255,255,.15); }
+.student-item.state-refunded.active { background: #0F172A; border-color: #4F46E5; }
+.student-item.state-refunded .mini-badge { filter: brightness(1.05); }
 
 .student-avatar { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #fff; flex-shrink: 0; }
 .student-info { flex: 1; min-width: 0; }
@@ -225,7 +245,8 @@ button { outline: none; cursor: pointer; }
 .student-meta { font-size: 10px; color: var(--text-tertiary); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .student-badges { display: flex; gap: 3px; flex-wrap: wrap; margin-top: 4px; }
 
-.mini-badge { font-size: 9px; font-weight: 700; padding: 1px 6px; border-radius: 999px; border: 1px solid transparent; }
+.mini-badge { font-size: 9px; font-weight: 700; padding: 1px 6px; border-radius: 999px; border: 1px solid transparent; display: inline-flex; align-items: center; gap: 4px; }
+.mini-badge .dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
 .mini-badge.cod { color: var(--warning); background: var(--warning-bg); border-color: var(--warning-border); }
 .mini-badge.paid { color: var(--success); background: var(--success-bg); border-color: var(--success-border); }
 .mini-badge.care { color: var(--danger); background: var(--danger-bg); border-color: var(--danger-border); }
@@ -328,6 +349,7 @@ button { outline: none; cursor: pointer; }
 
 .flag-checkbox { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; cursor: pointer; padding: 4px 10px; border-radius: var(--r-sm); border: 1px solid; transition: all .12s; user-select: none; }
 .flag-checkbox input { margin: 0; width: 11px; height: 11px; }
+.flag-checkbox .flag-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
 .flag-checkbox.care { color: var(--danger); background: var(--bg-surface); border-color: var(--danger-border); }
 .flag-checkbox.care input { accent-color: var(--danger); }
 .flag-checkbox.care:has(input:checked) { background: var(--danger-bg); }
@@ -751,10 +773,10 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
               <span class="profile-meta-item"><svg class="icon icon-sm" viewBox="0 0 24 24" style="color:var(--success);"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span id="subContact">연락처 미입력</span></span>
             </div>
             <div class="profile-flags">
-              <label class="flag-checkbox care"><input type="checkbox" id="requiresCare" onchange="markDirty()"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>특별관리</label>
-              <label class="flag-checkbox leave"><input type="checkbox" id="isOnLeave" onchange="markDirty()"><svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>휴학</label>
-              <label class="flag-checkbox done"><input type="checkbox" id="isCompleted" onchange="markDirty()"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/></svg>종강</label>
-              <label class="flag-checkbox refund"><input type="checkbox" id="isRefunded" onchange="markDirty()"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>환불</label>
+              <label class="flag-checkbox care"><input type="checkbox" id="requiresCare" onchange="markDirty()"><span class="flag-dot"></span>특별관리</label>
+              <label class="flag-checkbox leave"><input type="checkbox" id="isOnLeave" onchange="markDirty()"><span class="flag-dot"></span>휴학</label>
+              <label class="flag-checkbox done"><input type="checkbox" id="isCompleted" onchange="markDirty()"><span class="flag-dot"></span>종강</label>
+              <label class="flag-checkbox refund"><input type="checkbox" id="isRefunded" onchange="markDirty()"><span class="flag-dot"></span>환불</label>
             </div>
           </div>
           <div class="profile-stats">
@@ -921,7 +943,7 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
             <div class="card-title">
               <span class="card-icon" style="background:var(--brand-soft); color:var(--brand); border:1px solid var(--brand-border);"><svg class="icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/></svg></span>
               학사일정 배정 플래너
-              <select id="assignYear" class="year-selector" onchange="renderAssignmentMatrix()"><option value="2026">2026년</option><option value="2027">2027년</option><option value="2028">2028년</option><option value="2029">2029년</option></select>
+              <select id="assignYear" class="year-selector" onchange="renderAssignmentMatrix(); updateDashboard();"><option value="2026">2026년</option><option value="2027">2027년</option><option value="2028">2028년</option><option value="2029">2029년</option></select>
             </div>
             <div style="display:flex; align-items:center; gap:8px;">
               <span id="pdfLoader" style="display:none; font-size:11px; color:var(--text-tertiary); font-weight:700;">추출 중...</span>
@@ -961,7 +983,10 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
             <div class="card-title">
               <span class="card-icon" style="background:var(--purple-bg); color:var(--purple); border:1px solid var(--purple-border);"><svg class="icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></span>
               전체 시간표 (마스터 캘린더)
-              <select class="form-control" id="masterMonth" style="width:110px; height:32px;" onchange="renderMasterSchedule()"></select>
+              <select class="form-control" id="masterYear" style="width:90px; height:32px;" onchange="renderMasterSchedule()">
+                <option value="2026">2026년</option><option value="2027">2027년</option><option value="2028">2028년</option><option value="2029">2029년</option>
+              </select>
+              <select class="form-control" id="masterMonth" style="width:80px; height:32px;" onchange="renderMasterSchedule()"></select>
               <select class="form-control" id="masterMentorFilter" style="width:130px; height:32px;" onchange="renderMasterSchedule()">
                 <option value="">모든 멘토</option>
               </select>
@@ -1624,6 +1649,7 @@ let currentMemos = [];
 let confirmCallback = null;
 let pendingAuthAction = null;
 let isDirty = false;
+let isLoadingForm = false; // 프로그램이 폼을 채우는 중일 때 markDirty 무시
 let cmdSelectedIdx = 0;
 let cmdResults = [];
 let editingMemoId = null;
@@ -1654,6 +1680,7 @@ function avatarGradient(name) {
 }
 
 function markDirty() {
+  if (isLoadingForm) return; // 프로그램이 폼 채우는 중에는 무시
   if (isDirty) return;
   isDirty = true;
   document.getElementById('dirtyIndicator').classList.add('show');
@@ -1663,6 +1690,47 @@ function clearDirty() {
   document.getElementById('dirtyIndicator').classList.remove('show');
 }
 window.addEventListener('beforeunload', (e) => { if (isDirty) { e.preventDefault(); e.returnValue = ''; } });
+
+/* =================================================================
+   연도 헬퍼 + 마이그레이션
+================================================================= */
+const DEFAULT_YEAR = '2026';
+
+function getCurrentAssignYear() {
+  const sel = document.getElementById('assignYear');
+  return sel ? sel.value : DEFAULT_YEAR;
+}
+function getCurrentMasterYear() {
+  const sel = document.getElementById('masterYear');
+  return sel ? sel.value : DEFAULT_YEAR;
+}
+
+// 기존 데이터에 year 필드가 없으면 DEFAULT_YEAR 추가
+function migrateAssignedClassesYear(arr) {
+  if (!Array.isArray(arr)) return [];
+  return arr.map(a => {
+    if (a && typeof a === 'object' && !a.year) {
+      return { ...a, year: DEFAULT_YEAR };
+    }
+    return a;
+  });
+}
+
+// 모든 학생 데이터에 일괄 적용
+function migrateAllStudentsYearField() {
+  let changed = 0;
+  globalStudentData.forEach(s => {
+    if (s.assignedClasses && Array.isArray(s.assignedClasses)) {
+      const before = JSON.stringify(s.assignedClasses);
+      s.assignedClasses = migrateAssignedClassesYear(s.assignedClasses);
+      if (JSON.stringify(s.assignedClasses) !== before) changed++;
+    }
+  });
+  if (changed > 0) {
+    saveToStorage();
+    console.log(`[Migration] ${changed}명의 학사일정에 연도 필드 추가됨`);
+  }
+}
 
 function loadFromStorage() {
   try {
@@ -1675,6 +1743,8 @@ function loadFromStorage() {
       const parsed = JSON.parse(mentors);
       if (Array.isArray(parsed) && parsed.length > 0) MENTORS = parsed;
     }
+    // 학사일정 연도 필드 마이그레이션 (기존 데이터에 year 없으면 2026 추가)
+    migrateAllStudentsYearField();
   } catch (e) { globalStudentData = []; }
 }
 function saveToStorage() { localStorage.setItem(STORAGE_KEY, JSON.stringify(globalStudentData)); }
@@ -2057,19 +2127,37 @@ function renderStudentList(list) {
     ul.innerHTML = `<li class="empty-state"><div class="empty-state-icon"><svg class="icon icon-lg" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>표시할 학생이 없습니다</li>`;
     return;
   }
+
+  // 정렬: 일반(상단) → 종강 → 환불(맨 아래)
+  // priority: refunded=2, completed=1, 그 외=0
+  const sorted = [...list].sort((a, b) => {
+    const pa = a.isRefunded ? 2 : (a.isCompleted ? 1 : 0);
+    const pb = b.isRefunded ? 2 : (b.isCompleted ? 1 : 0);
+    return pa - pb; // 낮은 priority(일반)가 위로
+  });
+
   const currentId = document.getElementById('studentId').value;
-  ul.innerHTML = list.map(s => {
+  ul.innerHTML = sorted.map(s => {
     const isUnassigned = !s.assignedClasses || s.assignedClasses.length === 0;
+
+    // 상태 클래스 결정 (우선순위: 환불 > 종강 > 휴학 > 특별관리 > 일반)
+    let stateClass = 'state-default';
+    if (s.isRefunded) stateClass = 'state-refunded';
+    else if (s.isCompleted) stateClass = 'state-completed';
+    else if (s.isOnLeave) stateClass = 'state-leave';
+    else if (s.requiresCare) stateClass = 'state-care';
+
     const badges = [];
-    if (s.paymentStatus === '완납') badges.push('<span class="mini-badge paid">완납</span>');
-    else badges.push('<span class="mini-badge cod">COD</span>');
-    if (isUnassigned) badges.push('<span class="mini-badge unassign">미배정</span>');
-    if (s.requiresCare) badges.push('<span class="mini-badge care">관리</span>');
-    if (s.isOnLeave) badges.push('<span class="mini-badge leave">휴학</span>');
-    if (s.isCompleted) badges.push('<span class="mini-badge done">종강</span>');
-    if (s.isRefunded) badges.push('<span class="mini-badge refund">환불</span>');
+    if (s.paymentStatus === '완납') badges.push('<span class="mini-badge paid"><span class="dot"></span>완납</span>');
+    else badges.push('<span class="mini-badge cod"><span class="dot"></span>COD</span>');
+    if (isUnassigned) badges.push('<span class="mini-badge unassign"><span class="dot"></span>미배정</span>');
+    if (s.requiresCare) badges.push('<span class="mini-badge care"><span class="dot"></span>특별관리</span>');
+    if (s.isOnLeave) badges.push('<span class="mini-badge leave"><span class="dot"></span>휴학</span>');
+    if (s.isCompleted) badges.push('<span class="mini-badge done"><span class="dot"></span>종강</span>');
+    if (s.isRefunded) badges.push('<span class="mini-badge refund"><span class="dot"></span>환불</span>');
+
     const grad = avatarGradient(s.name);
-    return `<li class="student-item ${currentId === s.id ? 'active' : ''}" onclick="loadStudentDetail('${s.id}')">
+    return `<li class="student-item ${stateClass} ${currentId === s.id ? 'active' : ''}" onclick="loadStudentDetail('${s.id}')">
       <input type="checkbox" data-id="${s.id}" class="stu-chk" onclick="event.stopPropagation();">
       <div class="student-avatar" style="background:linear-gradient(135deg, ${grad[0]} 0%, ${grad[1]} 100%);">${(s.name||'?').charAt(0)}</div>
       <div class="student-info">
@@ -2192,9 +2280,12 @@ function updateDashboard() {
 
   list.forEach(s => {
     const ac = s.assignedClasses || [];
+    const currentYear = getCurrentAssignYear();
     const monthsFound = {};
     ac.forEach(a => {
       if (!a.month || !a.subject) return;
+      // 현재 선택된 연도의 데이터만 카운트
+      if ((a.year || DEFAULT_YEAR) !== currentYear) return;
       let mStr = '';
       months.forEach(mm => { if (a.month.includes(mm)) mStr = mm; });
       if (mStr) {
@@ -2263,6 +2354,7 @@ function resetForm() {
   doResetForm();
 }
 function doResetForm() {
+  isLoadingForm = true;
   document.getElementById('studentForm').reset();
   document.getElementById('studentId').value = '';
   document.getElementById('originalMentor').value = '';
@@ -2288,6 +2380,7 @@ function doResetForm() {
   if (infoTabBtn && !document.getElementById('tab-info').classList.contains('active')) {
     switchMainTab('tab-info', infoTabBtn);
   }
+  isLoadingForm = false;
   clearDirty();
   showToast('새 학생 등록 모드');
 }
@@ -2298,6 +2391,8 @@ function loadStudentDetail(id) {
 function doLoadStudentDetail(id) {
   const s = globalStudentData.find(x => x.id === id);
   if (!s) { customAlert('학생 정보를 찾을 수 없습니다.'); return; }
+
+  isLoadingForm = true; // 폼 채우는 동안 markDirty 무시
 
   // 기본정보 탭으로 자동 전환 (다른 탭에서 클릭 시에도 정보가 보이도록)
   const infoTabBtn = document.querySelector('.main-tab-btn[data-tab="tab-info"]');
@@ -2333,6 +2428,8 @@ function doLoadStudentDetail(id) {
   renderAssignmentMatrix();
   // filterList 호출 시 active 표시가 다시 그려지도록 - 단 폼 값은 보존됨
   filterList();
+
+  isLoadingForm = false;
   clearDirty();
 }
 function setRadio(name, value) { const r = document.querySelector(`input[name="${name}"][value="${value}"]`); if (r) r.checked = true; }
@@ -2528,10 +2625,12 @@ function undoAssignment() {
   showToast('실행취소 완료');
 }
 function resetAssignment() {
-  customConfirm('현재 학생의 모든 배정을 초기화할까요?', ok => {
+  const currentYear = getCurrentAssignYear();
+  customConfirm(`${currentYear}년 학사일정을 모두 초기화할까요?\n(다른 연도 데이터는 유지됩니다)`, ok => {
     if (!ok) return;
     pushHistory();
-    assignedClasses = [];
+    // 현재 연도 데이터만 제거
+    assignedClasses = assignedClasses.filter(a => (a.year || DEFAULT_YEAR) !== currentYear);
     renderAssignmentMatrix();
     updateQuickStats();
     markDirty();
@@ -2544,6 +2643,7 @@ function renderAssignmentMatrix() {
     container.innerHTML = `<div class="empty-state"><div class="empty-state-icon"><svg class="icon icon-lg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/></svg></div>먼저 좌측에서 학생을 선택하세요</div>`;
     return;
   }
+  const currentYear = getCurrentAssignYear();
   const months = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
   // 행 = 시간대, 열 = 월
   let html = '<div style="overflow-x:auto;"><table class="matrix-table"><thead><tr><th class="time-col">시간/월</th>';
@@ -2552,7 +2652,8 @@ function renderAssignmentMatrix() {
   ALL_TIMES_LIST.forEach(t => {
     html += `<tr><td class="time-col">${t}</td>`;
     months.forEach(m => {
-      const items = assignedClasses.filter(a => a.month === m && a.time === t);
+      // 현재 선택된 연도의 데이터만 필터링
+      const items = assignedClasses.filter(a => (a.year || DEFAULT_YEAR) === currentYear && a.month === m && a.time === t);
       // 셀 상태: empty / partial(노랑) / confirmed(초록)
       let cellState = 'empty';
       if (items.length > 0) {
@@ -2606,14 +2707,23 @@ function handleDrop(ev, targetMonth, targetTime, el) {
   if (el) el.classList.remove('drag-over');
   let data;
   try { data = JSON.parse(ev.dataTransfer.getData('text/plain')); } catch { return; }
+  const currentYear = getCurrentAssignYear();
   pushHistory();
   if (data.from === 'matrix') {
     const item = assignedClasses.find(a => a.id === data.id);
-    if (item) { item.month = targetMonth; item.time = targetTime; }
+    // 같은 연도 내에서만 이동 (다른 연도는 별도 매트릭스라 보이지 않음)
+    if (item) {
+      // 대상 셀의 같은 연도 항목 수 체크
+      const existing = assignedClasses.filter(a => (a.year || DEFAULT_YEAR) === currentYear && a.month === targetMonth && a.time === targetTime && a.id !== item.id);
+      if (existing.length >= 2) { customAlert('한 셀에는 최대 2과목까지 배정할 수 있습니다.'); return; }
+      item.month = targetMonth;
+      item.time = targetTime;
+      item.year = currentYear; // 안전하게 연도 명시
+    }
   } else if (data.from === 'palette') {
-    const existing = assignedClasses.filter(a => a.month === targetMonth && a.time === targetTime);
+    const existing = assignedClasses.filter(a => (a.year || DEFAULT_YEAR) === currentYear && a.month === targetMonth && a.time === targetTime);
     if (existing.length >= 2) { customAlert('한 셀에는 최대 2과목까지 배정할 수 있습니다.'); return; }
-    assignedClasses.push({ id: 'a' + Date.now(), month: targetMonth, time: targetTime, subject: data.subj, confirmed: false, room: 'A' });
+    assignedClasses.push({ id: 'a' + Date.now(), year: currentYear, month: targetMonth, time: targetTime, subject: data.subj, confirmed: false, room: 'A' });
   }
   renderAssignmentMatrix();
   updateQuickStats();
@@ -2633,8 +2743,9 @@ function toggleConfirmMatrixItem(id, checked) {
 }
 function openAssignModal(month, time) {
   currentEditMonth = month; currentEditTime = time;
-  document.getElementById('assignModalTitle').innerText = `${month} · ${time} 배정`;
-  const items = assignedClasses.filter(a => a.month === month && a.time === time);
+  const currentYear = getCurrentAssignYear();
+  document.getElementById('assignModalTitle').innerText = `${currentYear}년 ${month} · ${time} 배정`;
+  const items = assignedClasses.filter(a => (a.year || DEFAULT_YEAR) === currentYear && a.month === month && a.time === time);
   document.getElementById('assignSubj1').value = items[0]?.subject || '';
   document.getElementById('assignSubj2').value = items[1]?.subject || '';
   document.getElementById('assignModal').classList.add('show');
@@ -2644,10 +2755,12 @@ function closeAssignModal() { document.getElementById('assignModal').classList.r
 function saveAssignModal() {
   const s1 = document.getElementById('assignSubj1').value.trim();
   const s2 = document.getElementById('assignSubj2').value.trim();
+  const currentYear = getCurrentAssignYear();
   pushHistory();
-  assignedClasses = assignedClasses.filter(a => !(a.month === currentEditMonth && a.time === currentEditTime));
-  if (s1) assignedClasses.push({ id: 'a' + Date.now(), month: currentEditMonth, time: currentEditTime, subject: s1, confirmed: false, room: 'A' });
-  if (s2) assignedClasses.push({ id: 'a' + (Date.now()+1), month: currentEditMonth, time: currentEditTime, subject: s2, confirmed: false, room: 'A' });
+  // 현재 연도의 해당 셀만 비움 (다른 연도 데이터는 유지)
+  assignedClasses = assignedClasses.filter(a => !((a.year || DEFAULT_YEAR) === currentYear && a.month === currentEditMonth && a.time === currentEditTime));
+  if (s1) assignedClasses.push({ id: 'a' + Date.now(), year: currentYear, month: currentEditMonth, time: currentEditTime, subject: s1, confirmed: false, room: 'A' });
+  if (s2) assignedClasses.push({ id: 'a' + (Date.now()+1), year: currentYear, month: currentEditMonth, time: currentEditTime, subject: s2, confirmed: false, room: 'A' });
   renderAssignmentMatrix();
   updateQuickStats();
   markDirty();
@@ -2757,8 +2870,53 @@ async function handlePDFUpload(input) {
         });
       });
     }
-    if (subjects.length === 0) customAlert('PDF에서 과목을 추출하지 못했습니다.');
-    else customAlert(`PDF에서 ${subjects.length}개 과목을 추출했습니다:\n${subjects.join(', ')}\n\n매트릭스에서 직접 배정해주세요.`);
+    if (subjects.length === 0) {
+      customAlert('PDF에서 과목을 추출하지 못했습니다.\n\n팔레트에 등록된 과목명과 정확히 일치하는 텍스트가 PDF에 없습니다.\n과목 관리에서 과목을 먼저 등록한 후 다시 시도해주세요.');
+    } else {
+      // 추출된 과목들을 매트릭스에 자동 추가
+      // 빈 셀을 찾아서 차례로 배치
+      const months = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
+      const placed = [];
+      const skipped = [];
+
+      pushHistory(); // undo 가능하게
+
+      const currentYear = getCurrentAssignYear();
+      for (const subj of subjects) {
+        // 이미 배정된 과목이면 건너뜀 (현재 연도 기준)
+        if (assignedClasses.some(a => (a.year || DEFAULT_YEAR) === currentYear && a.subject === subj)) {
+          skipped.push(subj);
+          continue;
+        }
+        // 빈 셀 찾기 (현재 연도 기준)
+        let placed_one = false;
+        outer: for (const m of months) {
+          for (const t of ALL_TIMES_LIST) {
+            const existing = assignedClasses.filter(a => (a.year || DEFAULT_YEAR) === currentYear && a.month === m && a.time === t);
+            if (existing.length < 2) {
+              assignedClasses.push({
+                id: 'a' + Date.now() + Math.floor(Math.random() * 10000),
+                year: currentYear, month: m, time: t, subject: subj,
+                confirmed: false, room: 'A'
+              });
+              placed.push(`${m} ${t}: ${subj}`);
+              placed_one = true;
+              break outer;
+            }
+          }
+        }
+        if (!placed_one) skipped.push(subj + '(빈 셀 없음)');
+      }
+
+      renderAssignmentMatrix();
+      updateQuickStats();
+      markDirty();
+
+      let msg = `PDF에서 ${subjects.length}개 과목을 추출했습니다.\n\n✓ 매트릭스에 자동 배치: ${placed.length}개\n`;
+      if (skipped.length > 0) msg += `⚠ 건너뜀 (이미 배정됨): ${skipped.length}개\n  ${skipped.slice(0, 5).join(', ')}${skipped.length > 5 ? ' ...' : ''}\n`;
+      msg += `\n드래그로 원하는 시간/월로 이동하세요.\n저장하지 않으면 변경사항이 사라집니다.`;
+      customAlert(msg);
+    }
   } catch (e) {
     customAlert('PDF 처리 실패: ' + e.message);
   } finally {
@@ -2780,6 +2938,7 @@ function renderMasterSchedule() {
     const cur = new Date().getMonth() + 1;
     monthSel.innerHTML = months.map(m => `<option ${m === cur+'월' ? 'selected' : ''}>${m}</option>`).join('');
   }
+  const year = getCurrentMasterYear();
   const month = monthSel.value;
   const mentorFilter = document.getElementById('masterMentorFilter').value;
   const times = currentScheduleMode === 'weekday' ? WEEKDAY_TIMES : WEEKEND_TIMES;
@@ -2787,6 +2946,8 @@ function renderMasterSchedule() {
   globalStudentData.forEach(s => {
     if (mentorFilter && s.mentor !== mentorFilter) return;
     (s.assignedClasses || []).forEach(a => {
+      // 연도 필터링
+      if ((a.year || DEFAULT_YEAR) !== year) return;
       if (a.month !== month) return;
       if (!times.includes(a.time)) return;
       const room = a.room || 'A';
@@ -2829,14 +2990,16 @@ function openStudentListModal(students, month, room, time, subject) {
 function exportMasterCSV() {
   const monthSel = document.getElementById('masterMonth');
   const month = monthSel.value;
+  const year = getCurrentMasterYear();
   const mentorFilter = document.getElementById('masterMentorFilter').value;
   const times = currentScheduleMode === 'weekday' ? WEEKDAY_TIMES : WEEKEND_TIMES;
-  const rows = [['호실','시간','과목','학생','담당멘토']];
+  const rows = [['연도','호실','시간','과목','학생','담당멘토']];
   globalStudentData.forEach(s => {
     if (mentorFilter && s.mentor !== mentorFilter) return;
     (s.assignedClasses || []).forEach(a => {
+      if ((a.year || DEFAULT_YEAR) !== year) return;
       if (a.month !== month || !times.includes(a.time)) return;
-      rows.push([a.room || 'A', a.time, a.subject, s.name, s.mentor || '-']);
+      rows.push([year, a.room || 'A', a.time, a.subject, s.name, s.mentor || '-']);
     });
   });
   const csv = '\ufeff' + rows.map(r => r.map(c => `"${(String(c)||'').replace(/"/g,'""')}"`).join(',')).join('\n');
@@ -2844,7 +3007,7 @@ function exportMasterCSV() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `시간표_${month}_${currentScheduleMode === 'weekday' ? '평일' : '주말'}.csv`;
+  a.download = `시간표_${year}년_${month}_${currentScheduleMode === 'weekday' ? '평일' : '주말'}.csv`;
   a.click();
   URL.revokeObjectURL(url);
   showToast('CSV 다운로드 완료', 'success');
