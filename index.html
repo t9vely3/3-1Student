@@ -986,7 +986,7 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
 <div id="customConfirm" class="modal-overlay" onclick="closeModalIfBg(event,'customConfirm')"><div class="modal-content" style="max-width:400px;"><h3>확인</h3><p id="confirmMessage" style="font-size:13px; line-height:1.6; color:var(--text-secondary);"></p><div class="modal-actions"><button class="btn btn-outline" onclick="closeCustomConfirm(false)">취소</button><button class="btn btn-brand" onclick="closeCustomConfirm(true)">확인</button></div></div></div>
 <div id="authModal" class="modal-overlay" onclick="closeModalIfBg(event,'authModal')"><div class="modal-content" style="max-width:380px;"><h3>관리자 인증</h3><p style="font-size:12px; color:var(--text-tertiary); margin-bottom:12px;">관리자 비밀번호를 입력하세요.</p><input type="password" class="form-control" id="authPassword" placeholder="비밀번호" onkeydown="if(event.key==='Enter')verifyManageAuth()"><div class="modal-actions"><button class="btn btn-outline" onclick="document.getElementById('authModal').classList.remove('show')">취소</button><button class="btn btn-brand" onclick="verifyManageAuth()">확인</button></div></div></div>
 <div id="memoEditModal" class="modal-overlay" onclick="closeModalIfBg(event,'memoEditModal')"><div class="modal-content"><h3>메모 수정</h3><textarea class="form-control" id="editMemoInput" style="height:100px;"></textarea><div class="modal-actions"><button class="btn btn-outline" onclick="document.getElementById('memoEditModal').classList.remove('show')">취소</button><button class="btn btn-brand" onclick="saveEditedMemo()">수정 완료</button></div></div></div>
-<div id="trashModal" class="modal-overlay" onclick="closeModalIfBg(event,'trashModal')"><div class="modal-content wide"><h3>휴지통</h3><div id="trashListContent" class="trash-list"></div><div class="modal-actions"><button class="btn btn-outline" onclick="document.getElementById('trashModal').classList.remove('show')">닫기</button></div></div></div>
+<div id="trashModal" class="modal-overlay" onclick="closeModalIfBg(event,'trashModal')"><div class="modal-content wide"><h3>휴지통 <button id="trashEmptyBtn" class="btn btn-danger btn-sm" onclick="emptyTrashAll()" style="display:none;"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/></svg> 전체 비우기</button></h3><div id="trashListContent" class="trash-list"></div><div class="modal-actions"><button class="btn btn-outline" onclick="document.getElementById('trashModal').classList.remove('show')">닫기</button></div></div></div>
 
 <!-- IMPORT MODAL -->
 <div id="importModal" class="modal-overlay" onclick="closeModalIfBg(event,'importModal')">
@@ -1074,6 +1074,16 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
 
     <div style="font-size:11px; font-weight:800; color:var(--text-tertiary); text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px;">현재 멘토 목록 (<span id="mentorCount">0</span>명)</div>
     <div id="mentorListContainer" style="border:1px solid var(--border); border-radius:var(--r-md); max-height:340px; overflow-y:auto;"></div>
+
+    <!-- 관리자 도구: Firestore 수동 업로드 -->
+    <div style="margin-top:18px; padding-top:14px; border-top:1px dashed var(--border);">
+      <div style="font-size:11px; font-weight:800; color:var(--text-tertiary); text-transform:uppercase; letter-spacing:.5px; margin-bottom:8px;">데이터 관리</div>
+      <button class="btn btn-outline btn-sm" onclick="runManualMigration()" style="width:100%;">
+        <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Firestore에 로컬 데이터 업로드
+      </button>
+      <div style="font-size:10px; color:var(--text-tertiary); margin-top:6px; line-height:1.5;">현재 이 브라우저에 저장된 데이터를 Firestore로 업로드합니다. 같은 ID의 데이터는 덮어씌웁니다.</div>
+    </div>
 
     <div class="modal-actions">
       <button class="btn btn-outline" onclick="document.getElementById('mentorManageModal').classList.remove('show')">닫기</button>
@@ -1449,6 +1459,17 @@ async function loadFromFirestore() {
     const cloudIsEmpty = firestoreStudents.length === 0;
 
     if (cloudIsEmpty && localHasData) {
+      // 이전에 거절했으면 모달 다시 안 띄움
+      const declined = localStorage.getItem(MIGRATION_DECLINED_KEY) === '1';
+      if (declined) {
+        showSyncStatus('synced', '로컬 모드 (마이그레이션 거절됨)');
+        // localStorage 데이터로 UI 그대로 유지
+        renderAllMentorUIs();
+        filterList();
+        renderPalette();
+        renderMasterSchedule();
+        return;
+      }
       // 마이그레이션 모달
       showSyncStatus('synced', 'Firestore가 비어있음');
       offerMigration(firestoreStudents, firestoreTrash, firestoreMentors, firestoreSubjects);
@@ -1491,14 +1512,42 @@ function offerMigration(firestoreStudents, firestoreTrash, firestoreMentors, fir
   const localTrash = getTrashedStudents().length;
 
   customConfirm(
-    `Firestore가 비어있습니다.\n\n현재 이 브라우저에 저장된 데이터:\n• 학생 ${local}명\n• 휴지통 ${localTrash}명\n• 멘토 ${MENTORS.length}명\n• 과목 카테고리 ${Object.keys(COURSE_SUBJECTS).length}개\n\n이 데이터를 Firestore로 업로드할까요?\n(이후부터 모든 사람이 이 데이터를 공유합니다)`,
+    `Firestore가 비어있습니다.\n\n현재 이 브라우저에 저장된 데이터:\n• 학생 ${local}명\n• 휴지통 ${localTrash}명\n• 멘토 ${MENTORS.length}명\n• 과목 카테고리 ${Object.keys(COURSE_SUBJECTS).length}개\n\n이 데이터를 Firestore로 업로드할까요?\n(이후부터 모든 사람이 이 데이터를 공유합니다)\n\n※ 취소하면 다시 묻지 않습니다. 멘토 관리 → "Firestore에 업로드"에서 수동 실행 가능.`,
     async ok => {
       if (ok) {
+        // 거절 플래그 클리어 (혹시 이전에 거절했더라도)
+        localStorage.removeItem(MIGRATION_DECLINED_KEY);
         await runMigration();
       } else {
-        // 마이그레이션 거부 — 일단 메모리는 그대로 두고 진행
-        showToast('마이그레이션을 건너뛰었습니다. (헤더에서 다시 시도 가능)', 'brand');
+        // 거절 → localStorage에 플래그 기록 → 다음부터는 모달 안 뜸
+        localStorage.setItem(MIGRATION_DECLINED_KEY, '1');
+        // 일단 localStorage 데이터로 UI 유지
+        renderAllMentorUIs();
+        filterList();
+        renderPalette();
+        renderMasterSchedule();
+        showToast('로컬 모드로 진행합니다. (멘토 관리에서 다시 실행 가능)', 'brand');
       }
+    }
+  );
+}
+
+// 수동 마이그레이션 실행 (멘토 관리 모달에서 호출)
+async function runManualMigration() {
+  if (!firebaseDB || !currentUser) { customAlert('Firebase 로그인이 필요합니다.'); return; }
+  const local = globalStudentData.length;
+  const localTrash = getTrashedStudents().length;
+  if (local === 0 && localTrash === 0) { customAlert('업로드할 로컬 데이터가 없습니다.'); return; }
+
+  customConfirm(
+    `현재 이 브라우저의 데이터를 Firestore에 업로드합니다.\n\n• 학생 ${local}명\n• 휴지통 ${localTrash}명\n• 멘토 ${MENTORS.length}명\n• 과목 카테고리 ${Object.keys(COURSE_SUBJECTS).length}개\n\n⚠ Firestore에 같은 ID의 데이터가 있으면 덮어씁니다.\n\n진행할까요?`,
+    async ok => {
+      if (!ok) return;
+      // 거절 플래그 클리어
+      localStorage.removeItem(MIGRATION_DECLINED_KEY);
+      // 멘토 관리 모달 닫기
+      document.getElementById('mentorManageModal').classList.remove('show');
+      await runMigration();
     }
   );
 }
@@ -1583,6 +1632,7 @@ const STORAGE_KEY = 'studentMgmt_v3_students';
 const TRASH_KEY = 'studentMgmt_v3_trash';
 const SUBJECTS_KEY = 'studentMgmt_v3_subjects';
 const MENTORS_KEY = 'studentMgmt_v3_mentors';
+const MIGRATION_DECLINED_KEY = 'studentMgmt_v3_migration_declined';
 const ADMIN_PASSWORD = '1234';
 
 // 멘토 목록 - 동적 관리
@@ -2804,15 +2854,31 @@ function printCurrentStudent() {
 function openTrashModal() { renderTrashList(getTrashedStudents()); document.getElementById('trashModal').classList.add('show'); }
 function renderTrashList(trash) {
   const c = document.getElementById('trashListContent');
+  const emptyBtn = document.getElementById('trashEmptyBtn');
   if (trash.length === 0) {
     c.innerHTML = `<div class="empty-state"><div class="empty-state-icon"><svg class="icon icon-lg" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/></svg></div>휴지통이 비어있습니다</div>`;
+    if (emptyBtn) emptyBtn.style.display = 'none';
     return;
   }
+  if (emptyBtn) emptyBtn.style.display = '';
   c.innerHTML = trash.map(s => `
     <div class="trash-item">
       <div class="trash-info"><strong>${escapeHTML(s.name)}</strong> (${escapeHTML(s.course || '-')})<div class="meta">멘토: ${escapeHTML(s.mentor || '-')} · 삭제일: ${(s.deletedAt || '').split('T')[0]}</div></div>
       <div class="trash-actions"><button class="btn btn-outline btn-sm" onclick="restoreStudent('${s.id}')">복원</button><button class="btn btn-danger btn-sm" onclick="permanentDelete('${s.id}')">완전삭제</button></div>
     </div>`).join('');
+}
+function emptyTrashAll() {
+  const trash = getTrashedStudents();
+  if (trash.length === 0) { customAlert('휴지통이 이미 비어있습니다.'); return; }
+  customConfirm(`휴지통의 ${trash.length}명을 모두 영구 삭제하시겠습니까?\n\n⚠ 되돌릴 수 없습니다.`, ok => {
+    if (!ok) return;
+    const ids = trash.map(s => s.id);
+    saveTrashedStudents([]);
+    // Firestore: trash 컬렉션에서 일괄 삭제
+    ids.forEach(id => deleteTrashFromFirestore(id));
+    renderTrashList([]);
+    showToast(`휴지통 ${ids.length}명 영구 삭제됨`, 'error');
+  });
 }
 function restoreStudent(id) {
   let trash = getTrashedStudents();
