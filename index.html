@@ -328,6 +328,249 @@ html[data-theme="dark"] .assign-win { background: rgba(0,0,0,.7); }
 .aw-tip .pill-ok { background: var(--success-bg); color: var(--success); border: 1px solid var(--success-border); padding: 2px 8px; border-radius: 999px; font-weight: 800; margin-left: auto; }
 .aw-noselect { padding: 60px 20px; text-align: center; color: var(--text-soft); font-size: 13px; }
 
+/* =================================================================
+   기본 디자인 — 뉴트럴 (파스텔 틴트 제거, 색은 상태 표시에만)
+   카드 구분은 제목 왼쪽 3px 컬러바로만
+================================================================= */
+
+/* ── 1. 카드/접이식 헤더 틴트 제거 ── */
+.card.tint-info .card-header,
+.card.tint-payment .card-header,
+.collapsible.tint-reward.open .collapsible-header,
+.collapsible.tint-memo.open .collapsible-header,
+.collapsible.tint-emer.open .collapsible-header {
+  background: var(--bg-surface);
+}
+.collapsible-header { background: var(--bg-surface); }
+.collapsible-header:hover { background: var(--bg-soft); }
+.card-header { background: var(--bg-surface); }
+
+/* ── 2. 아이콘 박스 → 얇은 컬러바 ── */
+.card-icon,
+.collapsible-icon-wrap {
+  width: 3px !important; height: 15px !important;
+  border-radius: 999px !important; border: 0 !important;
+  background: var(--text-soft) !important;
+  flex-shrink: 0; overflow: hidden;
+}
+.card-icon > svg,
+.collapsible-icon-wrap > svg { display: none !important; }
+.card.tint-info .card-icon    { background: var(--brand) !important; }
+.card.tint-payment .card-icon { background: var(--success) !important; }
+.collapsible.tint-reward .collapsible-icon-wrap { background: var(--warning) !important; }
+.collapsible.tint-memo .collapsible-icon-wrap   { background: #8B5CF6 !important; }
+.collapsible.tint-emer .collapsible-icon-wrap   { background: var(--danger) !important; }
+html[data-theme="dark"] .collapsible.tint-memo .collapsible-icon-wrap { background: #A78BFA !important; }
+
+/* 배정/마스터/월별 탭 카드 헤더의 인라인 그라디언트 무력화 */
+#tab-assign .card-header,
+#tab-master .card-header,
+#tab-monthly .card-header { background: var(--bg-surface) !important; }
+#tab-assign .card-icon,
+#tab-master .card-icon,
+#tab-monthly .card-icon { background: var(--brand) !important; }
+#tab-master .card-icon { background: #8B5CF6 !important; }
+#tab-monthly .card-icon { background: var(--info) !important; }
+
+/* ── 3. 그라디언트 → 단색 ── */
+.sidebar-header { background: #1E2330; }
+html[data-theme="dark"] .sidebar-header { background: #10131A; }
+.sidebar-header:hover { filter: brightness(1.25); }
+.btn-brand {
+  background: var(--brand-strong); color: #fff;
+  box-shadow: none; border: 1px solid var(--brand-strong);
+}
+.btn-brand:hover { background: var(--brand); border-color: var(--brand); }
+.profile-avatar-lg,
+.user-badge-avatar,
+.auth-logo,
+.auth-submit-btn,
+.student-avatar,
+.mentor-btn.all.active,
+.toast.brand {
+  background: #1E2330 !important;
+  box-shadow: none !important;
+}
+html[data-theme="dark"] .profile-avatar-lg,
+html[data-theme="dark"] .user-badge-avatar,
+html[data-theme="dark"] .auth-logo,
+html[data-theme="dark"] .auth-submit-btn,
+html[data-theme="dark"] .student-avatar,
+html[data-theme="dark"] .mentor-btn.all.active,
+html[data-theme="dark"] .toast.brand { background: #2A3040 !important; }
+.mentor-btn.no-mentor-btn.active {
+  background: var(--danger-bg) !important; color: var(--danger) !important;
+  border-color: var(--danger-border) !important; box-shadow: none !important;
+}
+.palette-tab.pdf-tab.active {
+  background: var(--warning) !important; color: #fff !important;
+  border-color: var(--warning) !important; box-shadow: none !important;
+}
+.auth-screen { background: #1E2330; }
+html[data-theme="dark"] .auth-screen { background: #0B0D12; }
+
+/* 프로필 히어로 — 무지개 상단선 제거 */
+.profile-hero { background: var(--bg-surface); }
+.profile-hero::before { display: none; }
+
+/* ── 4. 통계 카드 — 아이콘 배경 제거, 점으로 ── */
+.stat-icon-wrap {
+  width: 7px !important; height: 7px !important;
+  border-radius: 999px !important; border: 0 !important;
+  background: var(--text-soft) !important; flex-shrink: 0;
+  overflow: hidden;
+}
+.stat-icon-wrap > svg { display: none !important; }
+.stat-card.total .stat-icon-wrap  { background: var(--info) !important; }
+.stat-card.leave .stat-icon-wrap  { background: var(--warning) !important; }
+.stat-card.done .stat-icon-wrap   { background: var(--success) !important; }
+.stat-card.refund .stat-icon-wrap { background: var(--danger) !important; }
+.stat-card { background: var(--bg-surface); }
+.stat-card.total .stat-value  { color: var(--info); }
+.stat-card.leave .stat-value  { color: var(--warning); }
+.stat-card.done .stat-value   { color: var(--success); }
+.stat-card.refund .stat-value { color: var(--danger); }
+
+/* ── 5. 학생 목록 아바타 — 이니셜만, 단색 ── */
+.student-item .student-avatar {
+  background: var(--bg-muted) !important;
+  color: var(--text-secondary) !important;
+  border: 1px solid var(--border);
+  border-radius: 8px !important;
+}
+.student-item.active .student-avatar {
+  background: var(--brand-soft) !important;
+  color: var(--brand-text) !important;
+  border-color: var(--brand-border);
+}
+.aw-av, .sheet-av, .aw-who-av {
+  background: var(--bg-muted) !important;
+  color: var(--text-secondary) !important;
+  border: 1px solid var(--border);
+}
+.aw-item.active .aw-av {
+  background: var(--brand-soft) !important;
+  color: var(--brand-text) !important;
+  border-color: var(--brand-border);
+}
+.mentor-btn.active .mentor-btn-avatar,
+.cmd-item .student-avatar {
+  background: var(--bg-muted) !important;
+  color: var(--text-secondary) !important;
+}
+
+/* ── 6. 배정 매트릭스 — 상태 색만 유지, 채도 낮춤 ── */
+.matrix-subj-pill {
+  background: var(--bg-muted); color: var(--text-secondary);
+  border-color: var(--border-strong);
+}
+.matrix-subj-pill.confirmed {
+  background: var(--success-bg); color: var(--success);
+  border-color: var(--success-border);
+}
+.matrix-subj-pill.is-free {
+  background: var(--bg-muted); color: var(--info);
+  border-color: var(--info-border);
+}
+.matrix-subj-pill.is-free.confirmed {
+  background: var(--success-bg); color: var(--success);
+  border-color: var(--success-border);
+}
+.pill-free-tag, .pdf-free-tag {
+  background: var(--info) !important;
+}
+.palette-subj {
+  background: var(--bg-surface); color: var(--text-secondary);
+  border-color: var(--border);
+}
+.palette-subj:hover {
+  background: var(--brand-soft); color: var(--brand-text);
+  border-color: var(--brand-border);
+}
+.palette-container { background: var(--bg-surface); }
+.palette-tab.active {
+  background: var(--brand-strong); color: #fff; border-color: var(--brand-strong);
+}
+
+/* ── 7. 칩/라디오 선택 상태 ── */
+.chip-group input[type="radio"]:checked + label {
+  background: var(--brand-strong); color: #fff;
+  border-color: var(--brand-strong); box-shadow: none;
+}
+.payment-toggle input[value="COD"]:checked + label,
+.payment-toggle input[value="완납"]:checked + label {
+  background: var(--bg-surface); box-shadow: var(--shadow-xs);
+}
+
+/* ── 8. 플래그 체크박스 — 점 + 테두리만 ── */
+.flag-checkbox { background: var(--bg-surface); }
+.flag-checkbox:has(input:checked) { background: var(--bg-surface); }
+.flag-checkbox.care:has(input:checked)   { border-color: var(--danger-border);  color: var(--danger); }
+.flag-checkbox.leave:has(input:checked)  { border-color: var(--warning-border); color: var(--warning); }
+.flag-checkbox.done:has(input:checked)   { border-color: var(--success-border); color: var(--success); }
+.flag-checkbox.refund:has(input:checked) { border-color: var(--border-strong);  color: var(--text-secondary); }
+
+/* ── 9. 미니 통계 (히어로 우측) ── */
+.mini-stat { background: var(--bg-soft); border: 1px solid var(--border); }
+.mini-stat.tuition .mini-stat-value { color: var(--success); }
+.mini-stat.assign .mini-stat-value  { color: var(--text-primary); }
+.progress-fill { background: var(--brand); }
+
+/* ── 10. 폰트 웨이트 정리 (800 남발 완화) ── */
+.card-title, .collapsible-title { font-weight: 700; letter-spacing: -.2px; }
+.stat-value, .mini-stat-value { font-weight: 750; }
+
+/* 프로필 히어로 아바타 — 뉴트럴 */
+.profile-avatar-lg {
+  background: var(--bg-muted) !important;
+  color: var(--text-secondary) !important;
+  border: 1px solid var(--border);
+  border-radius: 16px !important;
+  font-weight: 700;
+}
+html[data-theme="dark"] .profile-avatar-lg { background: var(--bg-muted) !important; }
+
+/* 배정관리 창 학생 아바타 */
+.aw-who-av { border-radius: 9px !important; }
+
+/* 사이드바 로고 */
+.sidebar-logo { background: rgba(255,255,255,.12); }
+
+/* 멘토 버튼 — 선택 시 단색 */
+.mentor-btn.active {
+  background: var(--brand-strong); color: #fff; border-color: var(--brand-strong);
+  box-shadow: none;
+}
+
+/* 잔여 그라디언트 정리 */
+.highlight-calc {
+  background: var(--success-bg) !important; color: var(--success) !important;
+  font-weight: 750 !important; border-color: var(--success-border) !important;
+}
+.mentor-btn.no-mentor-btn {
+  background: var(--bg-surface); color: var(--text-tertiary); border-color: var(--border);
+}
+.mentor-btn.no-mentor-btn:hover { border-color: var(--danger-border); color: var(--danger); }
+.palette-tab.pdf-tab {
+  background: var(--bg-surface); color: var(--warning); border-color: var(--warning-border);
+}
+.palette-subj.pdf-subj {
+  background: var(--bg-surface); color: var(--warning); border-color: var(--warning-border);
+}
+.pdf-x-btn:hover { background: var(--danger); color: #fff; }
+.month-card { background: var(--bg-surface); }
+.month-card-title { color: var(--text-secondary); }
+.matrix-cell.state-partial { background: var(--warning-bg); }
+.matrix-cell.state-confirmed { background: var(--success-bg); }
+.student-item.state-refunded { background: var(--bg-soft); }
+.student-item.state-refunded .student-name { color: var(--text-tertiary); }
+.student-item.state-refunded.active { background: var(--brand-soft); border-color: var(--brand-border); }
+.student-item.state-refunded.active .student-name { color: var(--brand-text); }
+.dept-chip.active { background: var(--brand-strong); color: #fff; border-color: var(--brand-strong); }
+.master-subj-count { background: var(--text-tertiary); }
+.toast { background: #1E2330; }
+html[data-theme="dark"] .toast { background: var(--bg-muted); border: 1px solid var(--border); }
+
 html, body { margin: 0; height: 100vh; overflow: hidden; }
 body {
   font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
@@ -923,6 +1166,34 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
   .form-group.span-3, .form-group.span-4 { grid-column: span 2; }
   .profile-stats { display: none; }
 }
+
+/* ── 아이콘 전용 탭 ── */
+.main-tabs.icon-tabs { gap: 2px; align-items: center; }
+.icon-tabs .main-tab-btn {
+  width: 34px; height: 30px; padding: 0; position: relative;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.icon-tabs .main-tab-btn .icon { width: 17px; height: 17px; }
+.icon-tabs .main-tab-btn::after {
+  content: attr(data-label);
+  position: absolute; top: calc(100% + 7px); left: 50%; transform: translateX(-50%);
+  background: var(--text-primary); color: var(--bg-surface);
+  font-size: 11px; font-weight: 700; padding: 4px 9px; border-radius: 6px;
+  white-space: nowrap; opacity: 0; pointer-events: none;
+  transition: opacity .15s .35s; z-index: 90;
+}
+.icon-tabs .main-tab-btn:hover::after { opacity: 1; }
+.tab-divider {
+  width: 1px; height: 18px; background: var(--border-strong);
+  margin: 0 5px; flex-shrink: 0;
+}
+.tab-current-label {
+  font-size: 13px; font-weight: 700; color: var(--text-primary);
+  margin-left: 12px; padding-left: 12px; border-left: 1px solid var(--border);
+  white-space: nowrap; letter-spacing: -.2px;
+}
+@media (max-width: 1100px) { .tab-current-label { display: none; } }
+
 </style>
 <!-- Firebase SDK (compat - HTML 단일 파일용) -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -1051,28 +1322,25 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
         <span class="breadcrumb-current" id="breadcrumbCurrent">신규 등록</span>
       </div>
       <div class="dirty-indicator" id="dirtyIndicator">변경사항</div>
-      <div class="main-tabs">
-        <button class="main-tab-btn active" data-tab="tab-info" onclick="switchMainTab('tab-info', this)">
-          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          기본/등록 정보
+      <div class="main-tabs icon-tabs">
+        <button class="main-tab-btn active" data-tab="tab-info" data-label="기본/등록 정보" onclick="switchMainTab('tab-info', this)" title="기본/등록 정보" aria-label="기본/등록 정보">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         </button>
-        <button class="main-tab-btn" data-tab="tab-assign" onclick="switchMainTab('tab-assign', this)">
-          <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-          학사일정
+        <button class="main-tab-btn" data-tab="tab-assign" data-label="학사일정" onclick="switchMainTab('tab-assign', this)" title="학사일정" aria-label="학사일정">
+          <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
         </button>
-        <button class="main-tab-btn" data-tab="tab-master" onclick="switchMainTab('tab-master', this)">
-          <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
-          전체 시간표
+        <button class="main-tab-btn" data-tab="tab-master" data-label="전체 시간표" onclick="switchMainTab('tab-master', this)" title="전체 시간표" aria-label="전체 시간표">
+          <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
         </button>
-        <button class="main-tab-btn" data-tab="tab-monthly" onclick="switchMainTab('tab-monthly', this); renderMonthlyView();">
-          <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01"/></svg>
-          월별 현황
+        <button class="main-tab-btn" data-tab="tab-monthly" data-label="월별 현황" onclick="switchMainTab('tab-monthly', this); renderMonthlyView();" title="월별 현황" aria-label="월별 현황">
+          <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01"/></svg>
         </button>
-        <button class="main-tab-btn" data-tab="tab-sheet" onclick="switchMainTab('tab-sheet', this);">
-          <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
-          전체표
+        <span class="tab-divider"></span>
+        <button class="main-tab-btn" data-tab="tab-sheet" data-label="수강생 목록" onclick="switchMainTab('tab-sheet', this);" title="수강생 목록 (전체표)" aria-label="수강생 목록">
+          <svg class="icon" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
         </button>
       </div>
+      <span class="tab-current-label" id="tabCurrentLabel">기본/등록 정보</span>
     </div>
 
     <div class="action-buttons">
@@ -2382,16 +2650,10 @@ let currentSelectedDept = ''; // '' = 모든 부서
 let PDF_SUBJECT_MAP = {};
 let editingMentorIdx = -1;
 
-const AVATAR_COLORS = [
-  ['#4F46E5','#7C3AED'], ['#EC4899','#BE185D'], ['#059669','#0D9488'],
-  ['#D97706','#B45309'], ['#0EA5E9','#0369A1'], ['#DC2626','#991B1B'],
-  ['#7E22CE','#581C87'], ['#0891B2','#155E75']
-];
+// 뉴트럴 디자인 — 아바타는 이름별 색상 대신 단색 (CSS 변수 사용)
+const AVATAR_COLORS = [['var(--bg-muted)','var(--bg-muted)']];
 function avatarGradient(name) {
-  if (!name) return AVATAR_COLORS[0];
-  let hash = 0;
-  for (let i = 0; i < name.length; i++) hash = (hash << 5) - hash + name.charCodeAt(i);
-  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
+  return AVATAR_COLORS[0];
 }
 
 function markDirty() {
@@ -3049,11 +3311,12 @@ function renderStudentList(list) {
     return [-1, -1];
   }
 
-  // 정렬: 1차 - 일반(상단) → 종강 → 환불(맨 아래)
+  // 정렬: 1차 - 일반(상단) → 휴학 → 종강 → 환불(맨 아래)
   //       2차 - 같은 그룹 내에서 원서번호 (사용자가 선택한 방향)
+  const grp = s => s.isRefunded ? 3 : (s.isCompleted ? 2 : (s.isOnLeave ? 1 : 0));
   const sorted = [...list].sort((a, b) => {
-    const pa = a.isRefunded ? 2 : (a.isCompleted ? 1 : 0);
-    const pb = b.isRefunded ? 2 : (b.isCompleted ? 1 : 0);
+    const pa = grp(a);
+    const pb = grp(b);
     if (pa !== pb) return pa - pb; // 그룹이 다르면 그룹 우선
     // 같은 그룹 → 원서번호 비교
     const [ay, an] = parseAppNum(a.appNum);
@@ -3334,7 +3597,7 @@ function doResetForm() {
   document.getElementById('totalTuition').value = '';
   document.getElementById('calcDiscWon').innerText = '';
   document.getElementById('profileAvatar').innerText = '+';
-  document.getElementById('profileAvatar').style.background = 'linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)';
+  document.getElementById('profileAvatar').style.background = '';
   currentMemos = [];
   updateMemoView();
   assignedClasses = [];
@@ -3495,8 +3758,7 @@ function onProfileChange() {
   const contact = document.getElementById('contact').value.trim();
   const av = document.getElementById('profileAvatar');
   av.innerText = name ? name.charAt(0) : '+';
-  if (name) { const grad = avatarGradient(name); av.style.background = `linear-gradient(135deg, ${grad[0]} 0%, ${grad[1]} 100%)`; }
-  else av.style.background = 'linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)';
+  av.style.background = '';
   document.getElementById('subCourse').innerText = course || '과정 미선택';
   document.getElementById('subMentorTxt').innerText = mentor ? mentor + ' 멘토' : '멘토 미지정';
   document.getElementById('subContact').innerText = contact || '연락처 미입력';
@@ -4700,6 +4962,85 @@ function renderCmdList() {
 
 
 
+
+/* =================================================================
+   뒤로가기 = 이전 작업으로 (탭 / 배정관리 창 / 모달)
+================================================================= */
+let isRestoringTab = false;
+
+function pushTabHistory(tabId) {
+  try {
+    const st = history.state;
+    if (st && st.app === 'sm3' && st.tab === tabId && !st.win) return;
+    history.pushState({ app: 'sm3', tab: tabId, win: false }, '');
+  } catch (e) {}
+}
+
+function initTabHistory() {
+  try {
+    const active = document.querySelector('.tab-section.active');
+    const id = active ? active.id : 'tab-info';
+    history.replaceState({ app: 'sm3', tab: id, win: false }, '');
+  } catch (e) {}
+}
+
+function activateTabById(id) {
+  const btn = document.querySelector(`.main-tab-btn[data-tab="${id}"]`);
+  if (!btn) return;
+  isRestoringTab = true;
+  switchMainTab(id, btn);
+  isRestoringTab = false;
+}
+
+window.addEventListener('popstate', (ev) => {
+  const st = ev.state;
+
+  // 1) 열려 있는 모달이 있으면 그것만 닫는다
+  const openModals = document.querySelectorAll('.modal-overlay.show');
+  if (openModals.length > 0) {
+    openModals.forEach(m => m.classList.remove('show'));
+    // 현재 위치를 다시 밀어넣어 페이지 이탈 방지
+    try { history.pushState(st || { app: 'sm3', tab: 'tab-info', win: awOpen }, ''); } catch (e) {}
+    return;
+  }
+  if (document.getElementById('cmdPalette').classList.contains('show')) {
+    closeCommandPalette();
+    try { history.pushState(st || { app: 'sm3', tab: 'tab-info', win: awOpen }, ''); } catch (e) {}
+    return;
+  }
+
+  // 2) 배정관리 창이 열려 있으면 창을 닫는다
+  if (typeof awOpen !== 'undefined' && awOpen) {
+    closeAssignWindow(true);
+    return;
+  }
+
+  // 3) 앱 상태면 해당 탭으로 복원
+  if (st && st.app === 'sm3') {
+    if (st.win) {
+      openAssignWindow(true);
+    } else {
+      activateTabById(st.tab || 'tab-info');
+    }
+    return;
+  }
+
+  // 4) 앱 밖으로 나가려는 경우 — 저장 안 된 변경이 있으면 붙잡는다
+  if (isDirty) {
+    try { history.pushState({ app: 'sm3', tab: (document.querySelector('.tab-section.active')||{}).id || 'tab-info', win: false }, ''); } catch (e) {}
+    customConfirm('저장하지 않은 변경사항이 있습니다.\n\n페이지를 나가시겠습니까?', ok => {
+      if (ok) { clearDirty(); history.back(); }
+    });
+    return;
+  }
+  // 저장할 게 없으면 첫 탭으로 되돌리고 한 번 더 붙잡아 둔다
+  const cur = document.querySelector('.tab-section.active');
+  if (cur && cur.id !== 'tab-info') {
+    activateTabById('tab-info');
+    try { history.pushState({ app: 'sm3', tab: 'tab-info', win: false }, ''); } catch (e) {}
+  }
+});
+
 /* =================================================================
    배정관리 전용 창 + 정보 탭 배정 요약 (B안)
 ================================================================= */
@@ -4817,9 +5158,12 @@ function renderAssignAside() {
 }
 
 /* ---------- 배정관리 창 ---------- */
-function openAssignWindow() {
+function openAssignWindow(fromHistory) {
   const win = document.getElementById('assignWindow');
   if (!win) return;
+  if (!fromHistory) {
+    try { history.pushState({ app: 'sm3', tab: (document.querySelector('.tab-section.active')||{}).id || 'tab-info', win: true }, ''); } catch (e) {}
+  }
 
   // 연도 동기화
   const ay = document.getElementById('assignYear');
@@ -4849,9 +5193,14 @@ function openAssignWindow() {
   awRenderWork();
 }
 
-function closeAssignWindow() {
+function closeAssignWindow(fromHistory) {
   const win = document.getElementById('assignWindow');
   if (!win) return;
+  // 사용자가 직접 닫은 경우: 히스토리 항목만 되돌리고 실제 닫기는 popstate가 처리
+  if (!fromHistory && awOpen) {
+    const st = history.state;
+    if (st && st.app === 'sm3' && st.win) { history.back(); return; }
+  }
   // DOM 원위치 복귀 — 매트릭스 → 팔레트 순서 유지
   const mtx = document.getElementById('assignmentMatrixContainer');
   const pal = document.getElementById('paletteContainer');
@@ -4924,7 +5273,12 @@ function awGetStudents() {
       if (!blob.includes(q)) return false;
     }
     return true;
-  }).sort((a, b) => parseAppNumForSort(b.appNum) - parseAppNumForSort(a.appNum));
+  }).sort((a, b) => {
+    const g = (s => s.isRefunded ? 3 : (s.isCompleted ? 2 : (s.isOnLeave ? 1 : 0)));
+    const d = g(a) - g(b);
+    if (d !== 0) return d;
+    return parseAppNumForSort(b.appNum) - parseAppNumForSort(a.appNum);
+  });
 }
 
 function awRenderStudents() {
@@ -5188,7 +5542,13 @@ function renderSheet() {
   }).join('');
 
   let rows = getSheetRows();
+  const sgrp = s => s.isRefunded ? 3 : (s.isCompleted ? 2 : (s.isOnLeave ? 1 : 0));
   rows.sort((a, b) => {
+    // 상태 열로 정렬할 때가 아니면 휴학/종강/환불은 항상 아래로
+    if (sheetSortKey !== 'status') {
+      const g = sgrp(a) - sgrp(b);
+      if (g !== 0) return g;
+    }
     const va = sheetSortVal(a, sheetSortKey), vb = sheetSortVal(b, sheetSortKey);
     let r;
     if (typeof va === 'number' && typeof vb === 'number') r = va - vb;
@@ -5838,6 +6198,11 @@ function switchMainTab(id, btn) {
   if (id === 'tab-monthly') renderMonthlyView();
   if (id === 'tab-sheet') renderSheet();
   if (id === 'tab-info') renderAssignAside();
+  // 현재 탭 이름 표시
+  const lbl = document.getElementById('tabCurrentLabel');
+  if (lbl) lbl.textContent = btn.dataset.label || '';
+  // 뒤로가기 히스토리
+  if (!isRestoringTab) pushTabHistory(id);
 }
 
 /* =================================================================
@@ -6179,6 +6544,12 @@ document.addEventListener('DOMContentLoaded', () => {
   updateQuickStats();
   renderPalette();
   renderMasterSchedule();
+  renderAssignAside();
+  initTabHistory();
+  // 현재 탭 이름 초기 표시
+  const initBtn = document.querySelector('.main-tab-btn.active');
+  const initLbl = document.getElementById('tabCurrentLabel');
+  if (initBtn && initLbl) initLbl.textContent = initBtn.dataset.label || '';
   document.querySelectorAll('#contextActions [data-context]').forEach(el => {
     el.style.display = el.dataset.context === 'info' ? '' : 'none';
   });
