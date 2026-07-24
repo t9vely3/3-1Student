@@ -1661,6 +1661,74 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
 
 .stat-divider { display: none !important; }
 
+
+/* =================================================================
+   세로 모니터 / 좁고 긴 화면 대응
+   (가로보다 세로가 긴 경우 = portrait)
+================================================================= */
+@media (orientation: portrait) {
+  /* 사이드바를 좁히고 본문 확보 */
+  .sidebar { width: 210px; }
+
+  /* 정보 탭: 좌우 2열 → 위아래 1열 (세로는 높이가 넉넉하므로) */
+  .info-split { grid-template-columns: 1fr !important; }
+  .info-split > .assign-side {
+    border-left: 0 !important; padding-left: 0 !important; margin-left: 0 !important;
+    border-top: 1px solid var(--border); padding-top: 14px; margin-top: 10px;
+    position: static; max-height: none;
+  }
+  /* 1열이 되면 카드 내부는 다시 4열 그리드로 (폭이 넓어짐) */
+  .info-col .card .form-grid { grid-template-columns: repeat(4, 1fr); }
+  .info-col .card .form-group.span-3 { grid-column: span 3; }
+  .info-col .card .form-group.span-4 { grid-column: span 4; }
+
+  /* 통계 바: 줄바꿈 허용 (가로로 다 안 들어감) */
+  .stats-bar {
+    height: auto !important; min-height: 44px;
+    flex-wrap: wrap; gap: 6px !important; padding: 7px 12px !important;
+  }
+  .month-stats { margin-left: 0; flex-wrap: wrap; }
+  .month-legend { margin-left: 0; }
+
+  /* 헤더: 줄바꿈 허용 */
+  .header { height: auto; min-height: 52px; flex-wrap: wrap; padding: 7px 12px; row-gap: 6px; }
+  .action-buttons { flex-wrap: wrap; row-gap: 5px; }
+  .tab-current-label { display: none; }
+
+  /* 배정관리 창: 좌측 선택 패널을 상단으로 */
+  .aw-body { grid-template-columns: 1fr !important; grid-template-rows: auto minmax(0, 1fr); }
+  .aw-pick {
+    border-right: 0; border-bottom: 1px solid var(--border);
+    max-height: 210px; flex-direction: row; flex-wrap: wrap;
+  }
+  .aw-pick .aw-seg { width: 190px; }
+  .aw-pick .aw-search { width: calc(100% - 190px); padding-top: 10px; }
+  .aw-list.mentors { max-height: 92px; width: 190px; border-right: 1px solid var(--border); }
+  .aw-list.students { width: calc(100% - 190px); max-height: 130px; }
+  .aw-sec { width: 100%; }
+  .aw-foot { width: 100%; }
+
+  /* 전체표: 세로 스크롤 여유 */
+  .sheet-scroll { max-height: calc(100vh - 260px); }
+}
+
+/* 아주 좁은 세로 화면 (태블릿 세로 등) */
+@media (orientation: portrait) and (max-width: 900px) {
+  .sidebar { width: 186px; }
+  .info-col .card .form-grid { grid-template-columns: repeat(2, 1fr); }
+  .info-col .card .form-group.span-3,
+  .info-col .card .form-group.span-4 { grid-column: span 2; }
+  .icon-tabs .main-tab-btn { width: 30px; }
+  .stats-bar .sp-cell { padding: 4px 8px; }
+  .month-card { padding: 3px 7px !important; }
+}
+
+/* 높이가 아주 긴 화면: 우측 배정 요약 목록을 더 길게 */
+@media (min-height: 1100px) {
+  .assign-side .aside-rows { max-height: 340px; }
+  .sheet-scroll { max-height: calc(100vh - 300px); }
+}
+
 </style>
 <!-- Firebase SDK (compat - HTML 단일 파일용) -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -3173,7 +3241,7 @@ function clearDirty() {
   const awd = document.getElementById('awDirty');
   if (awd) awd.style.display = 'none';
 }
-window.addEventListener('beforeunload', (e) => { if (isDirty) { e.preventDefault(); e.returnValue = ''; } });
+window.addEventListener('beforeunload', (e) => { if (typeof hasRealChanges === 'function' ? hasRealChanges() : isDirty) { e.preventDefault(); e.returnValue = ''; } });
 
 /* =================================================================
    연도 헬퍼 + 마이그레이션
@@ -4081,7 +4149,8 @@ function openMonthListModal(mStr, type) {
 }
 
 function resetForm() {
-  if (isDirty) { customConfirm('저장하지 않은 변경사항이 있습니다. 그래도 새로 등록하시겠어요?', ok => { if (ok) { clearDirty(); doResetForm(); } }); return; }
+  if (hasRealChanges()) { customConfirm('저장하지 않은 변경사항이 있습니다. 그래도 새로 등록하시겠어요?', ok => { if (ok) { clearDirty(); doResetForm(); } }); return; }
+  clearDirty();
   doResetForm();
 }
 function doResetForm() {
@@ -4117,10 +4186,12 @@ function doResetForm() {
   }
   isLoadingForm = false;
   clearDirty();
+  captureFormSnapshot();
   showToast('새 학생 등록 모드');
 }
 function loadStudentDetail(id) {
-  if (isDirty) { customConfirm('저장하지 않은 변경사항이 있습니다. 다른 학생으로 이동할까요?', ok => { if (ok) { clearDirty(); doLoadStudentDetail(id); } }); return; }
+  if (hasRealChanges()) { customConfirm('저장하지 않은 변경사항이 있습니다. 다른 학생으로 이동할까요?', ok => { if (ok) { clearDirty(); doLoadStudentDetail(id); } }); return; }
+  clearDirty();
   doLoadStudentDetail(id);
 }
 function doLoadStudentDetail(id) {
@@ -4175,6 +4246,7 @@ function doLoadStudentDetail(id) {
 
   isLoadingForm = false;
   clearDirty();
+  captureFormSnapshot();
 }
 function setRadio(name, value) { const r = document.querySelector(`input[name="${name}"][value="${value}"]`); if (r) r.checked = true; }
 function getRadio(name) { const r = document.querySelector(`input[name="${name}"]:checked`); return r ? r.value : ''; }
@@ -4227,6 +4299,7 @@ function submitForm() {
   filterList();
   updateQuickStats();
   clearDirty();
+  captureFormSnapshot();
   showToast('<svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> 저장 완료', 'success');
 }
 function deleteCurrentStudent() {
@@ -5490,6 +5563,61 @@ function renderCmdList() {
 
 
 
+
+/* =================================================================
+   실제 변경 여부 판정 (스냅샷 비교)
+   markDirty가 잘못 켜져도 값이 그대로면 확인창을 띄우지 않는다
+================================================================= */
+let formSnapshot = null;
+
+function buildFormSnapshot() {
+  const g = id => { const el = document.getElementById(id); return el ? String(el.value ?? '') : ''; };
+  const ck = id => { const el = document.getElementById(id); return el ? !!el.checked : false; };
+  const num = id => String(parseInt(String(g(id)).replace(/[^\d]/g, '')) || 0);
+  return JSON.stringify({
+    name: g('name').trim(),
+    appNum: g('appNum').trim(),
+    birth: g('birth').trim(),
+    contact: g('contact').trim(),
+    mentor: g('mentor').trim(),
+    subMentor: g('subMentor').trim(),
+    course: g('course'),
+    purpose: g('purpose'),
+    regDate: g('regDate').trim(),
+    durationStart: g('durationStart').trim(),
+    paidCourse: String(parseInt(g('paidCourse')) || 0),
+    freeCourse: String(parseInt(g('freeCourse')) || 0),
+    paymentStatus: getRadio('paymentStatus'),
+    ddazua: getRadio('ddazua'),
+    acp: getRadio('acp'),
+    regMethod: getRadio('regMethod'),
+    baseTuition: num('baseTuition'),
+    discountRate: String(parseInt(g('discountRate')) || 0),
+    directDiscount: num('directDiscount'),
+    requiresCare: ck('requiresCare'),
+    isOnLeave: ck('isOnLeave'),
+    isCompleted: ck('isCompleted'),
+    isRefunded: ck('isRefunded'),
+    emRel: g('emRel'),
+    emContact: g('emContact').trim(),
+    memo: JSON.stringify(currentMemos || []),
+    assign: JSON.stringify((assignedClasses || []).map(a => ({
+      y: a.year || DEFAULT_YEAR, m: a.month, t: a.time,
+      s: a.subject, c: !!a.confirmed, f: !!a.isFree
+    })).sort((x, y) => (x.m + x.t + x.s).localeCompare(y.m + y.t + y.s)))
+  });
+}
+
+function captureFormSnapshot() {
+  formSnapshot = buildFormSnapshot();
+}
+
+// 실제로 값이 달라졌는지
+function hasRealChanges() {
+  if (formSnapshot === null) return isDirty;
+  return buildFormSnapshot() !== formSnapshot;
+}
+
 /* =================================================================
    헤더 더보기 메뉴
 ================================================================= */
@@ -5702,7 +5830,7 @@ window.addEventListener('popstate', (ev) => {
   }
 
   // 4) 앱 밖으로 나가려는 경우 — 저장 안 된 변경이 있으면 붙잡는다
-  if (isDirty) {
+  if (hasRealChanges()) {
     try { history.pushState({ app: 'sm3', tab: (document.querySelector('.tab-section.active')||{}).id || 'tab-info', win: false }, ''); } catch (e) {}
     customConfirm('저장하지 않은 변경사항이 있습니다.\n\n페이지를 나가시겠습니까?', ok => {
       if (ok) { clearDirty(); history.back(); }
@@ -5988,7 +6116,7 @@ function awRenderStudents() {
 
 function awPickStudent(id) {
   if (id === document.getElementById('studentId').value) { awRenderWork(); return; }
-  if (isDirty) {
+  if (hasRealChanges()) {
     customConfirm('저장하지 않은 변경사항이 있습니다. 다른 학생으로 이동할까요?', ok => {
       if (!ok) return;
       clearDirty();
