@@ -216,6 +216,118 @@ tbody tr.active .sheet-stick { background: var(--brand-soft); }
 .sheet-note { margin-top: 12px; padding: 10px 13px; background: var(--info-bg); border: 1px solid var(--info-border); border-radius: var(--r-md); font-size: 11px; color: var(--info); line-height: 1.6; }
 .sheet-note b { font-weight: 800; }
 
+/* 다크 보정 추가 */
+html[data-theme="dark"] .matrix-cell.state-confirmed { background: var(--success-bg); }
+html[data-theme="dark"] .matrix-subj-pill.is-free { background: var(--info-bg); color: var(--info); border-color: var(--info-border); }
+html[data-theme="dark"] .matrix-subj-pill.is-free.confirmed { background: #16304F; color: #93C5FD; border-color: #2C5680; }
+html[data-theme="dark"] .matrix-subj-pill .del-x:hover { background: rgba(255,255,255,.1); }
+
+/* ===== B안: 정보 탭 3분할 (정보 + 배정 요약) ===== */
+.info-split { display: grid; grid-template-columns: minmax(0,1fr) 372px; gap: 0; align-items: start; }
+.info-split > .info-col { min-width: 0; }
+.info-split > .assign-side {
+  position: sticky; top: 0; align-self: start;
+  max-height: calc(100vh - var(--header-h) - var(--stats-h) - 40px);
+  display: flex; flex-direction: column;
+  border-left: 1px solid var(--border); padding-left: 16px; margin-left: 16px;
+}
+@media (max-width: 1500px) {
+  .info-split { grid-template-columns: 1fr; }
+  .info-split > .assign-side { position: static; max-height: none; border-left: 0; padding-left: 0; margin-left: 0; border-top: 1px solid var(--border); padding-top: 16px; margin-top: 8px; }
+}
+.aside-hd { font-size: 11px; font-weight: 800; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.aside-cnt { color: var(--brand-text); background: var(--brand-soft); border: 1px solid var(--brand-border); padding: 3px 9px; border-radius: 999px; font-size: 10px; font-weight: 800; }
+.aside-cnt.full { color: var(--success); background: var(--success-bg); border-color: var(--success-border); }
+.aside-cnt.zero { color: var(--danger); background: var(--danger-bg); border-color: var(--danger-border); }
+.expand-cta { width: 100%; padding: 11px; border-radius: var(--r-md); border: 1px solid var(--brand-border); background: var(--brand-soft); color: var(--brand-text); font-weight: 800; font-size: 12px; cursor: pointer; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 7px; margin-bottom: 12px; transition: all .15s; }
+.expand-cta:hover { background: var(--brand); color: #fff; border-color: var(--brand); }
+.expand-cta:disabled { opacity: .5; cursor: not-allowed; }
+
+/* 컴팩트 요약 그리드 */
+.mini-mtx { width: 100%; border-collapse: collapse; font-size: 9px; table-layout: fixed; }
+.mini-mtx th { background: var(--bg-muted); padding: 4px 1px; border: 1px solid var(--border); font-weight: 800; color: var(--text-tertiary); font-size: 8px; }
+.mini-mtx th.mini-tc { text-align: left; padding-left: 5px; white-space: nowrap; width: 74px; font-size: 8px; }
+.mini-mtx td { border: 1px solid var(--border); padding: 1px; height: 24px; background: var(--bg-surface); cursor: pointer; text-align: center; }
+.mini-mtx td:hover { box-shadow: inset 0 0 0 1px var(--brand); }
+.mini-mtx td.s-partial { background: var(--warning-bg); }
+.mini-mtx td.s-confirmed { background: var(--success-bg); }
+.mini-mtx tr.mini-wknd td.mini-tc, .mini-mtx tr.mini-wknd th.mini-tc { color: var(--purple); }
+.mini-dot { display: inline-block; width: 5px; height: 5px; border-radius: 999px; background: var(--warning); margin: 1px; }
+.mini-dot.ok { background: var(--success); }
+.mini-legend { display: flex; gap: 11px; font-size: 9px; color: var(--text-tertiary); margin-top: 8px; flex-wrap: wrap; }
+.mini-legend i { display: inline-block; width: 8px; height: 8px; border-radius: 2px; vertical-align: -1px; margin-right: 3px; border: 1px solid var(--border); }
+.aside-rows { margin-top: 12px; flex: 1; overflow-y: auto; min-height: 60px; }
+.aside-row { display: flex; align-items: center; gap: 7px; padding: 6px 8px; border-radius: var(--r-sm); background: var(--bg-soft); border: 1px solid var(--border); margin-bottom: 4px; font-size: 11px; }
+.aside-row:hover { border-color: var(--brand-border); }
+.aside-row .ar-m { font-weight: 800; color: var(--brand-text); min-width: 26px; font-size: 10px; }
+.aside-row .ar-t { color: var(--text-tertiary); font-size: 9px; min-width: 62px; }
+.aside-row .ar-s { font-weight: 700; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.aside-row .ar-ok { color: var(--success); font-weight: 800; font-size: 9px; }
+.aside-row .ar-no { color: var(--warning); font-weight: 800; font-size: 9px; }
+.aside-free { background: var(--info-bg); color: var(--info); border: 1px solid var(--info-border); border-radius: 3px; padding: 0 3px; font-size: 8px; font-weight: 800; }
+.aside-note { margin-top: 10px; padding: 9px 11px; border-radius: var(--r-md); font-size: 11px; line-height: 1.6; background: var(--warning-bg); border: 1px solid var(--warning-border); color: var(--warning); }
+.aside-note.ok { background: var(--success-bg); border-color: var(--success-border); color: var(--success); }
+.aside-note b { font-weight: 800; }
+.aside-empty { padding: 26px 10px; text-align: center; color: var(--text-soft); font-size: 11px; }
+
+/* ===== 배정관리 전용 창 ===== */
+.assign-win { display: none; position: fixed; inset: 0; z-index: 160; background: rgba(15,23,42,.55); backdrop-filter: blur(4px); align-items: center; justify-content: center; padding: 16px; }
+html[data-theme="dark"] .assign-win { background: rgba(0,0,0,.7); }
+.assign-win.show { display: flex; }
+.aw-box { background: var(--bg-app); border: 1px solid var(--border); border-radius: 14px; width: 100%; height: 100%; max-width: 1780px; display: flex; flex-direction: column; overflow: hidden; box-shadow: var(--shadow-lg); }
+.aw-hd { height: 54px; background: var(--bg-surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 15px; gap: 9px; flex-shrink: 0; flex-wrap: nowrap; }
+.aw-ttl { font-size: 14px; font-weight: 800; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.aw-ic { width: 26px; height: 26px; border-radius: 8px; background: var(--brand-soft); color: var(--brand); display: flex; align-items: center; justify-content: center; border: 1px solid var(--brand-border); flex-shrink: 0; }
+.aw-x { width: 31px; height: 31px; border-radius: var(--r-md); border: 1px solid var(--border); background: var(--bg-surface); cursor: pointer; color: var(--text-tertiary); display: flex; align-items: center; justify-content: center; font-family: inherit; flex-shrink: 0; }
+.aw-x:hover { background: var(--danger-bg); color: var(--danger); border-color: var(--danger-border); }
+.aw-body { flex: 1; display: grid; grid-template-columns: 238px minmax(0,1fr); overflow: hidden; min-height: 0; }
+
+.aw-pick { background: var(--bg-surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; min-height: 0; }
+.aw-seg { display: flex; padding: 10px 10px 7px; flex-shrink: 0; }
+.aw-seg button { flex: 1; padding: 6px 0; font-size: 11px; font-weight: 800; border: 1px solid var(--border); background: var(--bg-surface); color: var(--text-tertiary); cursor: pointer; font-family: inherit; }
+.aw-seg button:first-child { border-radius: var(--r-sm) 0 0 var(--r-sm); }
+.aw-seg button:last-child { border-radius: 0 var(--r-sm) var(--r-sm) 0; border-left: none; }
+.aw-seg button.active { background: var(--brand); color: #fff; border-color: var(--brand); }
+.aw-search { padding: 0 10px 8px; flex-shrink: 0; }
+.aw-search input { width: 100%; height: 30px; padding: 0 9px; border: 1px solid var(--border); border-radius: var(--r-sm); background: var(--bg-soft); font-size: 11px; outline: none; font-family: inherit; color: var(--text-primary); }
+.aw-search input:focus { border-color: var(--brand); box-shadow: var(--shadow-glow); }
+.aw-sec { padding: 7px 10px 5px; font-size: 9px; font-weight: 800; color: var(--text-soft); text-transform: uppercase; letter-spacing: .5px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 6px; flex-shrink: 0; }
+.aw-list { overflow-y: auto; padding: 0 7px 8px; }
+.aw-list.mentors { max-height: 176px; flex-shrink: 0; }
+.aw-list.students { flex: 1; min-height: 0; }
+.aw-item { padding: 6px 8px; border-radius: var(--r-sm); display: flex; align-items: center; gap: 7px; cursor: pointer; margin-bottom: 2px; font-size: 11px; }
+.aw-item:hover { background: var(--bg-hover); }
+.aw-item.active { background: var(--brand-soft); }
+.aw-item.active .aw-nm { color: var(--brand-text); }
+.aw-av { width: 21px; height: 21px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 800; color: #fff; flex-shrink: 0; }
+.aw-nm { font-weight: 700; }
+.aw-mt { font-size: 9px; color: var(--text-soft); }
+.aw-cnt { margin-left: auto; font-size: 9px; font-weight: 800; color: var(--text-tertiary); background: var(--bg-muted); padding: 2px 6px; border-radius: 999px; flex-shrink: 0; border: 1px solid var(--border); }
+.aw-item.active .aw-cnt { background: var(--bg-surface); color: var(--brand-text); border-color: var(--brand-border); }
+.aw-prog { margin-left: auto; font-size: 9px; font-weight: 800; flex-shrink: 0; font-variant-numeric: tabular-nums; }
+.aw-prog.full { color: var(--success); }
+.aw-prog.part { color: var(--warning); }
+.aw-prog.zero { color: var(--danger); }
+.aw-foot { padding: 8px 10px; border-top: 1px solid var(--border); background: var(--bg-soft); font-size: 10px; color: var(--text-tertiary); font-weight: 700; display: flex; gap: 10px; flex-wrap: wrap; flex-shrink: 0; }
+.aw-foot i { width: 6px; height: 6px; border-radius: 999px; display: inline-block; margin-right: 3px; }
+.aw-empty { padding: 22px 10px; text-align: center; color: var(--text-soft); font-size: 11px; }
+
+.aw-work { display: flex; flex-direction: column; overflow: hidden; min-height: 0; }
+.aw-whd { padding: 10px 14px; background: var(--bg-surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; flex-wrap: wrap; flex-shrink: 0; }
+.aw-who { display: flex; align-items: center; gap: 9px; min-width: 0; }
+.aw-who-av { width: 32px; height: 32px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; color: #fff; flex-shrink: 0; }
+.aw-who-n { font-size: 14px; font-weight: 800; }
+.aw-who-m { font-size: 10px; color: var(--text-tertiary); margin-top: 1px; }
+.aw-stat { padding: 5px 11px; border-radius: var(--r-md); background: var(--bg-soft); border: 1px solid var(--border); flex-shrink: 0; }
+.aw-stat .l { font-size: 9px; color: var(--text-tertiary); font-weight: 700; text-transform: uppercase; letter-spacing: .3px; }
+.aw-stat .v { font-size: 14px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.aw-wbody { flex: 1; overflow: auto; padding: 12px 14px; min-height: 0; }
+.aw-tip { display: flex; align-items: center; gap: 8px; padding: 7px 11px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--r-md); font-size: 11px; color: var(--text-tertiary); margin-bottom: 10px; flex-wrap: wrap; }
+.aw-tip b { font-weight: 800; color: var(--text-secondary); }
+.aw-tip .pill-warn { background: var(--warning-bg); color: var(--warning); border: 1px solid var(--warning-border); padding: 2px 8px; border-radius: 999px; font-weight: 800; margin-left: auto; }
+.aw-tip .pill-ok { background: var(--success-bg); color: var(--success); border: 1px solid var(--success-border); padding: 2px 8px; border-radius: 999px; font-weight: 800; margin-left: auto; }
+.aw-noselect { padding: 60px 20px; text-align: center; color: var(--text-soft); font-size: 13px; }
+
 html, body { margin: 0; height: 100vh; overflow: hidden; }
 body {
   font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
@@ -988,6 +1100,10 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
         <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         <span class="kbd">⌘K</span>
       </button>
+      <button class="btn btn-outline btn-sm" onclick="openAssignWindow()" title="배정관리 창 열기">
+        <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        배정관리
+      </button>
       <button class="btn btn-outline btn-sm btn-icon-only" onclick="openImportModal()" title="CSV 가져오기">
         <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
       </button>
@@ -1092,6 +1208,9 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
           </div>
         </div>
 
+        <div class="info-split">
+        <div class="info-col">
+
         <!-- 기본 정보 -->
         <div class="card tint-info">
           <div class="card-header">
@@ -1132,8 +1251,8 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
           <div class="card-body">
             <div class="form-grid">
               <div class="form-group span-2"><label class="form-label">수업 참여 월 (자유기입)</label><input type="text" class="form-control" id="durationStart" placeholder="예: 3월, 4월, 5월" oninput="markDirty()"></div>
-              <div class="form-group"><label class="form-label">유료 과목수</label><div class="flex-row"><input type="number" class="form-control" id="paidCourse" oninput="markDirty()"><span>과목</span></div></div>
-              <div class="form-group"><label class="form-label">무료 과목수</label><div class="flex-row"><input type="number" class="form-control" id="freeCourse" oninput="markDirty()"><span>과목</span></div></div>
+              <div class="form-group"><label class="form-label">유료 과목수</label><div class="flex-row"><input type="number" class="form-control" id="paidCourse" oninput="markDirty(); onSubjectCountChange()"><span>과목</span></div></div>
+              <div class="form-group"><label class="form-label">무료 과목수</label><div class="flex-row"><input type="number" class="form-control" id="freeCourse" oninput="markDirty(); onSubjectCountChange()"><span>과목</span></div></div>
               <div class="section-title">
                 <span>등록방법 / 결제 산정</span>
                 <div class="chip-group">
@@ -1229,6 +1348,30 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
           </div>
         </div>
 
+        </div><!-- /.info-col -->
+
+        <aside class="assign-side">
+          <div class="aside-hd">
+            <span>배정 현황 · <span id="asideYear">2026</span></span>
+            <span class="aside-cnt" id="asideCount">0 / 0</span>
+          </div>
+          <button type="button" class="expand-cta" onclick="openAssignWindow()">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+            배정관리 창에서 크게 열기
+          </button>
+          <div id="asideMatrix"></div>
+          <div class="mini-legend">
+            <span><i style="background:var(--success-bg); border-color:var(--success-border);"></i>확정</span>
+            <span><i style="background:var(--warning-bg); border-color:var(--warning-border);"></i>미확정</span>
+            <span><i style="background:var(--bg-surface);"></i>비어있음</span>
+          </div>
+          <div class="aside-hd" style="margin-top:14px;"><span>배정 목록</span></div>
+          <div class="aside-rows" id="asideRows"></div>
+          <div id="asideNote"></div>
+        </aside>
+
+        </div><!-- /.info-split -->
+
       </section>
 
       <!-- TAB: ASSIGN -->
@@ -1258,7 +1401,7 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
               </div>
             </div>
             <div id="assignmentMatrixContainer"></div>
-            <div class="palette-container">
+            <div class="palette-container" id="paletteContainer">
               <div class="palette-actions">
                 <button class="btn btn-outline btn-sm" onclick="openPdfMappingModal()" title="PDF 과목명 매핑 관리">PDF 매핑</button>
                 <button class="btn btn-outline btn-sm" onclick="requireManageAuth('addCat')">+ 탭</button>
@@ -1387,6 +1530,82 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
     </form>
   </div>
 </main>
+
+<!-- ===== 배정관리 전용 창 ===== -->
+<div id="assignWindow" class="assign-win" onclick="if(event.target===this) closeAssignWindow()">
+  <div class="aw-box">
+    <div class="aw-hd">
+      <div class="aw-ttl"><span class="aw-ic"><svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>배정관리</div>
+      <select id="awYear" class="year-selector" onchange="awOnYearChange()">
+        <option value="2026">2026년</option><option value="2027">2027년</option>
+        <option value="2028">2028년</option><option value="2029">2029년</option>
+      </select>
+      <div style="margin-left:auto; display:flex; align-items:center; gap:7px; flex-wrap:nowrap;">
+        <span id="awDirty" class="dirty-indicator" style="display:none;">변경사항</span>
+        <label class="btn btn-outline btn-sm" style="margin:0; cursor:pointer;" onclick="awCheckSelected(event)">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          PDF 추출
+          <input type="file" id="awPdfUpload" accept="application/pdf" style="display:none;" onchange="handlePDFUpload(this)">
+        </label>
+        <button class="btn btn-outline btn-sm" onclick="undoAssignment()">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-15-6.7L3 13"/></svg>취소</button>
+        <button class="btn btn-outline btn-sm" onclick="resetAssignment()">초기화</button>
+        <button class="btn btn-brand btn-sm" onclick="submitForm()">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>
+          저장 <span class="kbd">⌘S</span></button>
+        <button class="aw-x" onclick="closeAssignWindow()" title="닫기 (ESC)">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>
+    </div>
+
+    <div class="aw-body">
+      <!-- 좌: 멘토 → 학생 -->
+      <div class="aw-pick">
+        <div class="aw-seg">
+          <button type="button" id="awSegMentor" class="active" onclick="awSetMode('mentor')">멘토별</button>
+          <button type="button" id="awSegAll" onclick="awSetMode('all')">전체 학생</button>
+        </div>
+        <div class="aw-search"><input type="search" id="awSearch" placeholder="학생 이름·연락처 검색" onkeyup="awRenderStudents()" autocomplete="off"></div>
+        <div class="aw-sec" id="awMentorSec"><span>담당 멘토</span><span id="awMentorCnt">-</span></div>
+        <div class="aw-list mentors" id="awMentorList"></div>
+        <div class="aw-sec"><span id="awStuSecLabel">학생</span><span id="awStuCnt">-</span></div>
+        <div class="aw-list students" id="awStudentList"></div>
+        <div class="aw-foot">
+          <span><i style="background:var(--success);"></i>완료</span>
+          <span><i style="background:var(--warning);"></i>진행</span>
+          <span><i style="background:var(--danger);"></i>미배정</span>
+        </div>
+      </div>
+
+      <!-- 우: 배정 작업 -->
+      <div class="aw-work">
+        <div class="aw-whd">
+          <div class="aw-who">
+            <div class="aw-who-av" id="awWhoAv">?</div>
+            <div><div class="aw-who-n" id="awWhoName">학생을 선택하세요</div>
+              <div class="aw-who-m" id="awWhoMeta">좌측에서 멘토 → 학생 순으로 선택</div></div>
+          </div>
+          <div style="margin-left:auto; display:flex; align-items:center; gap:7px;">
+            <div class="aw-stat"><div class="l">배정</div><div class="v" id="awProg">- / -</div></div>
+            <button class="btn btn-outline btn-sm" onclick="awStep(-1)" id="awPrevBtn">◀ 이전</button>
+            <button class="btn btn-outline btn-sm" onclick="awStep(1)" id="awNextBtn">다음 ▶</button>
+          </div>
+        </div>
+        <div class="aw-wbody" id="awWorkBody">
+          <div class="aw-noselect" id="awNoSelect">좌측에서 학생을 선택하면 배정표가 표시됩니다</div>
+          <div id="awWorkInner" style="display:none;">
+            <div class="aw-tip">
+              <span>셀 <b>클릭</b>으로 과목 입력 · 팔레트에서 <b>드래그</b> · 뱃지 <b>체크</b>로 확정 · 셀당 최대 <b>2과목</b></span>
+              <span id="awTipPill" class="pill-warn">-</span>
+            </div>
+            <div id="awMatrixHost"></div>
+            <div id="awPaletteHost"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- MODALS -->
 <div id="customAlert" class="modal-overlay" onclick="closeModalIfBg(event,'customAlert')"><div class="modal-content" style="max-width:380px;"><h3>알림</h3><p id="alertMessage" style="font-size:13px; line-height:1.6; color:var(--text-secondary);"></p><div class="modal-actions"><button class="btn btn-brand" onclick="closeCustomAlert()">확인</button></div></div></div>
@@ -2180,10 +2399,14 @@ function markDirty() {
   if (isDirty) return;
   isDirty = true;
   document.getElementById('dirtyIndicator').classList.add('show');
+  const awd = document.getElementById('awDirty');
+  if (awd) awd.style.display = '';
 }
 function clearDirty() {
   isDirty = false;
   document.getElementById('dirtyIndicator').classList.remove('show');
+  const awd = document.getElementById('awDirty');
+  if (awd) awd.style.display = 'none';
 }
 window.addEventListener('beforeunload', (e) => { if (isDirty) { e.preventDefault(); e.returnValue = ''; } });
 
@@ -3438,6 +3661,9 @@ function renderAssignmentMatrix() {
   updateAllSubjectsDatalist();
   // 상단 월별 통계 실시간 갱신
   updateMonthlyStatsInline();
+  // 정보 탭 우측 요약 + 배정관리 창 갱신
+  if (typeof renderAssignAside === 'function') renderAssignAside();
+  if (typeof awOpen !== 'undefined' && awOpen) { awRenderWork(); awRenderStudents(); }
 }
 
 // 현재 학생의 매트릭스 변경에 따라 상단 월 카드를 즉시 갱신
@@ -4473,6 +4699,357 @@ function renderCmdList() {
 }
 
 
+
+/* =================================================================
+   배정관리 전용 창 + 정보 탭 배정 요약 (B안)
+================================================================= */
+let awMode = 'mentor';          // 'mentor' | 'all'
+let awMentor = '';              // 선택된 멘토 ('' = 전체)
+let awOpen = false;
+let awHomeMatrix = null;        // 원래 부모 (탭 복귀용)
+let awHomePalette = null;
+
+// ---------- 공통 계산 ----------
+function asgTotalSubjects(s) {
+  return (parseInt(s.paidCourse) || 0) + (parseInt(s.freeCourse) || 0);
+}
+function asgCountOf(s) {
+  return (s.assignedClasses || []).length;
+}
+function asgProgClass(done, total) {
+  if (total <= 0) return 'part';
+  if (done >= total) return 'full';
+  if (done === 0) return 'zero';
+  return 'part';
+}
+
+// 현재 편집 중 학생은 메모리(assignedClasses)를 우선 사용
+function asgLiveClasses(id) {
+  const curId = document.getElementById('studentId').value;
+  if (id && id === curId) return assignedClasses || [];
+  const s = globalStudentData.find(x => x.id === id);
+  return (s && s.assignedClasses) || [];
+}
+
+/* ---------- 정보 탭 우측 배정 요약 ---------- */
+function renderAssignAside() {
+  const host = document.getElementById('asideMatrix');
+  const rowsHost = document.getElementById('asideRows');
+  const noteHost = document.getElementById('asideNote');
+  const cntEl = document.getElementById('asideCount');
+  const yrEl = document.getElementById('asideYear');
+  if (!host || !rowsHost) return;
+
+  const id = document.getElementById('studentId').value;
+  const year = getCurrentAssignYear();
+  if (yrEl) yrEl.innerText = year;
+
+  const cta = document.querySelector('.expand-cta');
+  if (cta) cta.disabled = !id;
+
+  if (!id) {
+    host.innerHTML = '';
+    rowsHost.innerHTML = '<div class="aside-empty">학생을 선택하면<br>배정 현황이 표시됩니다</div>';
+    noteHost.innerHTML = '';
+    if (cntEl) { cntEl.innerText = '- / -'; cntEl.className = 'aside-cnt'; }
+    return;
+  }
+
+  const items = (assignedClasses || []).filter(a => (a.year || DEFAULT_YEAR) === year);
+  const s = globalStudentData.find(x => x.id === id) || {};
+  const total = (parseInt(document.getElementById('paidCourse').value) || 0) + (parseInt(document.getElementById('freeCourse').value) || 0);
+  const done = (assignedClasses || []).length;
+
+  if (cntEl) {
+    cntEl.innerText = `${done} / ${total || 0}`;
+    cntEl.className = 'aside-cnt ' + (total > 0 && done >= total ? 'full' : (done === 0 ? 'zero' : ''));
+  }
+
+  // 미니 그리드 (행=시간대, 열=12개월 숫자)
+  let h = '<table class="mini-mtx"><thead><tr><th class="mini-tc">시간</th>';
+  for (let m = 1; m <= 12; m++) h += `<th>${m}</th>`;
+  h += '</tr></thead><tbody>';
+  ALL_TIMES_LIST.forEach(t => {
+    const wk = t.indexOf('주말') === 0;
+    const shortT = wk ? t.replace('주말 ', '주 ').replace(/:00/g, '') : t.replace(/:00/g, '').replace(/:30/g, '.5');
+    h += `<tr class="${wk ? 'mini-wknd' : ''}"><th class="mini-tc">${escapeHTML(shortT)}</th>`;
+    for (let m = 1; m <= 12; m++) {
+      const mm = m + '월';
+      const cell = items.filter(a => a.month === mm && a.time === t);
+      let cls = '';
+      if (cell.length) cls = cell.every(a => a.confirmed) ? 's-confirmed' : 's-partial';
+      const dots = cell.map(a => `<i class="mini-dot ${a.confirmed ? 'ok' : ''}"></i>`).join('');
+      const tip = cell.length ? cell.map(a => a.subject).join(', ') : '';
+      h += `<td class="${cls}" title="${escapeHTML(mm + ' ' + t + (tip ? ' · ' + tip : ''))}" onclick="openAssignWindow()">${dots}</td>`;
+    }
+    h += '</tr>';
+  });
+  h += '</tbody></table>';
+  host.innerHTML = h;
+
+  // 배정 목록
+  const MO = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
+  const sorted = items.slice().sort((a, b) => {
+    const d = MO.indexOf(a.month) - MO.indexOf(b.month);
+    if (d !== 0) return d;
+    return ALL_TIMES_LIST.indexOf(a.time) - ALL_TIMES_LIST.indexOf(b.time);
+  });
+  if (sorted.length === 0) {
+    rowsHost.innerHTML = '<div class="aside-empty">이 연도에 배정된 과목이 없습니다</div>';
+  } else {
+    rowsHost.innerHTML = sorted.map(a => `<div class="aside-row">
+      <span class="ar-m">${escapeHTML(a.month)}</span>
+      <span class="ar-t">${escapeHTML(a.time)}</span>
+      <span class="ar-s">${escapeHTML(a.subject)}${a.isFree ? ' <span class="aside-free">무</span>' : ''}</span>
+      <span class="${a.confirmed ? 'ar-ok' : 'ar-no'}">${a.confirmed ? '확정' : '미확정'}</span>
+    </div>`).join('');
+  }
+
+  // 안내
+  const left = (total || 0) - done;
+  if (total > 0 && left > 0) {
+    noteHost.innerHTML = `<div class="aside-note"><b>미배정 ${left}과목</b> · 유료 ${parseInt(document.getElementById('paidCourse').value)||0} + 무료 ${parseInt(document.getElementById('freeCourse').value)||0} = ${total} 중 ${done}개 배정</div>`;
+  } else if (total > 0 && left <= 0) {
+    noteHost.innerHTML = `<div class="aside-note ok"><b>배정 완료</b> · ${total}과목 전부 배정되었습니다</div>`;
+  } else {
+    noteHost.innerHTML = '';
+  }
+}
+
+/* ---------- 배정관리 창 ---------- */
+function openAssignWindow() {
+  const win = document.getElementById('assignWindow');
+  if (!win) return;
+
+  // 연도 동기화
+  const ay = document.getElementById('assignYear');
+  const wy = document.getElementById('awYear');
+  if (ay && wy) wy.value = ay.value;
+
+  // 실제 매트릭스/팔레트 DOM을 창 안으로 이동 (구현 1개 유지)
+  const mtx = document.getElementById('assignmentMatrixContainer');
+  const pal = document.getElementById('paletteContainer');
+  if (mtx && !awHomeMatrix) awHomeMatrix = mtx.parentNode;
+  if (pal && !awHomePalette) awHomePalette = pal.parentNode;
+  if (mtx) document.getElementById('awMatrixHost').appendChild(mtx);
+  if (pal) document.getElementById('awPaletteHost').appendChild(pal);
+
+  awOpen = true;
+  win.classList.add('show');
+
+  // 현재 학생의 멘토를 기본 선택
+  const curId = document.getElementById('studentId').value;
+  if (curId) {
+    const s = globalStudentData.find(x => x.id === curId);
+    if (s && s.mentor) { awMode = 'mentor'; awMentor = s.mentor; }
+  }
+  awSyncSegUI();
+  awRenderMentors();
+  awRenderStudents();
+  awRenderWork();
+}
+
+function closeAssignWindow() {
+  const win = document.getElementById('assignWindow');
+  if (!win) return;
+  // DOM 원위치 복귀 — 매트릭스 → 팔레트 순서 유지
+  const mtx = document.getElementById('assignmentMatrixContainer');
+  const pal = document.getElementById('paletteContainer');
+  if (mtx && awHomeMatrix) awHomeMatrix.appendChild(mtx);
+  if (pal && awHomePalette) awHomePalette.appendChild(pal);
+  win.classList.remove('show');
+  awOpen = false;
+  renderAssignAside();
+}
+
+function awOnYearChange() {
+  const wy = document.getElementById('awYear');
+  const ay = document.getElementById('assignYear');
+  if (wy && ay) ay.value = wy.value;
+  renderAssignmentMatrix();
+  updateDashboard();
+  awRenderStudents();
+  awRenderWork();
+}
+
+function awSetMode(m) {
+  awMode = m;
+  if (m === 'all') awMentor = '';
+  awSyncSegUI();
+  awRenderMentors();
+  awRenderStudents();
+}
+function awSyncSegUI() {
+  const bm = document.getElementById('awSegMentor');
+  const ba = document.getElementById('awSegAll');
+  if (bm) bm.classList.toggle('active', awMode === 'mentor');
+  if (ba) ba.classList.toggle('active', awMode === 'all');
+  const sec = document.getElementById('awMentorSec');
+  const list = document.getElementById('awMentorList');
+  if (sec) sec.style.display = awMode === 'mentor' ? 'flex' : 'none';
+  if (list) list.style.display = awMode === 'mentor' ? 'block' : 'none';
+}
+
+function awRenderMentors() {
+  const host = document.getElementById('awMentorList');
+  if (!host) return;
+  const cntEl = document.getElementById('awMentorCnt');
+  if (cntEl) cntEl.innerText = MENTORS.length + '명';
+
+  const counts = {};
+  globalStudentData.forEach(s => { if (s.mentor) counts[s.mentor] = (counts[s.mentor] || 0) + 1; });
+
+  host.innerHTML = MENTORS.map(m => {
+    const grad = avatarGradient(m);
+    return `<div class="aw-item ${awMentor === m ? 'active' : ''}" onclick="awPickMentor('${escapeAttr(m)}')">
+      <div class="aw-av" style="background:linear-gradient(135deg, ${grad[0]} 0%, ${grad[1]} 100%);">${escapeHTML(m.charAt(0))}</div>
+      <span class="aw-nm">${escapeHTML(m)}</span>
+      <span class="aw-cnt">${counts[m] || 0}</span>
+    </div>`;
+  }).join('');
+}
+
+function awPickMentor(m) {
+  awMentor = (awMentor === m) ? '' : m;
+  awRenderMentors();
+  awRenderStudents();
+}
+
+function awGetStudents() {
+  const q = (document.getElementById('awSearch').value || '').toLowerCase().trim();
+  return globalStudentData.filter(s => {
+    if (awMode === 'mentor' && awMentor && s.mentor !== awMentor) return false;
+    if (q) {
+      const blob = `${s.name||''} ${s.contact||''} ${s.appNum||''}`.toLowerCase();
+      if (!blob.includes(q)) return false;
+    }
+    return true;
+  }).sort((a, b) => parseAppNumForSort(b.appNum) - parseAppNumForSort(a.appNum));
+}
+
+function awRenderStudents() {
+  const host = document.getElementById('awStudentList');
+  if (!host) return;
+  const list = awGetStudents();
+  const lbl = document.getElementById('awStuSecLabel');
+  if (lbl) lbl.innerText = (awMode === 'mentor' && awMentor) ? awMentor + ' 담당 학생' : '전체 학생';
+  const cnt = document.getElementById('awStuCnt');
+  if (cnt) cnt.innerText = list.length + '명';
+
+  if (list.length === 0) {
+    host.innerHTML = '<div class="aw-empty">해당 학생이 없습니다</div>';
+    return;
+  }
+  const curId = document.getElementById('studentId').value;
+  host.innerHTML = list.map(s => {
+    const grad = avatarGradient(s.name);
+    const total = asgTotalSubjects(s);
+    const done = asgLiveClasses(s.id).length;
+    return `<div class="aw-item ${s.id === curId ? 'active' : ''}" onclick="awPickStudent('${s.id}')">
+      <div class="aw-av" style="background:linear-gradient(135deg, ${grad[0]} 0%, ${grad[1]} 100%);">${escapeHTML((s.name||'?').charAt(0))}</div>
+      <div style="min-width:0;">
+        <div class="aw-nm">${escapeHTML(s.name || '-')}</div>
+        <div class="aw-mt">${escapeHTML(s.appNum || '-')} · ${escapeHTML(s.course || '-')}</div>
+      </div>
+      <span class="aw-prog ${asgProgClass(done, total)}">${done}/${total || 0}</span>
+    </div>`;
+  }).join('');
+}
+
+function awPickStudent(id) {
+  if (id === document.getElementById('studentId').value) { awRenderWork(); return; }
+  if (isDirty) {
+    customConfirm('저장하지 않은 변경사항이 있습니다. 다른 학생으로 이동할까요?', ok => {
+      if (!ok) return;
+      clearDirty();
+      awDoPick(id);
+    });
+    return;
+  }
+  awDoPick(id);
+}
+function awDoPick(id) {
+  doLoadStudentDetail(id);   // 폼 채우기 (정보 탭 전환 포함)
+  renderAssignmentMatrix();  // 창 안으로 이동된 컨테이너에 그려짐
+  awRenderStudents();
+  awRenderWork();
+}
+
+// 이전 / 다음 학생
+function awStep(dir) {
+  const list = awGetStudents();
+  if (list.length === 0) return;
+  const curId = document.getElementById('studentId').value;
+  let idx = list.findIndex(s => s.id === curId);
+  if (idx < 0) idx = dir > 0 ? -1 : 0;
+  let next = idx + dir;
+  if (next < 0) next = list.length - 1;
+  if (next >= list.length) next = 0;
+  awPickStudent(list[next].id);
+}
+
+function awRenderWork() {
+  const id = document.getElementById('studentId').value;
+  const no = document.getElementById('awNoSelect');
+  const inner = document.getElementById('awWorkInner');
+  if (!no || !inner) return;
+
+  if (!id) {
+    no.style.display = '';
+    inner.style.display = 'none';
+    document.getElementById('awWhoAv').innerText = '?';
+    document.getElementById('awWhoAv').style.background = 'var(--bg-muted)';
+    document.getElementById('awWhoName').innerText = '학생을 선택하세요';
+    document.getElementById('awWhoMeta').innerText = '좌측에서 멘토 → 학생 순으로 선택';
+    document.getElementById('awProg').innerText = '- / -';
+    return;
+  }
+
+  no.style.display = 'none';
+  inner.style.display = '';
+
+  const s = globalStudentData.find(x => x.id === id) || {};
+  const nm = document.getElementById('name').value || s.name || '-';
+  const grad = avatarGradient(nm);
+  const av = document.getElementById('awWhoAv');
+  av.innerText = nm.charAt(0);
+  av.style.background = `linear-gradient(135deg, ${grad[0]} 0%, ${grad[1]} 100%)`;
+  document.getElementById('awWhoName').innerText = nm;
+
+  const paid = parseInt(document.getElementById('paidCourse').value) || 0;
+  const free = parseInt(document.getElementById('freeCourse').value) || 0;
+  const total = paid + free;
+  const done = (assignedClasses || []).length;
+  document.getElementById('awWhoMeta').innerText =
+    `${document.getElementById('appNum').value || '-'} · ${document.getElementById('course').value || '-'} · ${document.getElementById('mentor').value || '멘토 미지정'} · 유료 ${paid} + 무료 ${free}`;
+  document.getElementById('awProg').innerText = `${done} / ${total || 0}`;
+
+  const pill = document.getElementById('awTipPill');
+  const left = total - done;
+  if (total > 0 && left > 0) { pill.className = 'pill-warn'; pill.innerText = `미배정 ${left}과목`; }
+  else if (total > 0) { pill.className = 'pill-ok'; pill.innerText = '배정 완료'; }
+  else { pill.className = 'pill-warn'; pill.innerText = '과목수 미입력'; }
+
+  const d = document.getElementById('awDirty');
+  if (d) d.style.display = isDirty ? '' : 'none';
+}
+
+function awCheckSelected(ev) {
+  if (!document.getElementById('studentId').value) {
+    ev.preventDefault();
+    customAlert('먼저 학생을 선택하세요.');
+    return;
+  }
+  document.getElementById('awPdfUpload').click();
+}
+
+function onSubjectCountChange() {
+  if (typeof renderAssignAside === 'function') renderAssignAside();
+  if (typeof awOpen !== 'undefined' && awOpen) awRenderWork();
+}
+
+function escapeAttr(s) { return String(s == null ? '' : s).replace(/'/g, "\\'").replace(/"/g, '&quot;'); }
+
 /* =================================================================
    전체표 (tab-sheet)
 ================================================================= */
@@ -5231,11 +5808,18 @@ document.addEventListener('keydown', (e) => {
   if (isCmd && e.key === 's') { e.preventDefault(); submitForm(); return; }
   if (isCmd && e.key === 'n') { e.preventDefault(); resetForm(); return; }
   if (isCmd && e.key === 'k') { e.preventDefault(); openCommandPalette(); return; }
-  if (isCmd && e.key === 'z' && document.getElementById('tab-assign').classList.contains('active')) { e.preventDefault(); undoAssignment(); return; }
+  if (isCmd && e.key === 'z' && (document.getElementById('tab-assign').classList.contains('active') || (typeof awOpen !== 'undefined' && awOpen))) { e.preventDefault(); undoAssignment(); return; }
   if (e.key === '/' && !['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)) { e.preventDefault(); document.getElementById('searchInput').focus(); return; }
   if (e.key === 'Escape') {
+    const anyModal = document.querySelectorAll('.modal-overlay.show').length > 0;
     document.querySelectorAll('.modal-overlay.show').forEach(m => m.classList.remove('show'));
-    if (document.getElementById('cmdPalette').classList.contains('show')) closeCommandPalette();
+    if (document.getElementById('cmdPalette').classList.contains('show')) { closeCommandPalette(); return; }
+    if (!anyModal && typeof awOpen !== 'undefined' && awOpen) { closeAssignWindow(); return; }
+  }
+  // 배정관리 창에서 좌우 화살표로 학생 이동
+  if (typeof awOpen !== 'undefined' && awOpen && !['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)) {
+    if (e.key === 'ArrowDown' || e.key === 'ArrowRight') { e.preventDefault(); awStep(1); return; }
+    if (e.key === 'ArrowUp'   || e.key === 'ArrowLeft')  { e.preventDefault(); awStep(-1); return; }
   }
   if (isCmd && e.key === 'Enter' && document.activeElement.id === 'newMemoInput') { e.preventDefault(); addMemo(); }
 });
@@ -5253,6 +5837,7 @@ function switchMainTab(id, btn) {
   if (id === 'tab-master') renderMasterSchedule();
   if (id === 'tab-monthly') renderMonthlyView();
   if (id === 'tab-sheet') renderSheet();
+  if (id === 'tab-info') renderAssignAside();
 }
 
 /* =================================================================
