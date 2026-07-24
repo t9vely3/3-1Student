@@ -1257,6 +1257,122 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
 .mon-chip.has { border-color: var(--brand-border); }
 .mon-chip.has.off { border-color: var(--border); }
 .mon-chip .mon-dot { margin-left: 1px; }
+
+/* =================================================================
+   사이드바 — 학생 목록 중심 / 필터 분리 / 행 압축
+================================================================= */
+
+/* 필터 요약 줄 */
+.filter-summary-row {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 11px 8px;
+}
+.filter-open-btn {
+  flex: 1; min-width: 0; height: 29px; padding: 0 8px;
+  display: inline-flex; align-items: center; gap: 6px;
+  border: 1px solid var(--border); border-radius: var(--r-sm);
+  background: var(--bg-surface); color: var(--text-secondary);
+  font-size: 11px; font-weight: 700; cursor: pointer; font-family: inherit;
+  transition: all .12s;
+}
+.filter-open-btn:hover { border-color: var(--border-strong); background: var(--bg-soft); }
+.filter-open-btn .icon { width: 12px; height: 12px; flex-shrink: 0; color: var(--text-tertiary); }
+.filter-open-btn #filterSummaryText {
+  flex: 1; text-align: left; overflow: hidden;
+  text-overflow: ellipsis; white-space: nowrap;
+}
+.filter-open-btn .chev { transition: transform .18s; margin-left: auto; }
+.filter-open-btn.open .chev { transform: rotate(180deg); }
+.filter-open-btn.active {
+  border-color: var(--brand-border); background: var(--brand-soft); color: var(--brand-text);
+}
+.filter-open-btn.active .icon { color: var(--brand); }
+.filter-clear-btn {
+  width: 22px; height: 22px; flex-shrink: 0;
+  border: 1px solid var(--border); border-radius: var(--r-sm);
+  background: var(--bg-surface); color: var(--text-tertiary);
+  font-size: 13px; line-height: 1; cursor: pointer; font-family: inherit;
+}
+.filter-clear-btn:hover { background: var(--danger-bg); color: var(--danger); border-color: var(--danger-border); }
+.list-count {
+  font-size: 10px; font-weight: 800; color: var(--text-tertiary);
+  white-space: nowrap; flex-shrink: 0;
+}
+
+/* 접히는 필터 패널 */
+.filter-panel {
+  display: none; padding: 2px 11px 10px;
+  border-bottom: 1px solid var(--border); background: var(--bg-soft);
+}
+.filter-panel.open { display: block; }
+.fp-sec { margin-bottom: 10px; }
+.fp-sec:last-child { margin-bottom: 2px; }
+.fp-label {
+  font-size: 9px; font-weight: 800; color: var(--text-tertiary);
+  text-transform: uppercase; letter-spacing: .6px; margin-bottom: 5px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.fp-select {
+  width: 100%; height: 28px; padding: 0 7px;
+  border: 1px solid var(--border); border-radius: var(--r-sm);
+  background: var(--bg-surface); font-size: 11px; font-family: inherit;
+  color: var(--text-primary); outline: none; cursor: pointer;
+}
+.filter-panel .mentor-grid { margin: 0; }
+.filter-panel .filter-row { display: flex; flex-wrap: wrap; gap: 4px; }
+
+/* 사이드바 액션 줄 축소 */
+.sidebar-actions { padding: 6px 11px; }
+.sidebar-actions .select-all { font-size: 10px; }
+
+/* 학생 행 압축 — 2줄, 아바타 없음 */
+.student-list { padding: 4px 7px 12px; }
+.student-item {
+  padding: 6px 8px !important; gap: 7px !important;
+  min-height: 0 !important; align-items: center !important;
+  border-radius: var(--r-sm) !important; margin-bottom: 1px !important;
+  border-left: 2px solid transparent !important;
+}
+.student-item.active { border-left-color: var(--brand) !important; }
+.student-item .stu-chk { width: 13px; height: 13px; margin: 0; flex-shrink: 0; }
+.student-info { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 1px; }
+.student-line1 { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.student-name {
+  font-size: 12.5px !important; font-weight: 700 !important;
+  color: var(--text-primary); white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis; flex-shrink: 1; min-width: 0;
+  margin: 0 !important;
+}
+.student-appnum {
+  font-size: 10px !important; font-weight: 600 !important;
+  color: var(--text-soft) !important; font-variant-numeric: tabular-nums;
+  flex-shrink: 0; margin: 0 !important; background: none !important;
+  padding: 0 !important; border: 0 !important;
+}
+.student-dots { display: inline-flex; gap: 3px; margin-left: auto; flex-shrink: 0; }
+.sd { width: 6px; height: 6px; border-radius: 999px; display: inline-block; }
+.sd.care     { background: var(--danger); }
+.sd.unassign { background: var(--warning); }
+.sd.cod      { background: var(--info); }
+.sd.leave    { background: var(--warning); box-shadow: inset 0 0 0 1px var(--bg-surface); }
+.sd.done     { background: var(--text-soft); }
+.sd.refund   { background: var(--danger); opacity: .5; }
+.student-meta {
+  font-size: 10px !important; color: var(--text-tertiary) !important;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  margin: 0 !important;
+}
+.student-badges { display: none !important; }
+
+/* 상태별 흐림 처리 */
+.student-item.state-completed .student-name,
+.student-item.state-refunded .student-name { color: var(--text-tertiary) !important; }
+.student-item.state-refunded { opacity: .65; }
+
+/* 프로필 히어로 — 아바타 제거 후 정렬 */
+.profile-hero { padding: 13px 16px !important; }
+.profile-name-row { gap: 9px; }
+
 </style>
 <!-- Firebase SDK (compat - HTML 단일 파일용) -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -1334,40 +1450,55 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
       </div>
     </div>
 
-    <div class="sidebar-mentors">
-      <!-- 부서 선택 (선택한 부서의 멘토만 그리드에 표시) -->
-      <div class="dept-selector-row" id="deptSelectorRow">
-        <span style="font-size:9px; font-weight:800; color:var(--text-tertiary); text-transform:uppercase; letter-spacing:.6px;">부서</span>
-        <select id="deptSelector" onchange="onDeptChange()">
+    <!-- 필터 요약 줄: 클릭하면 필터 패널 열림 -->
+    <div class="filter-summary-row">
+      <button type="button" class="filter-open-btn" id="filterOpenBtn" onclick="toggleFilterPanel()">
+        <svg class="icon icon-sm" viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+        <span id="filterSummaryText">전체</span>
+        <svg class="icon icon-sm chev" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <button type="button" class="filter-clear-btn" id="filterClearBtn" onclick="clearAllFilters()" title="필터 초기화" style="display:none;">×</button>
+      <span class="list-count" id="listCount">0명</span>
+    </div>
+
+    <!-- 접히는 필터 패널 -->
+    <div class="filter-panel" id="filterPanel">
+      <div class="fp-sec">
+        <div class="fp-label">부서</div>
+        <select id="deptSelector" class="fp-select" onchange="onDeptChange()">
           <option value="">전체 부서</option>
         </select>
       </div>
-      <div class="mentor-section-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; margin-top:8px;">
-        <span style="font-size:9px; font-weight:800; color:var(--text-tertiary); text-transform:uppercase; letter-spacing:.6px;">담당 멘토</span>
-        <button type="button" class="mentor-manage-btn" onclick="requireManageAuth('mentor')" title="멘토 관리">
-          <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-        </button>
-      </div>
-      <div class="mentor-grid" id="mentorGrid"></div>
-    </div>
 
-    <div class="sidebar-filters">
-      <div class="filter-row">
-        <label class="filter-chip unassigned"><input type="checkbox" id="filterUnassigned" onchange="filterList()"> 미배정</label>
-        <label class="filter-chip no-mentor"><input type="checkbox" id="filterNoMentor" onchange="filterList()"> 멘토없음</label>
-        <label class="filter-chip leave"><input type="checkbox" id="filterOnLeave" onchange="filterList()"> 휴학</label>
-        <label class="filter-chip completed"><input type="checkbox" id="filterCompleted" onchange="filterList()"> 종강</label>
-        <label class="filter-chip refunded"><input type="checkbox" id="filterRefunded" onchange="filterList()"> 환불</label>
+      <div class="fp-sec">
+        <div class="fp-label">
+          담당 멘토
+          <button type="button" class="mentor-manage-btn" onclick="requireManageAuth('mentor')" title="멘토 관리">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          </button>
+        </div>
+        <div class="mentor-grid" id="mentorGrid"></div>
+      </div>
+
+      <div class="fp-sec">
+        <div class="fp-label">수업 상태</div>
+        <div class="filter-row">
+          <label class="filter-chip unassigned"><input type="checkbox" id="filterUnassigned" onchange="filterList()"> 미배정</label>
+          <label class="filter-chip no-mentor"><input type="checkbox" id="filterNoMentor" onchange="filterList()"> 멘토없음</label>
+          <label class="filter-chip leave"><input type="checkbox" id="filterOnLeave" onchange="filterList()"> 휴학</label>
+          <label class="filter-chip completed"><input type="checkbox" id="filterCompleted" onchange="filterList()"> 종강</label>
+          <label class="filter-chip refunded"><input type="checkbox" id="filterRefunded" onchange="filterList()"> 환불</label>
+        </div>
       </div>
     </div>
 
     <div class="sidebar-actions">
-      <label class="select-all"><input type="checkbox" id="selectAllChk" onchange="toggleSelectAll(this)"> 전체 선택</label>
+      <label class="select-all"><input type="checkbox" id="selectAllChk" onchange="toggleSelectAll(this)"> 전체</label>
       <div style="display:flex; gap:4px; align-items:center;">
         <button class="sort-toggle-btn" id="sortToggleBtn" onclick="toggleSortOrder()" title="원서번호 정렬">
-          <span id="sortLabel">원서번호 ↓</span>
+          <span id="sortLabel">번호 ↓</span>
         </button>
-        <button class="btn btn-danger btn-sm" onclick="deleteSelectedStudents()">선택 삭제</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteSelectedStudents()">삭제</button>
       </div>
     </div>
 
@@ -1504,7 +1635,6 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
       <!-- TAB: INFO -->
       <section id="tab-info" class="tab-section active">
         <div class="profile-hero">
-          <div class="profile-avatar-lg" id="profileAvatar">+</div>
           <div class="profile-main">
             <input type="text" class="profile-name-input" id="name" placeholder="학생 이름 입력" oninput="onProfileChange()" autocomplete="off" data-form-type="other" data-lpignore="true">
             <div class="profile-meta">
@@ -3338,6 +3468,7 @@ function filterList() {
   });
   renderStudentList(filtered);
   updateDashboard();
+  updateFilterSummary(filtered.length);
   if (document.getElementById('tab-sheet') && document.getElementById('tab-sheet').classList.contains('active')) renderSheet();
 }
 function toggleSortOrder() {
@@ -3420,16 +3551,24 @@ function renderStudentList(list) {
     if (s.isCompleted) badges.push('<span class="mini-badge done"><span class="dot"></span>종강</span>');
     if (s.isRefunded) badges.push('<span class="mini-badge refund"><span class="dot"></span>환불</span>');
 
-    const grad = avatarGradient(s.name);
-    // 원서번호: 이름 위에 별도 줄로 표시 (가독성 향상)
-    return `<li class="student-item ${stateClass} ${currentId === s.id ? 'active' : ''}" onclick="loadStudentDetail('${s.id}')">
+    // 2줄 압축: [이름 · 원서번호 · 상태점] / [과정 · 멘토]
+    const dots = [];
+    if (s.requiresCare) dots.push('<i class="sd care" title="특별관리"></i>');
+    if (isUnassigned)   dots.push('<i class="sd unassign" title="미배정"></i>');
+    if (s.paymentStatus !== '완납') dots.push('<i class="sd cod" title="COD"></i>');
+    if (s.isOnLeave)    dots.push('<i class="sd leave" title="휴학"></i>');
+    if (s.isCompleted)  dots.push('<i class="sd done" title="종강"></i>');
+    if (s.isRefunded)   dots.push('<i class="sd refund" title="환불"></i>');
+
+    return `<li class="student-item ${stateClass} ${currentId === s.id ? 'active' : ''}" onclick="loadStudentDetail('${s.id}')" title="${escapeHTML((s.name||'') + ' · ' + (s.course||'-') + ' · ' + (s.mentor||'미지정'))}">
       <input type="checkbox" data-id="${s.id}" class="stu-chk" onclick="event.stopPropagation();">
-      <div class="student-avatar" style="background:linear-gradient(135deg, ${grad[0]} 0%, ${grad[1]} 100%);">${(s.name||'?').charAt(0)}</div>
       <div class="student-info">
-        ${s.appNum ? `<div class="student-appnum">${escapeHTML(s.appNum)}</div>` : ''}
-        <div class="student-name">${escapeHTML(s.name || '(이름 없음)')}</div>
+        <div class="student-line1">
+          <span class="student-name">${escapeHTML(s.name || '(이름 없음)')}</span>
+          ${s.appNum ? `<span class="student-appnum">${escapeHTML(s.appNum)}</span>` : ''}
+          <span class="student-dots">${dots.join('')}</span>
+        </div>
         <div class="student-meta">${escapeHTML(s.course || '-')} · ${escapeHTML(s.mentor || '미지정')}</div>
-        <div class="student-badges">${badges.join('')}</div>
       </div>
     </li>`;
   }).join('');
@@ -3659,8 +3798,8 @@ function doResetForm() {
   }
   document.getElementById('totalTuition').value = '';
   document.getElementById('calcDiscWon').innerText = '';
-  document.getElementById('profileAvatar').innerText = '+';
-  document.getElementById('profileAvatar').style.background = '';
+  const pav0 = document.getElementById('profileAvatar');
+  if (pav0) { pav0.innerText = '+'; pav0.style.background = ''; }
   currentMemos = [];
   updateMemoView();
   assignedClasses = [];
@@ -3820,8 +3959,7 @@ function onProfileChange() {
   const mentor = document.getElementById('mentor').value.trim();
   const contact = document.getElementById('contact').value.trim();
   const av = document.getElementById('profileAvatar');
-  av.innerText = name ? name.charAt(0) : '+';
-  av.style.background = '';
+  if (av) { av.innerText = name ? name.charAt(0) : '+'; av.style.background = ''; }
   document.getElementById('subCourse').innerText = course || '과정 미선택';
   document.getElementById('subMentorTxt').innerText = mentor ? mentor + ' 멘토' : '멘토 미지정';
   document.getElementById('subContact').innerText = contact || '연락처 미입력';
@@ -5051,6 +5189,58 @@ function renderCmdList() {
 
 
 
+
+
+/* =================================================================
+   사이드바 필터 패널 (부서 / 멘토 / 수업 상태 분리)
+================================================================= */
+function toggleFilterPanel() {
+  const p = document.getElementById('filterPanel');
+  const b = document.getElementById('filterOpenBtn');
+  if (!p || !b) return;
+  const open = p.classList.toggle('open');
+  b.classList.toggle('open', open);
+}
+
+function updateFilterSummary(shownCount) {
+  const txt = document.getElementById('filterSummaryText');
+  const btn = document.getElementById('filterOpenBtn');
+  const clr = document.getElementById('filterClearBtn');
+  const cnt = document.getElementById('listCount');
+  if (!txt || !btn) return;
+
+  const parts = [];
+  if (currentSelectedDept) parts.push(currentSelectedDept);
+  if (currentSelectedMentor === '__NO_MENTOR__') parts.push('멘토없음');
+  else if (currentSelectedMentor) parts.push(currentSelectedMentor);
+
+  const states = [];
+  if (document.getElementById('filterUnassigned').checked) states.push('미배정');
+  if (document.getElementById('filterNoMentor').checked) states.push('멘토없음');
+  if (document.getElementById('filterOnLeave').checked) states.push('휴학');
+  if (document.getElementById('filterCompleted').checked) states.push('종강');
+  if (document.getElementById('filterRefunded').checked) states.push('환불');
+  if (states.length) parts.push(states.join('·'));
+
+  const any = parts.length > 0;
+  txt.textContent = any ? parts.join(' / ') : '전체';
+  btn.classList.toggle('active', any);
+  if (clr) clr.style.display = any ? '' : 'none';
+  if (cnt && typeof shownCount === 'number') cnt.textContent = shownCount + '명';
+}
+
+function clearAllFilters() {
+  currentSelectedDept = '';
+  currentSelectedMentor = '';
+  const ds = document.getElementById('deptSelector');
+  if (ds) ds.value = '';
+  ['filterUnassigned','filterNoMentor','filterOnLeave','filterCompleted','filterRefunded'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.checked = false;
+  });
+  renderAllMentorUIs();
+  filterList();
+}
 
 /* =================================================================
    학사일정 — 월 표시/숨기기
