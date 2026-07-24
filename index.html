@@ -4,6 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>수강생 관리파일 v3</title>
+<script>
+(function(){
+  try {
+    var t = localStorage.getItem('studentMgmt_v3_theme');
+    if (!t) t = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', t);
+  } catch(e) { document.documentElement.setAttribute('data-theme','light'); }
+})();
+</script>
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css">
 <style>
 *, *::before, *::after { box-sizing: border-box; }
@@ -64,6 +73,110 @@
   --sidebar-w: 280px; --sidebar-w-collapsed: 56px;
   --header-h: 60px; --stats-h: 56px;
 }
+
+/* ===== 다크 테마 (C안 · 토글) ===== */
+html[data-theme="dark"] {
+  --bg-app: #0B0D12;
+  --bg-surface: #14171F;
+  --bg-soft: #14171F;
+  --bg-muted: #1B1F29;
+  --bg-hover: #1F2430;
+
+  --text-primary: #EDEFF4;
+  --text-strong: #FFFFFF;
+  --text-secondary: #B9C0CE;
+  --text-tertiary: #8A93A5;
+  --text-soft: #6B7383;
+
+  --border: #252A36;
+  --border-strong: #333A4A;
+  --border-focus: #7C83FF;
+
+  --brand: #7C83FF;
+  --brand-soft: #1D2036;
+  --brand-text: #A5AAFF;
+  --brand-border: #343A5C;
+  --brand-strong: #6B72F0;
+
+  --card-info-tint: #171B2B;
+  --card-info-border: #2C3350;
+  --card-info-text: #A5AAFF;
+  --card-payment-tint: #0F2620;
+  --card-payment-border: #1D4A3A;
+  --card-payment-text: #34D399;
+  --card-reward-tint: #2A2210;
+  --card-reward-border: #4D3B14;
+  --card-reward-text: #FBBF24;
+  --card-memo-tint: #221A2E;
+  --card-memo-border: #3D2D52;
+  --card-memo-text: #C084FC;
+  --card-emer-tint: #2A1518;
+  --card-emer-border: #4F2224;
+  --card-emer-text: #F87171;
+
+  --info: #60A5FA; --info-bg: #12233D; --info-border: #1E3A5F;
+  --success: #34D399; --success-bg: #0E2B22; --success-border: #1D4A3A;
+  --warning: #FBBF24; --warning-bg: #2E2410; --warning-border: #4D3B14;
+  --danger: #F87171; --danger-bg: #301618; --danger-border: #4F2224;
+  --purple: #C084FC; --purple-bg: #221A2E; --purple-border: #3D2D52;
+  --gray: #B9C0CE; --gray-bg: #1B1F29; --gray-border: #333A4A;
+
+  --shadow-xs: 0 1px 2px rgba(0,0,0,.4);
+  --shadow-sm: 0 2px 8px rgba(0,0,0,.35);
+  --shadow-md: 0 8px 24px rgba(0,0,0,.45);
+  --shadow-lg: 0 16px 48px rgba(0,0,0,.6);
+  --shadow-glow: 0 0 0 3px rgba(124,131,255,.2);
+}
+
+/* 하드코딩 색상 다크 보정 */
+html[data-theme="dark"] .auth-screen { background: linear-gradient(135deg,#1E1B3A 0%,#2A1F3D 50%,#3A1F30 100%); }
+html[data-theme="dark"] .auth-card { background: var(--bg-surface); }
+html[data-theme="dark"] .auth-tab.active { background: var(--bg-muted); }
+html[data-theme="dark"] .auth-input { background: var(--bg-app); }
+html[data-theme="dark"] .sidebar-header,
+html[data-theme="dark"] .btn-brand,
+html[data-theme="dark"] .mentor-btn.all.active,
+html[data-theme="dark"] .profile-avatar-lg,
+html[data-theme="dark"] .user-badge-avatar,
+html[data-theme="dark"] .auth-logo,
+html[data-theme="dark"] .auth-submit-btn,
+html[data-theme="dark"] .toast.brand {
+  background: linear-gradient(135deg,#3A4170 0%,#4A3A6E 100%);
+}
+html[data-theme="dark"] .profile-hero { background: var(--bg-surface); }
+html[data-theme="dark"] .profile-hero::before { background: linear-gradient(90deg,#6B72F0 0%,#9B6BE0 50%,#D6608F 100%); }
+html[data-theme="dark"] .payment-toggle input[value="COD"]:checked + label,
+html[data-theme="dark"] .payment-toggle input[value="완납"]:checked + label,
+html[data-theme="dark"] .st-btn.active { background: var(--bg-muted); }
+html[data-theme="dark"] .matrix-cell.state-partial { background: var(--warning-bg); }
+html[data-theme="dark"] .palette-subj.pdf-subj { background: var(--warning-bg); color: var(--warning); border-color: var(--warning-border); }
+html[data-theme="dark"] .palette-tab.pdf-tab.active { background: linear-gradient(135deg,#8B6914 0%,#6B5010 100%); border-color: var(--warning-border); }
+html[data-theme="dark"] .pdf-free-tag,
+html[data-theme="dark"] .pill-free-tag { background: #2563EB; }
+html[data-theme="dark"] .modal-overlay { background: rgba(0,0,0,.7); }
+html[data-theme="dark"] .cmd-palette { background: rgba(0,0,0,.65); }
+html[data-theme="dark"] .toast { background: var(--bg-muted); border: 1px solid var(--border); }
+html[data-theme="dark"] .student-item.state-refunded.active { background: #2A1518; border-color: var(--danger-border); }
+html[data-theme="dark"] .mentor-btn.no-mentor-btn.active { background: linear-gradient(135deg,#7F2A2A 0%,#5F1F1F 100%); }
+html[data-theme="dark"] .kbd { background: rgba(255,255,255,.12); }
+html[data-theme="dark"] input[type="checkbox"],
+html[data-theme="dark"] input[type="radio"] { accent-color: var(--brand); }
+html[data-theme="dark"] ::-webkit-scrollbar-thumb { background: #333A4A; }
+html[data-theme="dark"] ::-webkit-scrollbar-track { background: var(--bg-app); }
+
+/* 테마 토글 버튼 */
+.theme-toggle {
+  display: inline-flex; align-items: center; gap: 0; border: 1px solid var(--border);
+  border-radius: 999px; overflow: hidden; background: var(--bg-muted); flex-shrink: 0;
+}
+.theme-toggle button {
+  padding: 5px 11px; border: none; background: transparent; font-size: 11px;
+  font-weight: 700; color: var(--text-tertiary); cursor: pointer;
+  font-family: inherit; transition: all .15s; display: inline-flex; align-items: center; gap: 4px;
+}
+.theme-toggle button:hover { color: var(--text-primary); }
+.theme-toggle button.active { background: var(--brand); color: #fff; }
+html, body { transition: background-color .2s ease, color .2s ease; }
 
 html, body { margin: 0; height: 100vh; overflow: hidden; }
 body {
@@ -856,6 +969,11 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
       <button class="btn btn-outline btn-sm btn-icon-only" onclick="refreshFromFirestore()" title="Firestore 새로고침" id="refreshBtn" style="display:none;">
         <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
       </button>
+
+      <div class="theme-toggle" id="themeToggle">
+        <button type="button" id="themeLightBtn" onclick="setTheme('light')" title="라이트 모드">&#9728; 라이트</button>
+        <button type="button" id="themeDarkBtn" onclick="setTheme('dark')" title="다크 모드">&#127769; 다크</button>
+      </div>
 
       <div class="user-badge" id="userBadge" style="display:none;">
         <div class="user-badge-avatar" id="userBadgeAvatar">?</div>
@@ -1950,7 +2068,7 @@ const MENTOR_DEPTS_KEY = 'studentMgmt_v3_mentor_depts';
 const PDF_SUBJECT_MAP_KEY = 'studentMgmt_v3_pdf_subject_map';
 const MIGRATION_DECLINED_KEY = 'studentMgmt_v3_migration_declined';
 const SEEDED_KEY = 'studentMgmt_v3_seeded';
-const ADMIN_PASSWORD = '1234';
+const ADMIN_PASSWORD = '1018';
 
 // 멘토 목록 - 동적 관리
 const DEFAULT_MENTORS = ['김태욱','김민영','최봉경','조용준','심규리','최병훈','김예원','백수하'];
@@ -2535,6 +2653,28 @@ function executeManageAction(action) {
 }
 
 function toggleSidebar() { document.getElementById('sidebar').classList.toggle('collapsed'); }
+
+// ===== 테마 (라이트 / 다크) =====
+const THEME_KEY = 'studentMgmt_v3_theme';
+function setTheme(mode) {
+  document.documentElement.setAttribute('data-theme', mode);
+  try { localStorage.setItem(THEME_KEY, mode); } catch (e) {}
+  const lb = document.getElementById('themeLightBtn');
+  const db = document.getElementById('themeDarkBtn');
+  if (lb && db) {
+    lb.classList.toggle('active', mode === 'light');
+    db.classList.toggle('active', mode === 'dark');
+  }
+}
+function initTheme() {
+  let saved = null;
+  try { saved = localStorage.getItem(THEME_KEY); } catch (e) {}
+  if (!saved) {
+    saved = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+  }
+  setTheme(saved);
+}
+initTheme();
 function selectMentor(name, btn) {
   currentSelectedMentor = name;
   renderMentorGrid();
