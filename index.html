@@ -1729,6 +1729,214 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
   .sheet-scroll { max-height: calc(100vh - 300px); }
 }
 
+
+/* =================================================================
+   마스터 캘린더 — 시간 그룹 / 과목 카드
+================================================================= */
+.master-toolbar {
+  display: flex; align-items: center; gap: 9px; flex-wrap: wrap;
+  padding: 9px 12px; margin-bottom: 12px;
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: var(--r-md);
+}
+.mtb-lbl {
+  font-size: 10px; font-weight: 800; color: var(--text-tertiary);
+  text-transform: uppercase; letter-spacing: .5px;
+}
+.msort-seg {
+  display: flex; border: 1px solid var(--border);
+  border-radius: var(--r-sm); overflow: hidden;
+}
+.msort-seg button {
+  padding: 5px 11px; border: 0; background: var(--bg-surface);
+  font-size: 11px; font-weight: 700; color: var(--text-tertiary);
+  cursor: pointer; font-family: inherit; white-space: nowrap;
+}
+.msort-seg button + button { border-left: 1px solid var(--border); }
+.msort-seg button.active { background: var(--brand); color: #fff; }
+
+.master-groups { display: flex; flex-direction: column; gap: 9px; }
+.mgroup {
+  border: 1px solid var(--border); border-radius: var(--r-md);
+  background: var(--bg-surface); overflow: hidden;
+}
+.mgroup-head {
+  display: flex; align-items: center; gap: 9px;
+  padding: 10px 13px; cursor: pointer; user-select: none;
+  background: var(--bg-soft); border-bottom: 1px solid transparent;
+}
+.mgroup-head:hover { background: var(--bg-hover); }
+.mgroup.open .mgroup-head { border-bottom-color: var(--border); }
+.mgroup-arrow {
+  color: var(--text-soft); transition: transform .18s; flex-shrink: 0;
+}
+.mgroup.open .mgroup-arrow { transform: rotate(90deg); }
+.mgroup-time {
+  font-size: 13px; font-weight: 800; color: var(--text-primary);
+  font-variant-numeric: tabular-nums; letter-spacing: -.2px;
+}
+.mgroup-meta {
+  font-size: 11px; font-weight: 700; color: var(--text-tertiary);
+  margin-left: auto; white-space: nowrap;
+}
+.mgroup-body { display: none; padding: 11px 13px 13px; }
+.mgroup.open .mgroup-body { display: block; }
+.mgroup-empty {
+  padding: 14px; text-align: center; color: var(--text-soft); font-size: 11px;
+}
+
+.subj-cards {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(196px, 1fr));
+  gap: 8px;
+}
+.subj-card {
+  border: 1px solid var(--border); border-radius: var(--r-sm);
+  background: var(--bg-app); padding: 9px 11px; cursor: pointer;
+  transition: all .12s; min-width: 0;
+}
+.subj-card:hover {
+  border-color: var(--brand-border); background: var(--brand-soft);
+  box-shadow: var(--shadow-xs);
+}
+.subj-card-top {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 5px;
+}
+.subj-card-name {
+  font-size: 12.5px; font-weight: 750; color: var(--text-primary);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0;
+}
+.subj-card-count {
+  margin-left: auto; flex-shrink: 0;
+  min-width: 22px; height: 20px; padding: 0 6px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--brand); color: #fff;
+  border-radius: 999px; font-size: 11px; font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+.subj-card-names {
+  font-size: 10.5px; color: var(--text-tertiary); line-height: 1.45;
+  overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* 세로 모니터에서는 카드 1~2열 */
+@media (orientation: portrait) {
+  .subj-cards { grid-template-columns: repeat(auto-fill, minmax(168px, 1fr)); }
+}
+
+
+/* =================================================================
+   패널 배치 커스터마이즈 (학생별)
+================================================================= */
+.layout-controls {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 10px; flex-wrap: wrap;
+}
+.layout-scope-badge {
+  font-size: 10px; font-weight: 750; padding: 4px 9px;
+  border-radius: 999px; border: 1px solid var(--border);
+  background: var(--bg-soft); color: var(--text-tertiary);
+}
+.layout-scope-badge.per-student {
+  background: var(--brand-soft); color: var(--brand-text);
+  border-color: var(--brand-border);
+}
+.lb-btn {
+  height: 26px; padding: 0 10px; border: 1px solid var(--border);
+  border-radius: var(--r-sm); background: var(--bg-surface);
+  color: var(--text-tertiary); font-size: 11px; font-weight: 700;
+  cursor: pointer; font-family: inherit; white-space: nowrap;
+}
+.lb-btn:hover { border-color: var(--brand-border); color: var(--brand-text); background: var(--brand-soft); }
+.lb-btn.active { background: var(--brand); color: #fff; border-color: var(--brand); }
+
+.layout-bar {
+  display: none; padding: 11px 13px; margin-bottom: 12px;
+  background: var(--bg-surface); border: 1px solid var(--brand-border);
+  border-radius: var(--r-md);
+}
+.layout-bar.open { display: block; }
+.lb-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 5px 0; flex-wrap: wrap;
+}
+.lb-row + .lb-row { border-top: 1px dashed var(--border); }
+.lb-label {
+  font-size: 9px; font-weight: 800; color: var(--text-soft);
+  text-transform: uppercase; letter-spacing: .5px;
+  width: 66px; flex-shrink: 0;
+}
+.lb-help { font-size: 11px; color: var(--text-tertiary); line-height: 1.5; }
+.lb-help b { color: var(--text-secondary); font-weight: 750; }
+.lb-hidden { display: flex; gap: 5px; flex-wrap: wrap; }
+.lb-none { font-size: 11px; color: var(--text-soft); }
+.lb-hidden-chip {
+  height: 24px; padding: 0 9px; border: 1px dashed var(--border-strong);
+  border-radius: 999px; background: var(--bg-soft);
+  color: var(--text-tertiary); font-size: 11px; font-weight: 700;
+  cursor: pointer; font-family: inherit;
+  display: inline-flex; align-items: center; gap: 5px;
+}
+.lb-hidden-chip:hover {
+  border-color: var(--success-border); background: var(--success-bg); color: var(--success);
+  border-style: solid;
+}
+.lb-hidden-chip .x { font-weight: 800; font-size: 12px; }
+
+/* 패널 조작 버튼 — 배치 모드에서만 */
+.panel-ctrl { display: none; }
+body.layout-editing .panel-ctrl {
+  display: flex; align-items: center; gap: 4px;
+  padding: 6px 9px; background: var(--brand-soft);
+  border-bottom: 1px solid var(--brand-border);
+}
+.pc-name {
+  font-size: 10.5px; font-weight: 800; color: var(--brand-text);
+  margin-right: auto; white-space: nowrap;
+}
+.pc-btn {
+  width: 22px; height: 22px; padding: 0;
+  border: 1px solid var(--brand-border); border-radius: 4px;
+  background: var(--bg-surface); color: var(--brand-text);
+  font-size: 9px; font-weight: 800; cursor: pointer; font-family: inherit;
+  display: inline-flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.pc-btn:hover { background: var(--brand); color: #fff; }
+.pc-btn.danger {
+  width: auto; padding: 0 7px; font-size: 10px;
+  color: var(--danger); border-color: var(--danger-border);
+}
+.pc-btn.danger:hover { background: var(--danger); color: #fff; border-color: var(--danger); }
+
+/* 배치 모드 시각 표시 */
+body.layout-editing .panel-card {
+  outline: 1px dashed var(--brand-border); outline-offset: 2px;
+  cursor: grab; position: relative;
+}
+body.layout-editing .panel-card:hover { outline-color: var(--brand); }
+body.layout-editing .panel-card.dragging { opacity: .4; }
+body.layout-editing .panel-card.panel-drop-before { box-shadow: 0 -3px 0 0 var(--brand); }
+body.layout-editing .panel-card.panel-drop-after  { box-shadow: 0  3px 0 0 var(--brand); }
+body.layout-editing .info-col,
+body.layout-editing .assign-side {
+  min-height: 90px; border-radius: var(--r-md);
+  background: linear-gradient(var(--bg-soft), var(--bg-soft)) padding-box;
+}
+/* 배치 모드에서는 입력 방지 (드래그 방해 요소 제거) */
+body.layout-editing .panel-card input,
+body.layout-editing .panel-card select,
+body.layout-editing .panel-card textarea { pointer-events: none; }
+body.layout-editing .panel-card .panel-ctrl input,
+body.layout-editing .panel-card .panel-ctrl select { pointer-events: auto; }
+
+/* 배정 현황 패널도 카드처럼 */
+.panel-card#pnl-assign {
+  border: 1px solid var(--border); border-radius: var(--r-lg);
+  background: var(--bg-surface); padding: 12px 13px; margin-bottom: 10px;
+}
+.panel-card#pnl-assign .aside-hd:first-of-type { margin-top: 0; }
+
 </style>
 <!-- Firebase SDK (compat - HTML 단일 파일용) -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -2042,11 +2250,32 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
           </div>
         </div>
 
+        <div class="layout-controls">
+          <span class="layout-scope-badge" id="layoutScopeBadge">기본 배치</span>
+          <button type="button" class="lb-btn" id="layoutEditBtn" onclick="toggleLayoutEdit()">배치 변경</button>
+          <button type="button" class="lb-btn" id="layoutResetBtn" onclick="resetStudentLayout()" style="display:none;">전용 배치 삭제</button>
+        </div>
+
+        <div class="layout-bar" id="layoutBar">
+          <div class="lb-row">
+            <span class="lb-label">사용법</span>
+            <span class="lb-help">카드를 <b>드래그</b>해서 순서·좌우 이동 · 카드 우측 <b>버튼</b>으로 이동/숨김 · 변경은 <b>이 학생에게만</b> 저장됩니다</span>
+          </div>
+          <div class="lb-row">
+            <span class="lb-label">숨긴 항목</span>
+            <div class="lb-hidden" id="layoutHiddenList"><span class="lb-none">숨긴 항목 없음</span></div>
+          </div>
+          <div class="lb-row">
+            <span class="lb-label">전체 적용</span>
+            <button type="button" class="lb-btn" onclick="saveLayoutAsDefault()">현재 배치를 기본으로 저장</button>
+          </div>
+        </div>
+
         <div class="info-split">
         <div class="info-col">
 
         <!-- 기본 정보 -->
-        <div class="card tint-info">
+        <div class="card tint-info panel-card" id="pnl-basic" data-panel="basic">
           <div class="card-header">
             <div class="card-title"><span class="card-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>기본 정보</div>
           </div>
@@ -2074,7 +2303,7 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
         </div>
 
         <!-- 결제 정보 -->
-        <div class="card tint-payment">
+        <div class="card tint-payment panel-card" id="pnl-pay" data-panel="pay">
           <div class="card-header">
             <div class="card-title"><span class="card-icon"><svg class="icon" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg></span>결제 정보</div>
             <div class="payment-toggle">
@@ -2109,6 +2338,7 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
 
         <aside class="assign-side">
         <!-- 배정 현황 (달력) -->
+        <div class="panel-card" id="pnl-assign" data-panel="assign">
           <div class="aside-hd">
             <span>배정 현황 · <span id="asideYear">2026</span></span>
             <span class="aside-cnt" id="asideCount">0 / 0</span>
@@ -2126,9 +2356,10 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
           <div class="aside-hd" style="margin-top:14px;"><span>배정 목록</span></div>
           <div class="aside-rows" id="asideRows"></div>
           <div id="asideNote"></div>
+        </div><!-- /#pnl-assign -->
 
         <!-- 메모 -->
-        <div class="collapsible tint-memo open" id="col-memo">
+        <div class="collapsible tint-memo open panel-card" id="col-memo" data-panel="memo">
           <div class="collapsible-header" onclick="toggleCollapsible('col-memo')">
             <div class="collapsible-toggle">
               <svg class="icon icon-sm collapsible-arrow" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
@@ -2150,7 +2381,7 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
         </div>
 
         <!-- 보상 -->
-        <div class="collapsible tint-reward open" id="col-rewards">
+        <div class="collapsible tint-reward open panel-card" id="col-rewards" data-panel="reward">
           <div class="collapsible-header" onclick="toggleCollapsible('col-rewards')">
             <div class="collapsible-toggle">
               <svg class="icon icon-sm collapsible-arrow" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
@@ -2185,7 +2416,7 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
         </div>
 
         <!-- 비상연락 -->
-        <div class="collapsible tint-emer open" id="col-emer">
+        <div class="collapsible tint-emer open panel-card" id="col-emer" data-panel="emer">
           <div class="collapsible-header" onclick="toggleCollapsible('col-emer')">
             <div class="collapsible-toggle">
               <svg class="icon icon-sm collapsible-arrow" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
@@ -2272,6 +2503,20 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
               <button class="st-btn active" id="btnWeekday" onclick="setScheduleMode('weekday')" type="button">평일</button>
               <button class="st-btn" id="btnWeekend" onclick="setScheduleMode('weekend')" type="button">주말</button>
             </div>
+
+            <div class="master-toolbar">
+              <span class="mtb-lbl">과목 정렬</span>
+              <div class="msort-seg">
+                <button type="button" id="msortCount" class="active" onclick="setMasterSort('count')">인원 많은 순</button>
+                <button type="button" id="msortName" onclick="setMasterSort('name')">과목명 순</button>
+              </div>
+              <label class="mtb-chk"><input type="checkbox" id="mHideEmpty" checked onchange="toggleMasterHideEmpty(this.checked)"> 빈 시간대 숨김</label>
+              <div style="margin-left:auto; display:flex; gap:5px;">
+                <button type="button" class="mtb-btn" onclick="masterExpandAll()">전체 펼치기</button>
+                <button type="button" class="mtb-btn" onclick="masterCollapseAll()">전체 접기</button>
+              </div>
+            </div>
+
             <div id="masterScheduleContainer"></div>
           </div>
         </div>
@@ -4247,6 +4492,7 @@ function doLoadStudentDetail(id) {
   isLoadingForm = false;
   clearDirty();
   captureFormSnapshot();
+  applyLayout();
 }
 function setRadio(name, value) { const r = document.querySelector(`input[name="${name}"][value="${value}"]`); if (r) r.checked = true; }
 function getRadio(name) { const r = document.querySelector(`input[name="${name}"]:checked`); return r ? r.value : ''; }
@@ -5380,35 +5626,75 @@ function renderMasterSchedule() {
       if ((a.year || DEFAULT_YEAR) !== year) return;
       if (a.month !== month) return;
       if (!times.includes(a.time)) return;
-      const room = a.room || 'A';
-      const key = `${room}|${a.time}|${a.subject}`;
-      if (!aggregated[key]) aggregated[key] = { room, time: a.time, subject: a.subject, students: [] };
+      const key = `${a.time}|${a.subject}`;
+      if (!aggregated[key]) aggregated[key] = { time: a.time, subject: a.subject, students: [] };
       aggregated[key].students.push({ id: s.id, name: s.name, mentor: s.mentor });
     });
   });
-  let html = '<div style="overflow-x:auto;"><table class="master-table"><thead><tr><th>호실 / 시간</th>';
-  times.forEach(t => html += `<th>${t}</th>`);
-  html += '</tr></thead><tbody>';
-  ROOMS_LIST.forEach(r => {
-    html += `<tr><td style="text-align:center; font-weight:700; background:var(--bg-soft); padding:8px;">${r}</td>`;
-    times.forEach(t => {
-      const matches = Object.values(aggregated).filter(x => x.room === r && x.time === t);
-      let cellHtml = '';
-      matches.forEach(m => {
-        cellHtml += `<div class="master-subj-row">
-          <span class="master-subj-name">${escapeHTML(m.subject)}</span>
-          <span class="master-subj-count" onclick="openStudentListModal(${JSON.stringify(m.students).replace(/"/g,'&quot;')}, '${escapeHTML(month)}', '${r}', '${escapeHTML(t)}', '${escapeHTML(m.subject)}')">${m.students.length}</span>
+  // ── 시간 우선 그룹 → 과목별 학생 수/목록 ──
+  const byTime = {};
+  times.forEach(t => byTime[t] = []);
+  Object.values(aggregated).forEach(x => {
+    if (byTime[x.time]) byTime[x.time].push(x);
+  });
+
+  const totalClasses = Object.values(byTime).reduce((n, arr) => n + arr.length, 0);
+  if (totalClasses === 0) {
+    document.getElementById('masterScheduleContainer').innerHTML =
+      `<div class="empty-state" style="padding:40px;">${escapeHTML(year)}년 ${escapeHTML(month)}에 배정된 수업이 없습니다</div>`;
+    return;
+  }
+
+  const sortKey = masterSortMode; // 'count' | 'name'
+  let html = '<div class="master-groups">';
+
+  times.forEach(t => {
+    const rows = byTime[t];
+    if (rows.length === 0 && masterHideEmpty) return;
+
+    // 과목별 정렬
+    rows.sort((a, b) => sortKey === 'count'
+      ? (b.students.length - a.students.length) || a.subject.localeCompare(b.subject, 'ko')
+      : a.subject.localeCompare(b.subject, 'ko'));
+
+    const headCount = rows.reduce((n, r) => n + r.students.length, 0);
+    const gid = 'mg_' + t.replace(/[^\w]/g, '');
+    const collapsed = masterCollapsedTimes.has(t) ? '' : ' open';
+
+    html += `<div class="mgroup${collapsed}" id="${gid}">
+      <div class="mgroup-head" onclick="toggleMasterGroup('${escapeAttr(t)}')">
+        <svg class="icon icon-sm mgroup-arrow" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        <span class="mgroup-time">${escapeHTML(t)}</span>
+        <span class="mgroup-meta">${rows.length}개 과목 · ${headCount}명</span>
+      </div>
+      <div class="mgroup-body">`;
+
+    if (rows.length === 0) {
+      html += `<div class="mgroup-empty">배정된 수업 없음</div>`;
+    } else {
+      html += '<div class="subj-cards">';
+      rows.forEach(m => {
+        const names = m.students.map(s => s.name).filter(Boolean);
+        const preview = names.slice(0, 6).join(', ') + (names.length > 6 ? ` +${names.length - 6}` : '');
+        const payload = JSON.stringify(m.students).replace(/"/g, '&quot;');
+        html += `<div class="subj-card" onclick="openStudentListModal(${payload}, '${escapeAttr(month)}', '', '${escapeAttr(t)}', '${escapeAttr(m.subject)}')">
+          <div class="subj-card-top">
+            <span class="subj-card-name">${escapeHTML(m.subject)}</span>
+            <span class="subj-card-count">${m.students.length}</span>
+          </div>
+          <div class="subj-card-names">${escapeHTML(preview)}</div>
         </div>`;
       });
-      html += `<td class="master-cell">${cellHtml}</td>`;
-    });
-    html += '</tr>';
+      html += '</div>';
+    }
+    html += '</div></div>';
   });
-  html += '</tbody></table></div>';
+
+  html += '</div>';
   document.getElementById('masterScheduleContainer').innerHTML = html;
 }
 function openStudentListModal(students, month, room, time, subject) {
-  document.getElementById('unassignedModalTitle').innerText = `${month} · ${room}호 · ${time} · ${subject} (${students.length}명)`;
+  document.getElementById('unassignedModalTitle').textContent = `${month} · ${time} · ${subject} (${students.length}명)`;
   document.getElementById('unassignedModalContent').innerHTML = students.map(s => `
     <div class="trash-item">
       <div class="trash-info"><strong>${escapeHTML(s.name)}</strong><div class="meta">${escapeHTML(s.mentor || '-')} 멘토</div></div>
@@ -5423,15 +5709,26 @@ function exportMasterCSV() {
   const year = getCurrentMasterYear();
   const mentorFilter = document.getElementById('masterMentorFilter').value;
   const times = currentScheduleMode === 'weekday' ? WEEKDAY_TIMES : WEEKEND_TIMES;
-  const rows = [['연도','호실','시간','과목','학생','담당멘토']];
+  // 시간 → 과목 순으로 집계 후 내보내기
+  const agg = {};
   globalStudentData.forEach(s => {
     if (mentorFilter && s.mentor !== mentorFilter) return;
     (s.assignedClasses || []).forEach(a => {
       if ((a.year || DEFAULT_YEAR) !== year) return;
       if (a.month !== month || !times.includes(a.time)) return;
-      rows.push([year, a.room || 'A', a.time, a.subject, s.name, s.mentor || '-']);
+      const k = `${a.time}|${a.subject}`;
+      if (!agg[k]) agg[k] = { time: a.time, subject: a.subject, students: [] };
+      agg[k].students.push(s);
     });
   });
+  const rows = [['연도','월','시간','과목','인원','학생','담당멘토']];
+  Object.values(agg)
+    .sort((x, y) => (times.indexOf(x.time) - times.indexOf(y.time)) || y.students.length - x.students.length)
+    .forEach(g => {
+      g.students.forEach(s => {
+        rows.push([year, month, g.time, g.subject, g.students.length, s.name, s.mentor || '-']);
+      });
+    });
   const csv = '\ufeff' + rows.map(r => r.map(c => `"${(String(c)||'').replace(/"/g,'""')}"`).join(',')).join('\n');
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
   const url = URL.createObjectURL(blob);
@@ -5563,6 +5860,390 @@ function renderCmdList() {
 
 
 
+
+
+
+/* =================================================================
+   정보 탭 패널 배치 — 학생별 커스터마이즈 (순서 / 좌우 / 숨김)
+================================================================= */
+const PANEL_DEFS = {
+  basic:  { label: '기본 정보' },
+  pay:    { label: '결제 정보' },
+  assign: { label: '배정 현황' },
+  memo:   { label: '특이사항 메모' },
+  reward: { label: '따즈아 · ACP 보상' },
+  emer:   { label: '비상 연락망' }
+};
+const DEFAULT_LAYOUT = {
+  left:  ['basic', 'pay'],
+  right: ['assign', 'memo', 'reward', 'emer'],
+  hidden: []
+};
+const LAYOUT_BASE_KEY = 'studentMgmt_v3_layoutBase';
+const LAYOUT_PER_KEY  = 'studentMgmt_v3_layoutPerStudent';
+
+let layoutBase = null;          // 기본 배치 (전체 공통)
+let layoutPerStudent = {};      // { studentId: layout }
+let layoutEditMode = false;
+let dragPanel = null;
+
+function loadLayoutPrefs() {
+  try {
+    const b = localStorage.getItem(LAYOUT_BASE_KEY);
+    layoutBase = b ? JSON.parse(b) : JSON.parse(JSON.stringify(DEFAULT_LAYOUT));
+  } catch (e) { layoutBase = JSON.parse(JSON.stringify(DEFAULT_LAYOUT)); }
+  try {
+    layoutPerStudent = JSON.parse(localStorage.getItem(LAYOUT_PER_KEY) || '{}');
+    if (typeof layoutPerStudent !== 'object' || !layoutPerStudent) layoutPerStudent = {};
+  } catch (e) { layoutPerStudent = {}; }
+  normalizeLayout(layoutBase);
+}
+
+function saveLayoutPrefs() {
+  try {
+    localStorage.setItem(LAYOUT_BASE_KEY, JSON.stringify(layoutBase));
+    localStorage.setItem(LAYOUT_PER_KEY, JSON.stringify(layoutPerStudent));
+  } catch (e) {}
+}
+
+// 빠진 패널을 보충하고, 없는 패널 키를 제거
+function normalizeLayout(L) {
+  if (!L) return;
+  L.left = Array.isArray(L.left) ? L.left.filter(k => PANEL_DEFS[k]) : [];
+  L.right = Array.isArray(L.right) ? L.right.filter(k => PANEL_DEFS[k]) : [];
+  L.hidden = Array.isArray(L.hidden) ? L.hidden.filter(k => PANEL_DEFS[k]) : [];
+  const seen = new Set([...L.left, ...L.right, ...L.hidden]);
+  Object.keys(PANEL_DEFS).forEach(k => {
+    if (!seen.has(k)) {
+      // 새로 생긴 패널은 기본 위치로
+      (DEFAULT_LAYOUT.left.includes(k) ? L.left : L.right).push(k);
+    }
+  });
+}
+
+function currentStudentIdForLayout() {
+  const el = document.getElementById('studentId');
+  return el ? (el.value || '') : '';
+}
+
+// 지금 적용해야 할 배치 (학생별 우선, 없으면 기본)
+function getActiveLayout() {
+  const id = currentStudentIdForLayout();
+  if (id && layoutPerStudent[id]) {
+    const L = JSON.parse(JSON.stringify(layoutPerStudent[id]));
+    normalizeLayout(L);
+    return L;
+  }
+  const L = JSON.parse(JSON.stringify(layoutBase || DEFAULT_LAYOUT));
+  normalizeLayout(L);
+  return L;
+}
+
+function hasPerStudentLayout() {
+  const id = currentStudentIdForLayout();
+  return !!(id && layoutPerStudent[id]);
+}
+
+function applyLayout() {
+  const L = getActiveLayout();
+  const leftCol = document.querySelector('.info-col');
+  const rightCol = document.querySelector('.assign-side');
+  if (!leftCol || !rightCol) return;
+
+  let hiddenBox = document.getElementById('panelHiddenBox');
+  if (!hiddenBox) {
+    hiddenBox = document.createElement('div');
+    hiddenBox.id = 'panelHiddenBox';
+    hiddenBox.style.display = 'none';
+    document.querySelector('#tab-info').appendChild(hiddenBox);
+  }
+
+  L.left.forEach(k => {
+    const el = document.querySelector(`[data-panel="${k}"]`);
+    if (el) { el.style.display = ''; leftCol.appendChild(el); }
+  });
+  L.right.forEach(k => {
+    const el = document.querySelector(`[data-panel="${k}"]`);
+    if (el) { el.style.display = ''; rightCol.appendChild(el); }
+  });
+  L.hidden.forEach(k => {
+    const el = document.querySelector(`[data-panel="${k}"]`);
+    if (el) { el.style.display = 'none'; hiddenBox.appendChild(el); }
+  });
+
+  updateLayoutBar();
+}
+
+function updateLayoutBar() {
+  const badge = document.getElementById('layoutScopeBadge');
+  const resetBtn = document.getElementById('layoutResetBtn');
+  if (badge) {
+    const per = hasPerStudentLayout();
+    const nm = document.getElementById('name');
+    badge.textContent = per ? `${(nm && nm.value) || '이 학생'} 전용 배치` : '기본 배치';
+    badge.classList.toggle('per-student', per);
+  }
+  if (resetBtn) resetBtn.style.display = hasPerStudentLayout() ? '' : 'none';
+  const hiddenList = document.getElementById('layoutHiddenList');
+  if (hiddenList) {
+    const L = getActiveLayout();
+    if (L.hidden.length === 0) {
+      hiddenList.innerHTML = '<span class="lb-none">숨긴 항목 없음</span>';
+    } else {
+      hiddenList.innerHTML = L.hidden.map(k =>
+        `<button type="button" class="lb-hidden-chip" onclick="restorePanel('${k}')" title="다시 표시">
+          ${escapeHTML(PANEL_DEFS[k].label)} <span class="x">+</span>
+        </button>`).join('');
+    }
+  }
+}
+
+function toggleLayoutEdit() {
+  layoutEditMode = !layoutEditMode;
+  document.body.classList.toggle('layout-editing', layoutEditMode);
+  const btn = document.getElementById('layoutEditBtn');
+  if (btn) {
+    btn.classList.toggle('active', layoutEditMode);
+    btn.textContent = layoutEditMode ? '배치 완료' : '배치 변경';
+  }
+  const bar = document.getElementById('layoutBar');
+  if (bar) bar.classList.toggle('open', layoutEditMode);
+  document.querySelectorAll('.panel-card').forEach(el => {
+    el.setAttribute('draggable', layoutEditMode ? 'true' : 'false');
+  });
+  if (!layoutEditMode) showToast('배치를 저장했습니다', 'success');
+}
+
+// 현재 DOM 순서를 읽어 저장 (학생별)
+function persistCurrentLayout() {
+  const leftCol = document.querySelector('.info-col');
+  const rightCol = document.querySelector('.assign-side');
+  const L = {
+    left: Array.from(leftCol.querySelectorAll(':scope > [data-panel]')).map(e => e.dataset.panel),
+    right: Array.from(rightCol.querySelectorAll(':scope > [data-panel]')).map(e => e.dataset.panel),
+    hidden: getActiveLayout().hidden
+  };
+  const id = currentStudentIdForLayout();
+  if (id) layoutPerStudent[id] = L;
+  else layoutBase = L;
+  saveLayoutPrefs();
+  updateLayoutBar();
+}
+
+function hidePanel(key) {
+  const L = getActiveLayout();
+  L.left = L.left.filter(k => k !== key);
+  L.right = L.right.filter(k => k !== key);
+  if (!L.hidden.includes(key)) L.hidden.push(key);
+  const id = currentStudentIdForLayout();
+  if (id) layoutPerStudent[id] = L; else layoutBase = L;
+  saveLayoutPrefs();
+  applyLayout();
+}
+
+function restorePanel(key) {
+  const L = getActiveLayout();
+  L.hidden = L.hidden.filter(k => k !== key);
+  const side = DEFAULT_LAYOUT.left.includes(key) ? 'left' : 'right';
+  if (!L[side].includes(key)) L[side].push(key);
+  const id = currentStudentIdForLayout();
+  if (id) layoutPerStudent[id] = L; else layoutBase = L;
+  saveLayoutPrefs();
+  applyLayout();
+}
+
+function movePanelSide(key, dir) {
+  const L = getActiveLayout();
+  const from = L.left.includes(key) ? 'left' : (L.right.includes(key) ? 'right' : null);
+  if (!from) return;
+  const to = dir === 'left' ? 'left' : 'right';
+  if (from === to) return;
+  L[from] = L[from].filter(k => k !== key);
+  L[to].push(key);
+  const id = currentStudentIdForLayout();
+  if (id) layoutPerStudent[id] = L; else layoutBase = L;
+  saveLayoutPrefs();
+  applyLayout();
+}
+
+function movePanelOrder(key, delta) {
+  const L = getActiveLayout();
+  const side = L.left.includes(key) ? 'left' : (L.right.includes(key) ? 'right' : null);
+  if (!side) return;
+  const arr = L[side];
+  const i = arr.indexOf(key);
+  const j = i + delta;
+  if (j < 0 || j >= arr.length) return;
+  arr.splice(i, 1);
+  arr.splice(j, 0, key);
+  const id = currentStudentIdForLayout();
+  if (id) layoutPerStudent[id] = L; else layoutBase = L;
+  saveLayoutPrefs();
+  applyLayout();
+}
+
+// 이 학생 전용 배치 삭제 → 기본 배치로
+function resetStudentLayout() {
+  const id = currentStudentIdForLayout();
+  if (!id || !layoutPerStudent[id]) return;
+  customConfirm('이 학생의 전용 배치를 삭제하고 기본 배치로 되돌릴까요?', ok => {
+    if (!ok) return;
+    delete layoutPerStudent[id];
+    saveLayoutPrefs();
+    applyLayout();
+    showToast('기본 배치로 되돌렸습니다', 'success');
+  });
+}
+
+// 현재 배치를 기본값으로 (모든 학생 공통)
+function saveLayoutAsDefault() {
+  const L = getActiveLayout();
+  customConfirm('현재 배치를 기본 배치로 저장할까요?\n\n전용 배치가 없는 모든 학생에게 적용됩니다.', ok => {
+    if (!ok) return;
+    layoutBase = JSON.parse(JSON.stringify(L));
+    saveLayoutPrefs();
+    updateLayoutBar();
+    showToast('기본 배치로 저장했습니다', 'success');
+  });
+}
+
+
+// 각 패널에 이동/숨김 버튼 붙이기 (배치 모드에서만 보임)
+function injectPanelControls() {
+  document.querySelectorAll('.panel-card').forEach(el => {
+    if (el.querySelector(':scope > .panel-ctrl')) return;
+    const key = el.dataset.panel;
+    if (!key) return;
+    const box = document.createElement('div');
+    box.className = 'panel-ctrl';
+    box.innerHTML = `
+      <span class="pc-name">${escapeHTML(PANEL_DEFS[key].label)}</span>
+      <button type="button" class="pc-btn" title="위로" onclick="event.stopPropagation(); movePanelOrder('${key}', -1)">▲</button>
+      <button type="button" class="pc-btn" title="아래로" onclick="event.stopPropagation(); movePanelOrder('${key}', 1)">▼</button>
+      <button type="button" class="pc-btn" title="왼쪽 열로" onclick="event.stopPropagation(); movePanelSide('${key}', 'left')">◀</button>
+      <button type="button" class="pc-btn" title="오른쪽 열로" onclick="event.stopPropagation(); movePanelSide('${key}', 'right')">▶</button>
+      <button type="button" class="pc-btn danger" title="숨기기" onclick="event.stopPropagation(); hidePanel('${key}')">숨김</button>`;
+    el.insertBefore(box, el.firstChild);
+  });
+}
+
+/* ---------- 드래그 ---------- */
+function panelDragStart(ev, el) {
+  if (!layoutEditMode) return;
+  dragPanel = el;
+  el.classList.add('dragging');
+  try { ev.dataTransfer.setData('text/plain', el.dataset.panel); } catch (e) {}
+  ev.dataTransfer.effectAllowed = 'move';
+}
+function panelDragEnd(el) {
+  if (el) el.classList.remove('dragging');
+  document.querySelectorAll('.panel-drop-before, .panel-drop-after').forEach(x => {
+    x.classList.remove('panel-drop-before', 'panel-drop-after');
+  });
+  dragPanel = null;
+}
+function initPanelDrag() {
+  document.querySelectorAll('.panel-card').forEach(el => {
+    if (el.dataset.dragBound) return;
+    el.dataset.dragBound = '1';
+    el.addEventListener('dragstart', ev => panelDragStart(ev, el));
+    el.addEventListener('dragend', () => panelDragEnd(el));
+    el.addEventListener('dragover', ev => {
+      if (!layoutEditMode || !dragPanel || dragPanel === el) return;
+      ev.preventDefault();
+      const r = el.getBoundingClientRect();
+      const after = (ev.clientY - r.top) > r.height / 2;
+      el.classList.toggle('panel-drop-after', after);
+      el.classList.toggle('panel-drop-before', !after);
+    });
+    el.addEventListener('dragleave', () => {
+      el.classList.remove('panel-drop-before', 'panel-drop-after');
+    });
+    el.addEventListener('drop', ev => {
+      if (!layoutEditMode || !dragPanel || dragPanel === el) return;
+      ev.preventDefault();
+      ev.stopPropagation();
+      const after = el.classList.contains('panel-drop-after');
+      el.classList.remove('panel-drop-before', 'panel-drop-after');
+      el.parentNode.insertBefore(dragPanel, after ? el.nextSibling : el);
+      persistCurrentLayout();
+    });
+  });
+
+  // 빈 열에도 떨어뜨릴 수 있게
+  [document.querySelector('.info-col'), document.querySelector('.assign-side')].forEach(col => {
+    if (!col || col.dataset.dropBound) return;
+    col.dataset.dropBound = '1';
+    col.addEventListener('dragover', ev => { if (layoutEditMode && dragPanel) ev.preventDefault(); });
+    col.addEventListener('drop', ev => {
+      if (!layoutEditMode || !dragPanel) return;
+      ev.preventDefault();
+      if (dragPanel.parentNode !== col) { col.appendChild(dragPanel); persistCurrentLayout(); }
+    });
+  });
+}
+
+/* =================================================================
+   마스터 캘린더 — 시간 그룹 / 과목별 정리
+================================================================= */
+let masterSortMode = 'count';          // 'count' | 'name'
+let masterHideEmpty = true;            // 배정 없는 시간대 숨김
+let masterCollapsedTimes = new Set();  // 접힌 시간대
+
+const MASTER_PREF_KEY = 'studentMgmt_v3_masterPrefs';
+function loadMasterPrefs() {
+  try {
+    const p = JSON.parse(localStorage.getItem(MASTER_PREF_KEY) || '{}');
+    if (p.sort) masterSortMode = p.sort;
+    if (typeof p.hideEmpty === 'boolean') masterHideEmpty = p.hideEmpty;
+    if (Array.isArray(p.collapsed)) masterCollapsedTimes = new Set(p.collapsed);
+  } catch (e) {}
+}
+function saveMasterPrefs() {
+  try {
+    localStorage.setItem(MASTER_PREF_KEY, JSON.stringify({
+      sort: masterSortMode, hideEmpty: masterHideEmpty,
+      collapsed: [...masterCollapsedTimes]
+    }));
+  } catch (e) {}
+}
+
+function toggleMasterGroup(t) {
+  if (masterCollapsedTimes.has(t)) masterCollapsedTimes.delete(t);
+  else masterCollapsedTimes.add(t);
+  saveMasterPrefs();
+  renderMasterSchedule();
+}
+function setMasterSort(mode) {
+  masterSortMode = mode;
+  saveMasterPrefs();
+  syncMasterToolbar();
+  renderMasterSchedule();
+}
+function toggleMasterHideEmpty(v) {
+  masterHideEmpty = v;
+  saveMasterPrefs();
+  renderMasterSchedule();
+}
+function masterExpandAll() {
+  masterCollapsedTimes.clear();
+  saveMasterPrefs();
+  renderMasterSchedule();
+}
+function masterCollapseAll() {
+  const times = currentScheduleMode === 'weekday' ? WEEKDAY_TIMES : WEEKEND_TIMES;
+  masterCollapsedTimes = new Set(times);
+  saveMasterPrefs();
+  renderMasterSchedule();
+}
+function syncMasterToolbar() {
+  const bc = document.getElementById('msortCount');
+  const bn = document.getElementById('msortName');
+  if (bc) bc.classList.toggle('active', masterSortMode === 'count');
+  if (bn) bn.classList.toggle('active', masterSortMode === 'name');
+  const he = document.getElementById('mHideEmpty');
+  if (he) he.checked = masterHideEmpty;
+}
 
 /* =================================================================
    실제 변경 여부 판정 (스냅샷 비교)
@@ -7349,6 +8030,12 @@ document.addEventListener('DOMContentLoaded', () => {
   renderPalette();
   renderMasterSchedule();
   loadMonthPrefs();
+  loadMasterPrefs();
+  syncMasterToolbar();
+  loadLayoutPrefs();
+  injectPanelControls();
+  applyLayout();
+  initPanelDrag();
   renderAssignAside();
   initTabHistory();
   // 현재 탭 이름 초기 표시
