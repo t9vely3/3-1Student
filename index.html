@@ -1457,6 +1457,210 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
 .student-item.state-completed .student-name,
 .student-item.state-refunded .student-name { color: var(--text-tertiary) !important; }
 
+
+/* =================================================================
+   헤더 A안 — 더보기 메뉴
+================================================================= */
+.hdr-divider { width: 1px; height: 20px; background: var(--border); flex-shrink: 0; margin: 0 3px; }
+.more-wrap { position: relative; flex-shrink: 0; }
+.more-menu {
+  position: absolute; top: calc(100% + 6px); right: 0; min-width: 208px;
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: var(--r-md); box-shadow: var(--shadow-md);
+  padding: 5px; display: none; z-index: 150;
+}
+.more-menu.open { display: block; }
+.mm-label {
+  font-size: 9px; font-weight: 800; color: var(--text-soft);
+  text-transform: uppercase; letter-spacing: .5px; padding: 6px 9px 4px;
+}
+.more-menu .theme-toggle { margin: 0 7px 6px; width: calc(100% - 14px); }
+.more-menu .theme-toggle button { flex: 1; }
+.mm-item {
+  display: flex; align-items: center; gap: 9px; width: 100%;
+  padding: 7px 9px; border: 0; border-radius: var(--r-sm);
+  background: transparent; font-size: 12px; font-weight: 650;
+  color: var(--text-secondary); cursor: pointer; font-family: inherit;
+  text-align: left;
+}
+.mm-item:hover { background: var(--bg-soft); color: var(--text-primary); }
+.mm-item .icon { color: var(--text-tertiary); flex-shrink: 0; }
+.mm-item:hover .icon { color: var(--text-secondary); }
+.mm-div { height: 1px; background: var(--border); margin: 4px 2px; }
+.mm-user {
+  display: flex; align-items: center; gap: 7px; padding: 6px 9px;
+  font-size: 11px; font-weight: 700; color: var(--text-tertiary);
+}
+.mm-user .user-badge-avatar { width: 22px; height: 22px; font-size: 10px; border-radius: 999px; }
+.mm-user .user-badge-email { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* 이름 옆 삭제 버튼 */
+.profile-name-row { display: flex; align-items: center; gap: 8px; }
+.profile-name-row .profile-name-input { flex: 1; min-width: 0; }
+.name-del-btn {
+  width: 28px; height: 28px; flex-shrink: 0;
+  border: 1px solid var(--border); border-radius: var(--r-sm);
+  background: var(--bg-surface); color: var(--text-soft);
+  cursor: pointer; display: inline-flex; align-items: center;
+  justify-content: center; font-family: inherit; opacity: 0; transition: all .15s;
+}
+.profile-hero:hover .name-del-btn { opacity: 1; }
+.name-del-btn:hover {
+  background: var(--danger-bg); color: var(--danger); border-color: var(--danger-border);
+}
+
+/* =================================================================
+   B안 — 정보 탭 2열 (좌: 기본/결제, 우: 보상/메모/비상 + 달력)
+================================================================= */
+.info-split { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important; gap: 0; }
+.info-split > .assign-side {
+  border-left: 1px solid var(--border); padding-left: 16px; margin-left: 16px;
+  max-height: none; position: static;
+}
+@media (max-width: 1280px) {
+  .info-split { grid-template-columns: 1fr !important; }
+  .info-split > .assign-side {
+    border-left: 0; padding-left: 0; margin-left: 0;
+    border-top: 1px solid var(--border); padding-top: 14px; margin-top: 8px;
+  }
+}
+
+/* 우측 접이식 카드는 기본 펼침 */
+.assign-side .collapsible { margin-bottom: 10px; }
+.assign-side .collapsible .collapsible-body { padding: 12px 13px; }
+
+/* 우측 열의 보상 칩은 라벨 위 배치 유지 (칩이 많아서) */
+.assign-side .form-grid { display: block; }
+.assign-side .form-group {
+  display: block !important; border-bottom: 0 !important; min-height: 0 !important;
+  margin-bottom: 10px !important;
+}
+.assign-side .form-group:last-child { margin-bottom: 0 !important; }
+.assign-side .form-label {
+  width: auto !important; margin-bottom: 5px !important;
+  display: block !important;
+}
+.assign-side .chip-group { flex-wrap: wrap; }
+
+/* 비상연락은 인라인으로 */
+#col-emer .form-group {
+  display: flex !important; align-items: center; gap: 10px;
+  margin-bottom: 8px !important;
+}
+#col-emer .form-label { width: 52px !important; flex-shrink: 0; margin: 0 !important; }
+#col-emer .form-control { flex: 1; height: 31px; }
+
+/* 메모 입력 한 줄로 */
+#col-memo .memo-input-row { display: flex; gap: 7px; align-items: stretch; }
+#col-memo .memo-input-row textarea {
+  flex: 1; min-height: 34px; height: 34px; resize: none;
+  padding: 8px 10px; line-height: 1.3; font-size: 12px;
+}
+#col-memo .memo-input-row .btn { height: 34px; flex-shrink: 0; padding: 0 12px; }
+#col-memo .memo-list { margin-top: 9px; }
+
+/* 달력(배정 요약) — 우측 하단 */
+.assign-side .aside-hd { margin-top: 4px; }
+
+
+/* ── 우측 열: 배정현황이 맨 위 ── */
+.assign-side > .aside-hd:first-of-type { margin-top: 0; }
+.assign-side .expand-cta { margin-bottom: 10px; }
+.assign-side .aside-rows { max-height: 190px; overflow-y: auto; }
+.assign-side .collapsible:first-of-type { margin-top: 14px; }
+
+
+/* ── 좌측 열은 폭이 절반이므로 4열 → 2열 그리드 ── */
+.info-col .card .form-grid { grid-template-columns: repeat(2, 1fr); }
+.info-col .card .form-group.span-2 { grid-column: span 2; }
+.info-col .card .form-group.span-3,
+.info-col .card .form-group.span-4 { grid-column: span 2; }
+.info-col .card .section-title { grid-column: 1 / -1; }
+
+/* 화면이 넓을 때(1열 스택 모드)는 원래 4열 유지 */
+@media (max-width: 1280px) {
+  .info-col .card .form-grid { grid-template-columns: repeat(4, 1fr); }
+  .info-col .card .form-group.span-3 { grid-column: span 3; }
+  .info-col .card .form-group.span-4 { grid-column: span 4; }
+}
+
+
+/* =================================================================
+   통계 바 압축 (C안)
+================================================================= */
+.stats-bar {
+  height: 44px !important; padding: 0 14px !important;
+  gap: 0 !important; align-items: center;
+}
+
+/* 4개 통계 → 붙은 그룹 */
+.stat-pill-group {
+  display: flex; align-items: stretch; flex-shrink: 0;
+  border: 1px solid var(--border); border-radius: var(--r-md);
+  overflow: hidden; background: var(--bg-surface);
+}
+.sp-cell {
+  display: flex; align-items: baseline; gap: 5px;
+  padding: 5px 11px; border-right: 1px solid var(--border);
+  cursor: default;
+}
+.sp-cell:last-child { border-right: 0; }
+.sp-k { font-size: 9.5px; font-weight: 700; color: var(--text-soft); white-space: nowrap; }
+.sp-n {
+  font-size: 14px; font-weight: 800; font-variant-numeric: tabular-nums;
+  color: var(--text-primary); line-height: 1;
+}
+.sp-cell.total  .sp-n { color: var(--info); }
+.sp-cell.leave  .sp-n { color: var(--warning); }
+.sp-cell.done   .sp-n { color: var(--success); }
+.sp-cell.refund .sp-n { color: var(--danger); }
+
+/* 월별 카드 압축 */
+.month-stats { display: flex; align-items: center; gap: 4px; margin-left: 12px; flex-shrink: 0; }
+.month-card {
+  display: flex !important; align-items: center; gap: 7px;
+  padding: 4px 9px !important; border-radius: var(--r-md);
+  border: 1px solid var(--border); background: var(--bg-surface);
+  flex-shrink: 0; min-width: 0 !important;
+}
+.month-card:hover { border-color: var(--brand-border); }
+.month-card-title {
+  font-size: 10.5px !important; font-weight: 800 !important;
+  color: var(--text-secondary) !important; white-space: nowrap;
+}
+.month-frac {
+  display: inline-flex; align-items: baseline; gap: 1px;
+  font-size: 11.5px; font-weight: 800; font-variant-numeric: tabular-nums;
+  letter-spacing: -.2px;
+}
+.month-frac .fs { color: var(--text-soft); font-weight: 500; margin: 0 1px; }
+
+/* 숫자 색: 일정=회색 / 배정=초록 / 미배정=빨강 */
+.month-card-clickable-num.all,
+.month-card-num.zero { color: var(--text-tertiary); }
+.month-card-clickable-num.assigned { color: var(--success); }
+.month-card-unassigned-link { color: var(--danger); }
+.month-card-clickable-num,
+.month-card-unassigned-link {
+  cursor: pointer; text-decoration: none; padding: 0 1px;
+  border-radius: 3px; transition: background .12s;
+}
+.month-card-clickable-num:hover,
+.month-card-unassigned-link:hover { background: var(--bg-muted); text-decoration: underline; }
+.month-card-num.zero { cursor: default; }
+.month-card-stat, .month-card-divider { display: none !important; }
+
+/* 범례 (한 번만) */
+.month-legend {
+  font-size: 9.5px; font-weight: 700; color: var(--text-soft);
+  margin-left: 11px; white-space: nowrap; flex-shrink: 0;
+}
+.month-legend b { font-weight: 800; }
+.month-legend .lg-ok { color: var(--success); }
+.month-legend .lg-no { color: var(--danger); }
+
+.stat-divider { display: none !important; }
+
 </style>
 <!-- Firebase SDK (compat - HTML 단일 파일용) -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -1623,12 +1827,6 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
 
     <div class="action-buttons">
       <div class="context-actions" id="contextActions">
-        <button class="btn btn-outline btn-sm btn-icon-only" data-context="info" title="복사" onclick="copyCurrentStudent()">
-          <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-        </button>
-        <button class="btn btn-outline btn-sm btn-icon-only" data-context="info" title="인쇄" onclick="printCurrentStudent()">
-          <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-        </button>
         <button class="btn btn-outline btn-sm" data-context="assign" style="display:none;" onclick="undoAssignment()">
           <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-15-6.7L3 13"/></svg>
           실행취소
@@ -1642,72 +1840,90 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
           내보내기
         </button>
       </div>
-      <button class="btn btn-outline btn-sm" onclick="openCommandPalette()">
+
+      <button class="btn btn-outline btn-sm btn-icon-only" onclick="openCommandPalette()" title="검색 (⌘K)">
         <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <span class="kbd">⌘K</span>
       </button>
       <button class="btn btn-outline btn-sm" onclick="openAssignWindow()" title="배정관리 창 열기">
         <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
         배정관리
       </button>
-      <button class="btn btn-outline btn-sm btn-icon-only" onclick="openImportModal()" title="CSV 가져오기">
-        <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-      </button>
-      <button class="btn btn-outline btn-sm btn-icon-only" onclick="requireManageAuth('trash')" title="휴지통">
-        <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-      </button>
-      <button class="btn btn-outline" onclick="resetForm()">
+
+      <span class="hdr-divider"></span>
+
+      <button class="btn btn-outline btn-sm" onclick="resetForm()">
         <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         신규 <span class="kbd">⌘N</span>
       </button>
-      <button class="btn btn-danger" onclick="deleteCurrentStudent()">
-        <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/></svg>
-        삭제
-      </button>
-      <button class="btn btn-brand" onclick="submitForm()">
+      <button class="btn btn-brand btn-sm" onclick="submitForm()">
         <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
         저장 <span class="kbd">⌘S</span>
       </button>
 
       <span class="sync-status" id="syncStatus" style="display:none;"></span>
-      <button class="btn btn-outline btn-sm btn-icon-only" onclick="refreshFromFirestore()" title="Firestore 새로고침" id="refreshBtn" style="display:none;">
-        <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
-      </button>
 
-      <div class="theme-toggle" id="themeToggle">
-        <button type="button" id="themeLightBtn" onclick="setTheme('light')" title="라이트 모드">&#9728; 라이트</button>
-        <button type="button" id="themeDarkBtn" onclick="setTheme('dark')" title="다크 모드">&#127769; 다크</button>
-      </div>
-
-      <div class="user-badge" id="userBadge" style="display:none;">
-        <div class="user-badge-avatar" id="userBadgeAvatar">?</div>
-        <span class="user-badge-email" id="userBadgeEmail">-</span>
-        <button class="user-badge-logout" onclick="handleLogout()" title="로그아웃">
-          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      <!-- 더보기 메뉴 -->
+      <div class="more-wrap">
+        <button class="btn btn-outline btn-sm btn-icon-only" onclick="toggleMoreMenu(event)" title="더보기" id="moreBtn">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1.4"/><circle cx="12" cy="5" r="1.4"/><circle cx="12" cy="19" r="1.4"/></svg>
         </button>
+        <div class="more-menu" id="moreMenu">
+          <div class="mm-label">테마</div>
+          <div class="theme-toggle" id="themeToggle">
+            <button type="button" id="themeLightBtn" onclick="setTheme('light')" title="라이트 모드">&#9728; 라이트</button>
+            <button type="button" id="themeDarkBtn" onclick="setTheme('dark')" title="다크 모드">&#127769; 다크</button>
+          </div>
+          <div class="mm-div"></div>
+          <button type="button" class="mm-item" onclick="closeMoreMenu(); copyCurrentStudent()">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            학생 복제
+          </button>
+          <button type="button" class="mm-item" onclick="closeMoreMenu(); printCurrentStudent()">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+            인쇄
+          </button>
+          <div class="mm-div"></div>
+          <button type="button" class="mm-item" onclick="closeMoreMenu(); openImportModal()">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            CSV 가져오기
+          </button>
+          <button type="button" class="mm-item" onclick="closeMoreMenu(); exportSheetCSV()">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            CSV 내보내기
+          </button>
+          <button type="button" class="mm-item" onclick="closeMoreMenu(); requireManageAuth('trash')">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            휴지통
+          </button>
+          <button type="button" class="mm-item" id="mmRefresh" onclick="closeMoreMenu(); refreshFromFirestore()" style="display:none;">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+            Firestore 새로고침
+          </button>
+          <div class="mm-div"></div>
+          <div class="mm-user" id="mmUser" style="display:none;">
+            <div class="user-badge-avatar" id="userBadgeAvatar">?</div>
+            <span class="user-badge-email" id="userBadgeEmail">-</span>
+          </div>
+          <button type="button" class="mm-item" onclick="closeMoreMenu(); handleLogout()">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            로그아웃
+          </button>
+        </div>
       </div>
+
+      <div class="user-badge" id="userBadge" style="display:none;"></div>
     </div>
   </header>
 
   <div class="stats-bar">
-    <div class="stat-card total">
-      <div class="stat-icon-wrap"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
-      <div class="stat-info"><span class="stat-label">총 수강생</span><span class="stat-value" id="statTotal">0</span></div>
+    <div class="stat-pill-group">
+      <div class="sp-cell total"><span class="sp-k">전체</span><span class="sp-n" id="statTotal">0</span></div>
+      <div class="sp-cell leave"><span class="sp-k">휴학</span><span class="sp-n" id="statLeave">0</span></div>
+      <div class="sp-cell done"><span class="sp-k">종강</span><span class="sp-n" id="statDone">0</span></div>
+      <div class="sp-cell refund"><span class="sp-k">환불</span><span class="sp-n" id="statRefund">0</span></div>
     </div>
-    <div class="stat-card leave">
-      <div class="stat-icon-wrap"><svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg></div>
-      <div class="stat-info"><span class="stat-label">휴학</span><span class="stat-value" id="statLeave">0</span></div>
-    </div>
-    <div class="stat-card done">
-      <div class="stat-icon-wrap"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></div>
-      <div class="stat-info"><span class="stat-label">종강</span><span class="stat-value" id="statDone">0</span></div>
-    </div>
-    <div class="stat-card refund">
-      <div class="stat-icon-wrap"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M3 3h18v18H3z"/></svg></div>
-      <div class="stat-info"><span class="stat-label">환불</span><span class="stat-value" id="statRefund">0</span></div>
-    </div>
-    <div class="stat-divider"></div>
     <div class="month-stats" id="monthStats"></div>
+    <span class="month-legend">일정 / <b class="lg-ok">배정</b> / <b class="lg-no">미배정</b></span>
   </div>
 
   <div class="content">
@@ -1720,7 +1936,12 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
       <section id="tab-info" class="tab-section active">
         <div class="profile-hero">
           <div class="profile-main">
-            <input type="text" class="profile-name-input" id="name" placeholder="학생 이름 입력" oninput="onProfileChange()" autocomplete="off" data-form-type="other" data-lpignore="true">
+            <div class="profile-name-row">
+              <input type="text" class="profile-name-input" id="name" placeholder="학생 이름 입력" oninput="onProfileChange()" autocomplete="off" data-form-type="other" data-lpignore="true">
+              <button type="button" class="name-del-btn" id="nameDelBtn" onclick="deleteCurrentStudent()" title="이 학생 삭제">
+                <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              </button>
+            </div>
             <div class="profile-meta">
               <span class="profile-meta-item"><svg class="icon icon-sm" viewBox="0 0 24 24" style="color:var(--brand);"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/></svg><span id="subCourse">과정 미선택</span></span>
               <span class="profile-meta-dot"></span>
@@ -1816,8 +2037,52 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
           </div>
         </div>
 
+        </div><!-- /.info-col -->
+
+        <aside class="assign-side">
+        <!-- 배정 현황 (달력) -->
+          <div class="aside-hd">
+            <span>배정 현황 · <span id="asideYear">2026</span></span>
+            <span class="aside-cnt" id="asideCount">0 / 0</span>
+          </div>
+          <button type="button" class="expand-cta" onclick="openAssignWindow()">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+            배정관리 창에서 크게 열기
+          </button>
+          <div id="asideMatrix"></div>
+          <div class="mini-legend">
+            <span><i style="background:var(--success-bg); border-color:var(--success-border);"></i>확정</span>
+            <span><i style="background:var(--warning-bg); border-color:var(--warning-border);"></i>미확정</span>
+            <span><i style="background:var(--bg-surface);"></i>비어있음</span>
+          </div>
+          <div class="aside-hd" style="margin-top:14px;"><span>배정 목록</span></div>
+          <div class="aside-rows" id="asideRows"></div>
+          <div id="asideNote"></div>
+
+        <!-- 메모 -->
+        <div class="collapsible tint-memo open" id="col-memo">
+          <div class="collapsible-header" onclick="toggleCollapsible('col-memo')">
+            <div class="collapsible-toggle">
+              <svg class="icon icon-sm collapsible-arrow" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+              <span class="collapsible-icon-wrap"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M16 13H8"/><path d="M16 17H8"/></svg></span>
+              <span class="collapsible-title">특이사항 메모</span>
+            </div>
+            <span class="collapsible-summary" id="memoSummary">0개</span>
+          </div>
+          <div class="collapsible-body">
+            <div class="memo-input-row">
+              <textarea class="form-control" id="newMemoInput" placeholder="새로운 특이사항을 입력하세요... (Cmd+Enter로 추가)"></textarea>
+              <button class="btn btn-brand" onclick="addMemo()" style="height:auto;">
+                <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>추가
+              </button>
+            </div>
+            <div class="memo-list" id="memoListContainer"></div>
+            <input type="hidden" id="memo">
+          </div>
+        </div>
+
         <!-- 보상 -->
-        <div class="collapsible tint-reward" id="col-rewards">
+        <div class="collapsible tint-reward open" id="col-rewards">
           <div class="collapsible-header" onclick="toggleCollapsible('col-rewards')">
             <div class="collapsible-toggle">
               <svg class="icon icon-sm collapsible-arrow" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
@@ -1851,30 +2116,8 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
           </div>
         </div>
 
-        <!-- 메모 -->
-        <div class="collapsible tint-memo" id="col-memo">
-          <div class="collapsible-header" onclick="toggleCollapsible('col-memo')">
-            <div class="collapsible-toggle">
-              <svg class="icon icon-sm collapsible-arrow" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
-              <span class="collapsible-icon-wrap"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M16 13H8"/><path d="M16 17H8"/></svg></span>
-              <span class="collapsible-title">특이사항 메모</span>
-            </div>
-            <span class="collapsible-summary" id="memoSummary">0개</span>
-          </div>
-          <div class="collapsible-body">
-            <div class="memo-input-row">
-              <textarea class="form-control" id="newMemoInput" placeholder="새로운 특이사항을 입력하세요... (Cmd+Enter로 추가)"></textarea>
-              <button class="btn btn-brand" onclick="addMemo()" style="height:auto;">
-                <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>추가
-              </button>
-            </div>
-            <div class="memo-list" id="memoListContainer"></div>
-            <input type="hidden" id="memo">
-          </div>
-        </div>
-
         <!-- 비상연락 -->
-        <div class="collapsible tint-emer" id="col-emer">
+        <div class="collapsible tint-emer open" id="col-emer">
           <div class="collapsible-header" onclick="toggleCollapsible('col-emer')">
             <div class="collapsible-toggle">
               <svg class="icon icon-sm collapsible-arrow" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
@@ -1893,26 +2136,6 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
           </div>
         </div>
 
-        </div><!-- /.info-col -->
-
-        <aside class="assign-side">
-          <div class="aside-hd">
-            <span>배정 현황 · <span id="asideYear">2026</span></span>
-            <span class="aside-cnt" id="asideCount">0 / 0</span>
-          </div>
-          <button type="button" class="expand-cta" onclick="openAssignWindow()">
-            <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
-            배정관리 창에서 크게 열기
-          </button>
-          <div id="asideMatrix"></div>
-          <div class="mini-legend">
-            <span><i style="background:var(--success-bg); border-color:var(--success-border);"></i>확정</span>
-            <span><i style="background:var(--warning-bg); border-color:var(--warning-border);"></i>미확정</span>
-            <span><i style="background:var(--bg-surface);"></i>비어있음</span>
-          </div>
-          <div class="aside-hd" style="margin-top:14px;"><span>배정 목록</span></div>
-          <div class="aside-rows" id="asideRows"></div>
-          <div id="asideNote"></div>
         </aside>
 
         </div><!-- /.info-split -->
@@ -2425,7 +2648,8 @@ function showAuthScreen() {
   document.body.classList.add('auth-active');
   document.body.classList.add('auth-checked');
   document.getElementById('authScreen').classList.add('show');
-  document.getElementById('userBadge').style.display = 'none';
+  const mu0 = document.getElementById('mmUser');
+  if (mu0) mu0.style.display = 'none';
   setAuthLoading(false);
   // 입력 초기화
   document.getElementById('authPasswordInput').value = '';
@@ -2435,14 +2659,16 @@ function showMainScreen(user) {
   document.body.classList.remove('auth-active');
   document.body.classList.add('auth-checked');
   document.getElementById('authScreen').classList.remove('show');
-  // 사용자 뱃지 표시
-  const badge = document.getElementById('userBadge');
-  badge.style.display = '';
-  document.getElementById('userBadgeEmail').innerText = user.email;
-  document.getElementById('userBadgeAvatar').innerText = (user.email || '?').charAt(0).toUpperCase();
-  // 새로고침 버튼도 표시
-  const ref = document.getElementById('refreshBtn');
-  if (ref) ref.style.display = '';
+  // 사용자 정보는 더보기 메뉴 안에 표시
+  const mu = document.getElementById('mmUser');
+  if (mu) mu.style.display = '';
+  const ue = document.getElementById('userBadgeEmail');
+  if (ue) ue.innerText = user.email;
+  const ua = document.getElementById('userBadgeAvatar');
+  if (ua) ua.innerText = (user.email || '?').charAt(0).toUpperCase();
+  // Firestore 새로고침 메뉴 항목 표시
+  const mr = document.getElementById('mmRefresh');
+  if (mr) mr.style.display = '';
 }
 
 // 인증 상태 감지 - 페이지 로드 시 자동 호출
@@ -3742,10 +3968,10 @@ function updateDashboard() {
     ? globalStudentData.filter(s => s.mentor === currentSelectedMentor || s.subMentor === currentSelectedMentor)
     : globalStudentData;
 
-  document.getElementById('statTotal').innerText = list.length;
-  document.getElementById('statLeave').innerText = list.filter(s => s.isOnLeave).length;
-  document.getElementById('statDone').innerText = list.filter(s => s.isCompleted).length;
-  document.getElementById('statRefund').innerText = list.filter(s => s.isRefunded).length;
+  document.getElementById('statTotal').textContent = list.length;
+  document.getElementById('statLeave').textContent = list.filter(s => s.isOnLeave).length;
+  document.getElementById('statDone').textContent = list.filter(s => s.isCompleted).length;
+  document.getElementById('statRefund').textContent = list.filter(s => s.isRefunded).length;
 
   // 현재 월 기준 ±2개월 (총 4개월) 자동 윈도우
   const now = new Date();
@@ -3813,11 +4039,7 @@ function updateDashboard() {
       : `<span class="month-card-num zero">0</span>`;
     return `<div class="month-card">
       <strong class="month-card-title">${mStr}</strong>
-      <span class="month-card-stat">일정 ${totalLink}</span>
-      <span class="month-card-divider">·</span>
-      <span class="month-card-stat ok">배정 ${assignedLink}</span>
-      <span class="month-card-divider">·</span>
-      <span class="month-card-stat danger">미배정 ${unassignedLink}</span>
+      <span class="month-frac">${totalLink}<span class="fs">/</span>${assignedLink}<span class="fs">/</span>${unassignedLink}</span>
     </div>`;
   }).join('');
 }
@@ -4085,7 +4307,7 @@ function addMemo() {
 function updateMemoView() {
   const c = document.getElementById('memoListContainer');
   c.innerHTML = currentMemos.map(m => `<div class="memo-item"><div class="memo-content"><div class="memo-date">${m.date}</div><div class="memo-text">${escapeHTML(m.text)}</div></div><div class="memo-actions"><button onclick="editMemo(${m.id})"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button><button class="del" onclick="deleteMemo(${m.id})"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/></svg></button></div></div>`).join('') || '<div class="text-soft" style="text-align:center; padding:14px;">메모가 없습니다.</div>';
-  document.getElementById('memoSummary').innerText = currentMemos.length === 0 ? '0개' : `${currentMemos.length}개 · 최근 ${currentMemos[0].date}`;
+  document.getElementById('memoSummary').textContent = currentMemos.length === 0 ? '0개' : `${currentMemos.length}개 · 최근 ${currentMemos[0].date}`;
 }
 function deleteMemo(id) {
   customConfirm('이 메모를 삭제할까요?', ok => { if (!ok) return; currentMemos = currentMemos.filter(m => m.id !== id); updateMemoView(); markDirty(); });
@@ -5266,6 +5488,24 @@ function renderCmdList() {
 
 
 
+
+
+/* =================================================================
+   헤더 더보기 메뉴
+================================================================= */
+function toggleMoreMenu(ev) {
+  if (ev) ev.stopPropagation();
+  const m = document.getElementById('moreMenu');
+  if (!m) return;
+  m.classList.toggle('open');
+}
+function closeMoreMenu() {
+  const m = document.getElementById('moreMenu');
+  if (m) m.classList.remove('open');
+}
+document.addEventListener('click', e => {
+  if (!e.target.closest('.more-wrap')) closeMoreMenu();
+});
 
 /* =================================================================
    사이드바 필터 패널 (부서 / 멘토 / 수업 상태 분리)
