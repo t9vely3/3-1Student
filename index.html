@@ -178,6 +178,44 @@ html[data-theme="dark"] ::-webkit-scrollbar-track { background: var(--bg-app); }
 .theme-toggle button.active { background: var(--brand); color: #fff; }
 html, body { transition: background-color .2s ease, color .2s ease; }
 
+/* ===== 전체표 (tab-sheet) ===== */
+.sheet-wrap { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--r-lg); overflow: hidden; box-shadow: var(--shadow-xs); }
+.sheet-bar { padding: 9px 13px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.sheet-bar .sheet-count { font-size: 11px; color: var(--text-tertiary); font-weight: 700; }
+.sheet-scroll { overflow: auto; max-height: calc(100vh - 300px); }
+table.sheet-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 11px; white-space: nowrap; }
+table.sheet-table thead th { position: sticky; top: 0; z-index: 5; background: var(--bg-muted); padding: 8px 10px; text-align: left; font-size: 10px; font-weight: 800; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: .3px; border-bottom: 1px solid var(--border); user-select: none; }
+table.sheet-table thead th.sortable { cursor: pointer; }
+table.sheet-table thead th.sortable:hover { color: var(--brand-text); }
+table.sheet-table thead th .sort-ind { opacity: .35; margin-left: 3px; }
+table.sheet-table thead th.sorted .sort-ind { opacity: 1; color: var(--brand); }
+table.sheet-table td { padding: 7px 10px; border-bottom: 1px solid var(--border); color: var(--text-secondary); }
+table.sheet-table tbody tr { cursor: pointer; }
+table.sheet-table tbody tr:hover td { background: var(--bg-hover); }
+table.sheet-table tbody tr.active td { background: var(--brand-soft); }
+.sheet-stick { position: sticky; left: 0; z-index: 3; background: var(--bg-surface); border-right: 1px solid var(--border); }
+table.sheet-table thead th.sheet-stick { z-index: 6; background: var(--bg-muted); }
+tbody tr:hover .sheet-stick { background: var(--bg-hover); }
+tbody tr.active .sheet-stick { background: var(--brand-soft); }
+.sheet-name { display: flex; align-items: center; gap: 7px; font-weight: 700; color: var(--text-primary); }
+.sheet-av { width: 21px; height: 21px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 800; color: #fff; flex-shrink: 0; }
+.sheet-tag { padding: 2px 7px; border-radius: 999px; font-size: 9px; font-weight: 800; display: inline-block; border: 1px solid transparent; }
+.sheet-tag.on { background: var(--success-bg); color: var(--success); border-color: var(--success-border); }
+.sheet-tag.leave { background: var(--warning-bg); color: var(--warning); border-color: var(--warning-border); }
+.sheet-tag.done { background: var(--bg-muted); color: var(--text-tertiary); border-color: var(--border); }
+.sheet-tag.refund { background: var(--danger-bg); color: var(--danger); border-color: var(--danger-border); }
+.sheet-tag.cod { background: var(--info-bg); color: var(--info); border-color: var(--info-border); }
+.sheet-tag.paid { background: var(--success-bg); color: var(--success); border-color: var(--success-border); }
+.sheet-tag.care { background: var(--danger-bg); color: var(--danger); border-color: var(--danger-border); }
+.sheet-num { text-align: right; font-variant-numeric: tabular-nums; font-weight: 700; color: var(--text-primary); }
+.sheet-pb { width: 44px; height: 4px; background: var(--bg-muted); border-radius: 999px; display: inline-block; vertical-align: middle; margin-right: 5px; overflow: hidden; border: 1px solid var(--border); }
+.sheet-pb i { display: block; height: 100%; background: var(--brand); }
+.sheet-assign-btn { background: none; border: none; padding: 0; font: inherit; color: inherit; cursor: pointer; display: inline-flex; align-items: center; }
+.sheet-assign-btn:hover { color: var(--brand-text); text-decoration: underline; }
+.sheet-empty { padding: 44px; text-align: center; color: var(--text-tertiary); font-size: 12px; }
+.sheet-note { margin-top: 12px; padding: 10px 13px; background: var(--info-bg); border: 1px solid var(--info-border); border-radius: var(--r-md); font-size: 11px; color: var(--info); line-height: 1.6; }
+.sheet-note b { font-weight: 800; }
+
 html, body { margin: 0; height: 100vh; overflow: hidden; }
 body {
   font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
@@ -918,6 +956,10 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
           <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01"/></svg>
           월별 현황
         </button>
+        <button class="main-tab-btn" data-tab="tab-sheet" onclick="switchMainTab('tab-sheet', this);">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+          전체표
+        </button>
       </div>
     </div>
 
@@ -1300,6 +1342,45 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
               <div id="monthlyStudentList"></div>
             </div>
           </div>
+        </div>
+      </section>
+
+      <!-- TAB: SHEET (전체표) -->
+      <section id="tab-sheet" class="tab-section">
+        <div class="sheet-wrap">
+          <div class="sheet-bar">
+            <span class="sheet-count" id="sheetCount">0명</span>
+            <div style="margin-left:auto; display:flex; gap:7px; align-items:center; flex-wrap:wrap;">
+              <select class="form-control" id="sheetMentorFilter" style="width:120px; height:30px; font-size:11px;" onchange="renderSheet()">
+                <option value="">모든 멘토</option>
+              </select>
+              <select class="form-control" id="sheetCourseFilter" style="width:130px; height:30px; font-size:11px;" onchange="renderSheet()">
+                <option value="">모든 과정</option>
+                <option>모션/영상</option><option>시각편집</option><option>마야/CG</option>
+                <option>건축/인테리어</option><option>AI 크리에이터</option><option>웹/웹디자인</option>
+                <option>아트웍</option><option>유튜브</option><option>자격증/OA</option>
+              </select>
+              <select class="form-control" id="sheetStatusFilter" style="width:110px; height:30px; font-size:11px;" onchange="renderSheet()">
+                <option value="">모든 상태</option>
+                <option value="active">수강중</option><option value="leave">휴학</option>
+                <option value="done">종강</option><option value="refund">환불</option>
+                <option value="care">특별관리</option><option value="unassigned">미배정</option>
+              </select>
+              <button class="btn btn-outline btn-sm" onclick="exportSheetCSV()">
+                <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                CSV
+              </button>
+            </div>
+          </div>
+          <div class="sheet-scroll">
+            <table class="sheet-table" id="sheetTable">
+              <thead><tr id="sheetHead"></tr></thead>
+              <tbody id="sheetBody"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="sheet-note">
+          <b>사용법</b> — 행 클릭 시 해당 학생의 정보 탭으로 이동합니다 · 배정 열의 숫자를 클릭하면 배정 탭으로 바로 이동 · 열 제목 클릭으로 정렬 · 좌측 사이드바의 부서/멘토/검색 필터도 함께 적용됩니다
         </div>
       </section>
 
@@ -2709,6 +2790,7 @@ function filterList() {
   });
   renderStudentList(filtered);
   updateDashboard();
+  if (document.getElementById('tab-sheet') && document.getElementById('tab-sheet').classList.contains('active')) renderSheet();
 }
 function toggleSortOrder() {
   appNumSortOrder = appNumSortOrder === 'desc' ? 'asc' : 'desc';
@@ -4390,6 +4472,251 @@ function renderCmdList() {
   }).join('');
 }
 
+
+/* =================================================================
+   전체표 (tab-sheet)
+================================================================= */
+let sheetSortKey = 'appNum';
+let sheetSortAsc = false;
+
+const SHEET_COLS = [
+  { key: 'name',        label: '이름',     w: 160, stick: true },
+  { key: 'appNum',      label: '원서번호', w: 92 },
+  { key: 'course',      label: '과정',     w: 108 },
+  { key: 'mentor',      label: '멘토',     w: 82 },
+  { key: 'status',      label: '상태',     w: 78 },
+  { key: 'pay',         label: '결제',     w: 66 },
+  { key: 'tuition',     label: '수강료',   w: 96, num: true },
+  { key: 'assign',      label: '배정',     w: 88 },
+  { key: 'months',      label: '참여 월',  w: 118 },
+  { key: 'contact',     label: '연락처',   w: 116 },
+  { key: 'memo',        label: '메모',     w: 56 }
+];
+
+// 사이드바 필터(부서/멘토/검색/체크박스)를 그대로 재사용한 뒤 전체표 자체 필터를 추가 적용
+function getSheetRows() {
+  const q = (document.getElementById('searchInput').value || '').toLowerCase().trim();
+  const fUn = document.getElementById('filterUnassigned').checked;
+  const fNoMentor = (document.getElementById('filterNoMentor') || {}).checked;
+  const fLv = document.getElementById('filterOnLeave').checked;
+  const fDn = document.getElementById('filterCompleted').checked;
+  const fRf = document.getElementById('filterRefunded').checked;
+
+  const shMentor = (document.getElementById('sheetMentorFilter') || {}).value || '';
+  const shCourse = (document.getElementById('sheetCourseFilter') || {}).value || '';
+  const shStatus = (document.getElementById('sheetStatusFilter') || {}).value || '';
+
+  return globalStudentData.filter(s => {
+    if (currentSelectedMentor === '__NO_MENTOR__') {
+      if (s.mentor && s.mentor.trim() !== '') return false;
+    } else if (currentSelectedMentor) {
+      if (s.mentor !== currentSelectedMentor) return false;
+    }
+    if (currentSelectedDept) {
+      if (!s.mentor) return false;
+      if ((MENTOR_DEPTS[s.mentor] || '') !== currentSelectedDept) return false;
+    }
+    if (q) { const blob = `${s.name||''} ${s.contact||''} ${s.appNum||''}`.toLowerCase(); if (!blob.includes(q)) return false; }
+    if (fUn && (s.assignedClasses && s.assignedClasses.length > 0)) return false;
+    if (fNoMentor && s.mentor && s.mentor.trim() !== '') return false;
+    if (fLv && !s.isOnLeave) return false;
+    if (fDn && !s.isCompleted) return false;
+    if (fRf && !s.isRefunded) return false;
+
+    if (shMentor && s.mentor !== shMentor) return false;
+    if (shCourse && s.course !== shCourse) return false;
+    if (shStatus) {
+      if (shStatus === 'active'     && (s.isOnLeave || s.isCompleted || s.isRefunded)) return false;
+      if (shStatus === 'leave'      && !s.isOnLeave) return false;
+      if (shStatus === 'done'       && !s.isCompleted) return false;
+      if (shStatus === 'refund'     && !s.isRefunded) return false;
+      if (shStatus === 'care'       && !s.requiresCare) return false;
+      if (shStatus === 'unassigned' && (s.assignedClasses && s.assignedClasses.length > 0)) return false;
+    }
+    return true;
+  });
+}
+
+function sheetTotalSubjects(s) {
+  return (parseInt(s.paidCourse) || 0) + (parseInt(s.freeCourse) || 0);
+}
+function sheetAssignedCount(s) {
+  return (s.assignedClasses || []).length;
+}
+function sheetStatusOf(s) {
+  if (s.isRefunded)  return { cls: 'refund', txt: '환불',  ord: 4 };
+  if (s.isCompleted) return { cls: 'done',   txt: '종강',  ord: 3 };
+  if (s.isOnLeave)   return { cls: 'leave',  txt: '휴학',  ord: 2 };
+  return { cls: 'on', txt: '수강중', ord: 1 };
+}
+
+function sheetSortVal(s, key) {
+  switch (key) {
+    case 'name':    return (s.name || '').toLowerCase();
+    case 'appNum':  return parseAppNumForSort(s.appNum);
+    case 'course':  return (s.course || '').toLowerCase();
+    case 'mentor':  return (s.mentor || '').toLowerCase();
+    case 'status':  return sheetStatusOf(s).ord;
+    case 'pay':     return (s.paymentStatus === '완납') ? 1 : 0;
+    case 'tuition': return parseInt(s.totalTuition) || 0;
+    case 'assign': {
+      const t = sheetTotalSubjects(s);
+      return t > 0 ? (sheetAssignedCount(s) / t) : -1;
+    }
+    case 'months':  return (s.durationStart || '').toLowerCase();
+    case 'contact': return (s.contact || '').toLowerCase();
+    case 'memo':    return parseMemos(s.memo).length;
+    default:        return '';
+  }
+}
+
+// 원서번호 정렬용 숫자 변환 (renderStudentList와 동일 규칙)
+function parseAppNumForSort(v) {
+  const raw = String(v || '').trim();
+  if (!raw) return -1;
+  const m = raw.match(/(\d{4})\s*-\s*(\d+)/);
+  if (m) return parseInt(m[1]) * 100000 + parseInt(m[2]);
+  const digits = raw.replace(/[^\d]/g, '');
+  return digits ? parseInt(digits) : -1;
+}
+
+function parseMemos(raw) {
+  if (!raw) return [];
+  try { const j = JSON.parse(raw); if (Array.isArray(j)) return j; } catch (e) {}
+  return String(raw).split('\n').filter(x => x.trim());
+}
+
+function sortSheet(key) {
+  if (sheetSortKey === key) sheetSortAsc = !sheetSortAsc;
+  else { sheetSortKey = key; sheetSortAsc = (key === 'name' || key === 'course' || key === 'mentor'); }
+  renderSheet();
+}
+
+function renderSheet() {
+  const head = document.getElementById('sheetHead');
+  const body = document.getElementById('sheetBody');
+  if (!head || !body) return;
+
+  // 멘토 필터 옵션 동기화
+  const mf = document.getElementById('sheetMentorFilter');
+  if (mf) {
+    const prev = mf.value;
+    mf.innerHTML = '<option value="">모든 멘토</option>' + MENTORS.map(m => `<option${m === prev ? ' selected' : ''}>${escapeHTML(m)}</option>`).join('');
+  }
+
+  head.innerHTML = SHEET_COLS.map(c => {
+    const sorted = sheetSortKey === c.key;
+    const ind = sorted ? (sheetSortAsc ? '▲' : '▼') : '↕';
+    return `<th class="sortable${c.stick ? ' sheet-stick' : ''}${sorted ? ' sorted' : ''}" style="min-width:${c.w}px;${c.num ? 'text-align:right;' : ''}" onclick="sortSheet('${c.key}')">${c.label}<span class="sort-ind">${ind}</span></th>`;
+  }).join('');
+
+  let rows = getSheetRows();
+  rows.sort((a, b) => {
+    const va = sheetSortVal(a, sheetSortKey), vb = sheetSortVal(b, sheetSortKey);
+    let r;
+    if (typeof va === 'number' && typeof vb === 'number') r = va - vb;
+    else r = String(va).localeCompare(String(vb), 'ko');
+    return sheetSortAsc ? r : -r;
+  });
+
+  document.getElementById('sheetCount').innerText = `${rows.length}명`;
+
+  if (rows.length === 0) {
+    body.innerHTML = `<tr><td colspan="${SHEET_COLS.length}" class="sheet-empty">표시할 학생이 없습니다</td></tr>`;
+    return;
+  }
+
+  const curId = document.getElementById('studentId').value;
+
+  body.innerHTML = rows.map(s => {
+    const grad = avatarGradient(s.name);
+    const stt = sheetStatusOf(s);
+    const total = sheetTotalSubjects(s);
+    const done = sheetAssignedCount(s);
+    const pct = total > 0 ? Math.min(100, Math.round(done / total * 100)) : 0;
+    let barColor = 'var(--brand)';
+    if (total > 0) {
+      if (done >= total) barColor = 'var(--success)';
+      else if (pct === 0) barColor = 'var(--danger)';
+      else if (pct < 60)  barColor = 'var(--warning)';
+    }
+    const memoCnt = parseMemos(s.memo).length;
+    const paid = s.paymentStatus === '완납';
+
+    return `<tr class="${s.id === curId ? 'active' : ''}" onclick="loadStudentDetail('${s.id}')">
+      <td class="sheet-stick">
+        <div class="sheet-name">
+          <div class="sheet-av" style="background:linear-gradient(135deg, ${grad[0]} 0%, ${grad[1]} 100%);">${escapeHTML((s.name||'?').charAt(0))}</div>
+          ${escapeHTML(s.name || '-')}
+          ${s.requiresCare ? '<span class="sheet-tag care">관리</span>' : ''}
+        </div>
+      </td>
+      <td>${escapeHTML(s.appNum || '-')}</td>
+      <td>${escapeHTML(s.course || '-')}</td>
+      <td>${escapeHTML(s.mentor || '-')}</td>
+      <td><span class="sheet-tag ${stt.cls}">${stt.txt}</span></td>
+      <td><span class="sheet-tag ${paid ? 'paid' : 'cod'}">${paid ? '완납' : 'COD'}</span></td>
+      <td class="sheet-num">${(parseInt(s.totalTuition) || 0).toLocaleString()}</td>
+      <td>
+        <button type="button" class="sheet-assign-btn" onclick="event.stopPropagation(); openAssignFromSheet('${s.id}')" title="배정 탭으로 이동">
+          <span class="sheet-pb"><i style="width:${pct}%; background:${barColor};"></i></span>${done}/${total || 0}
+        </button>
+      </td>
+      <td>${escapeHTML(s.durationStart || '-')}</td>
+      <td>${escapeHTML(s.contact || '-')}</td>
+      <td style="color:var(--text-soft);">${memoCnt ? memoCnt + '개' : '-'}</td>
+    </tr>`;
+  }).join('');
+}
+
+function openAssignFromSheet(id) {
+  loadStudentDetail(id);
+  setTimeout(() => {
+    const btn = document.querySelector('.main-tab-btn[data-tab="tab-assign"]');
+    if (btn) switchMainTab('tab-assign', btn);
+  }, 60);
+}
+
+function exportSheetCSV() {
+  let rows = getSheetRows();
+  rows.sort((a, b) => {
+    const va = sheetSortVal(a, sheetSortKey), vb = sheetSortVal(b, sheetSortKey);
+    let r;
+    if (typeof va === 'number' && typeof vb === 'number') r = va - vb;
+    else r = String(va).localeCompare(String(vb), 'ko');
+    return sheetSortAsc ? r : -r;
+  });
+  if (rows.length === 0) { showToast('내보낼 데이터가 없습니다', 'warning'); return; }
+
+  const head = ['이름','원서번호','과정','담당멘토','서브멘토','상태','특별관리','결제','납부수강료','직권할인','최종수강료','유료과목','무료과목','배정과목수','참여월','연락처','생년월일','등록일','등록목적','비상관계','비상연락처','메모수'];
+  const esc = v => {
+    const s = String(v == null ? '' : v);
+    return /[",\n]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s;
+  };
+  const lines = [head.join(',')];
+  rows.forEach(s => {
+    lines.push([
+      s.name, s.appNum, s.course, s.mentor, s.subMentor,
+      sheetStatusOf(s).txt, s.requiresCare ? 'Y' : '',
+      s.paymentStatus === '완납' ? '완납' : 'COD',
+      parseInt(s.baseTuition) || 0, parseInt(s.directDiscount) || 0, parseInt(s.totalTuition) || 0,
+      parseInt(s.paidCourse) || 0, parseInt(s.freeCourse) || 0,
+      sheetAssignedCount(s), s.durationStart, s.contact, s.birth, s.regDate, s.purpose,
+      s.emRel, s.emContact, parseMemos(s.memo).length
+    ].map(esc).join(','));
+  });
+
+  const blob = new Blob(['\uFEFF' + lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  const d = new Date();
+  const stamp = `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
+  a.download = `수강생_전체표_${stamp}.csv`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(a.href);
+  showToast(`${rows.length}명 CSV 내보내기 완료`, 'success');
+}
+
 /* =================================================================
    CSV IMPORT FROM GOOGLE SHEETS
 ================================================================= */
@@ -4925,6 +5252,7 @@ function switchMainTab(id, btn) {
   if (id === 'tab-assign') renderAssignmentMatrix();
   if (id === 'tab-master') renderMasterSchedule();
   if (id === 'tab-monthly') renderMonthlyView();
+  if (id === 'tab-sheet') renderSheet();
 }
 
 /* =================================================================
