@@ -202,7 +202,7 @@ select.inp{
 
 .cell{
   border-bottom:1px solid var(--line);box-shadow:inset 1px 0 0 var(--line);
-  min-height:62px;min-width:0;
+  min-height:72px;min-width:0;
 }
 .cell.alt{background:var(--zebra)}
 .cell.q{box-shadow:inset 1px 0 0 var(--line-2)}
@@ -231,6 +231,10 @@ select.inp{
 }
 .block:hover{box-shadow:inset 2px 0 0 var(--cr), 0 4px 14px -4px rgba(0,0,0,.4)}
 .block.dragging{opacity:.28;pointer-events:none}
+.block.half,.preview.half,.celledit.half{height:calc(50% - 7px)}
+.block.top,.preview.top,.celledit.top{align-self:start;margin-top:5px;margin-bottom:0}
+.block.bottom,.preview.bottom,.celledit.bottom{align-self:end;margin-bottom:5px;margin-top:0}
+.block.half .seg{font-size:11.5px;padding:2px 7px}
 .block .segs{display:flex;flex:1;min-width:0}
 .seg{
   flex:1;min-width:0;display:flex;align-items:center;justify-content:center;
@@ -238,6 +242,13 @@ select.inp{
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
 }
 .seg + .seg{box-shadow:inset 1px 0 0 var(--cr)}
+.addlane{
+  position:absolute;left:0;right:11px;bottom:0;height:13px;
+  display:none;align-items:center;justify-content:center;
+  background:rgba(0,0,0,.22);font-size:10px;font-weight:700;cursor:pointer;
+}
+.block:not(.half):hover .addlane{display:flex}
+.addlane:hover{background:rgba(0,0,0,.38)}
 .block .grip{
   position:absolute;right:0;top:0;bottom:0;width:11px;cursor:ew-resize;
   display:flex;align-items:center;justify-content:center;
@@ -291,8 +302,9 @@ select.inp{
 .sl-tab.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
 .sl-tab.on span{color:var(--accent);opacity:.8}
 .sl-tab.zero{opacity:.45}
-.sl-chk{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--ink-3);
-  margin-bottom:10px;cursor:pointer}
+.sl-lbl{font-size:9.5px;font-weight:600;letter-spacing:.18em;color:var(--ink-4);
+  margin:0 0 5px;text-transform:uppercase}
+.sl-tabs + .sl-lbl{margin-top:12px}
 .sl-count{font-size:10.5px;color:var(--ink-4);margin:0 0 6px;font-variant-numeric:tabular-nums}
 .sl-items{display:flex;flex-direction:column;gap:1px}
 .sl-i{
@@ -306,6 +318,10 @@ select.inp{
   max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sl-d{font-size:10px;color:var(--ink-4);font-variant-numeric:tabular-nums}
 .sl-i.on .sl-d{color:var(--accent);opacity:.75}
+.sl-d{display:flex;align-items:center;gap:5px}
+.sl-s{font-style:normal;font-size:9.5px;font-weight:600;padding:1px 5px;border-radius:3px;
+  background:var(--surface-3);color:var(--ink-3);letter-spacing:.02em}
+.sl-s.rest{background:var(--danger-soft);color:var(--danger)}
 .sl-empty{font-size:12px;color:var(--ink-4);padding:6px 2px}
 
 /* ---------------- mentor bar ---------------- */
@@ -574,7 +590,7 @@ var D = BOOT;
 var UI = { view:'schedule', studentId:null, q:'', mentorFilter:'', dirty:false, saving:false,
            savedOnce:false, railOpen:true, mode:'dark', standalone:false,
            listOpen:true, touched:{}, syncing:false, syncedAt:0,
-           listMentor:'', listActive:true, listQ:'' };
+           listMentor:'', listStatus:'수강중', listQ:'' };
 var LSKEY = 'sched:' + location.pathname;
 var artifactApi = null, downloadsApi = null;
 
@@ -600,7 +616,8 @@ try{ UI.studentId = localStorage.getItem(LSKEY+':sel') || null;
      UI.railOpen = localStorage.getItem(LSKEY+':rail')!=='0';
      UI.listOpen = localStorage.getItem(LSKEY+':list')!=='0';
      UI.listMentor = localStorage.getItem(LSKEY+':lm') || '';
-     UI.listActive = localStorage.getItem(LSKEY+':lact')!=='0';
+     var _ls = localStorage.getItem(LSKEY+':lst');
+     UI.listStatus = (_ls === null) ? '수강중' : _ls;
      UI.mode = localStorage.getItem(LSKEY+':mode')==='light' ? 'light' : 'dark'; }catch(e){}
 function defStart(){
   var ds = D.defaultStart || [2026,8];
@@ -617,6 +634,16 @@ if(!UI.studentId || !D.students.some(function(s){return s.id===UI.studentId;}))
   UI.studentId = D.students[0].id;
 
 var MON = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
+var MENTOR_ORDER = ['김태욱','최봉경','김민영','조용준','최병훈','김승연','장채린'];
+function sortMentors(){
+  D.mentors.sort(function(a,b){
+    var ia = MENTOR_ORDER.indexOf(a.name), ib = MENTOR_ORDER.indexOf(b.name);
+    if(ia>=0 && ib>=0) return ia - ib;
+    if(ia>=0) return -1;
+    if(ib>=0) return 1;
+    return a.name.localeCompare(b.name,'ko');
+  });
+}
 var STATUS = ['수강중','휴강','수료','상담중','중도이탈'];
 var RESTING = {'수료':1,'중도이탈':1};
 
@@ -664,6 +691,7 @@ function applyMode(){
 }
 function render(){
   applyMode();
+  sortMentors();
   app.className = 'shell' + (UI.railOpen ? '' : ' norail') + (UI.listOpen ? '' : ' nolist');
   app.innerHTML = UI.view==='roster'
     ? topbar() + '<div class="roster">' + rosterPane() + '</div>'
@@ -701,11 +729,12 @@ function stuList(){
   if(!UI.listOpen) return '';
   var q = (UI.listQ||'').trim().toLowerCase();
   var RESTED = {'수료':1,'중도이탈':1};
-  function pool(mid){
+  function pool(mid, stat){
+    var st0 = (stat === undefined) ? UI.listStatus : stat;
     return D.students.filter(function(s){
       if(mid && s.mentorId !== mid) return false;
       if(!s.name.trim() && s.id !== UI.studentId) return false;
-      if(UI.listActive && RESTED[s.status] && s.id !== UI.studentId) return false;
+      if(st0 && (s.status || '수강중') !== st0) return false;
       return true;
     });
   }
@@ -715,7 +744,7 @@ function stuList(){
     '<input class="sl-q" id="listq" placeholder="이름 검색" value="'+esc(UI.listQ||'')+'">';
 
   /* 멘토 버튼 */
-  h += '<div class="sl-tabs">' +
+  h += '<p class="sl-lbl">멘토</p><div class="sl-tabs">' +
     '<button class="sl-tab'+(UI.listMentor?'':' on')+'" data-act="lm" data-id="">' +
       '전체 <span>'+pool('').length+'</span></button>';
   D.mentors.forEach(function(m){
@@ -724,7 +753,16 @@ function stuList(){
       '" data-act="lm" data-id="'+m.id+'">'+esc(m.name)+' <span>'+n+'</span></button>';
   });
   h += '</div>';
-  h += '<label class="sl-chk"><input type="checkbox" data-act="lactive"'+(UI.listActive?' checked':'')+'> 수강중만</label>';
+
+  h += '<p class="sl-lbl">상태</p><div class="sl-tabs">' +
+    '<button class="sl-tab'+(UI.listStatus?'':' on')+'" data-act="ls" data-id="">' +
+      '전체 <span>'+pool(UI.listMentor,'').length+'</span></button>';
+  STATUS.forEach(function(v){
+    var n = pool(UI.listMentor, v).length;
+    h += '<button class="sl-tab'+(UI.listStatus===v?' on':'')+(n?'':' zero')+
+      '" data-act="ls" data-id="'+v+'">'+v+' <span>'+n+'</span></button>';
+  });
+  h += '</div>';
 
   var list = pool(UI.listMentor);
   if(q) list = list.filter(function(s){ return s.name.toLowerCase().indexOf(q)>=0; });
@@ -738,7 +776,9 @@ function stuList(){
       'title="'+esc(s.name+' · '+(s.status||''))+'">' +
       '<span class="sl-n">'+esc(s.name || '이름 없음')+'</span>' +
       '<span class="sl-d">'+String(s.startYear).slice(2)+'.'+String(s.startMonth).padStart(2,'0')+
-      '–'+String(e.y).slice(2)+'.'+String(e.m).padStart(2,'0')+'</span></button>';
+      '–'+String(e.y).slice(2)+'.'+String(e.m).padStart(2,'0')+
+      ((s.status && s.status!=='수강중') ? '<em class="sl-s'+(RESTED[s.status]?' rest':'')+'">'+esc(s.status)+'</em>' : '') +
+      '</span></button>';
   });
   h += '</div>';
   h += '<button class="btn sm" data-act="quick-add" style="width:100%;justify-content:center;margin-top:12px">＋ 새 수강생</button>';
@@ -806,7 +846,7 @@ function gridHtml(st, ms){
   ROWMAP = {};
   vis.forEach(function(si,r){ ROWMAP[si] = r + 4; });
   var h = '<div class="grid" id="grid" style="grid-template-columns:var(--slotw) repeat('+n+',var(--colw));' +
-          'grid-template-rows:auto auto 1px repeat('+S+',minmax(62px,auto))">';
+          'grid-template-rows:auto auto 1px repeat('+S+',minmax(72px,auto))">';
   h += '<div class="corner" style="grid-row:1/4;grid-column:1"></div>';
   var i=0;
   while(i<n){
@@ -844,7 +884,7 @@ function gridHtml(st, ms){
   });
   st.blocks.forEach(function(b){
     if(b.start >= n || !ROWMAP[b.slot]) return;
-    h += blockHtml(b, Math.min(b.span, n - b.start));
+    h += blockHtml(b, Math.min(b.span, n - b.start), laneCls(st, b));
   });
   h += '</div>';
   h += '<datalist id="subjlist">' +
@@ -853,13 +893,14 @@ function gridHtml(st, ms){
   return h;
 }
 
-function blockHtml(b, span){
+function blockHtml(b, span, extra){
   var s = subj(b.subject), c = catOf(s.cat).id, segs='';
   for(var k=0;k<span;k++) segs += '<div class="seg">'+esc(segLabel(b,k))+'</div>';
-  return '<div class="block'+(b.note?' note':'')+'" data-block="'+b.id+'" tabindex="0" ' +
+  return '<div class="block'+(b.note?' note':'')+(extra||'')+'" data-block="'+b.id+'" tabindex="0" ' +
     'style="--gr:'+(ROWMAP[b.slot]||4)+';--gc:'+(b.start+2)+'/span '+span+';'+catVars(c)+'" ' +
     'title="'+esc(s.name + (b.note? ' — '+b.note : ''))+'">' +
-    '<div class="segs">'+segs+'</div><div class="grip" data-grip="1"></div></div>';
+    '<div class="segs">'+segs+'</div><div class="grip" data-grip="1"></div>' +
+    '<div class="addlane" data-addlane="1" title="이 칸에 과목 하나 더">＋</div></div>';
 }
 function catVars(c){
   return '--cb:var(--c-'+c+'-bg);--ct:var(--c-'+c+'-tx);--cr:var(--c-'+c+'-br)';
@@ -1031,6 +1072,23 @@ try{
 }catch(e){}
 
 /* ================= events ================= */
+var composing = false;
+document.addEventListener('compositionstart', function(){ composing = true; }, true);
+document.addEventListener('compositionend', function(e){
+  composing = false;
+  var t = e.target;
+  if(!t) return;
+  if(t.id==='q' || t.id==='listq'){ redrawSearch(t); }
+  else if(t.id==='sk-filter' && t._redraw){ t._redraw(); }
+}, true);
+function redrawSearch(t){
+  var pos = t.selectionStart, id = t.id;
+  if(id==='q') UI.q = t.value; else UI.listQ = t.value;
+  render();
+  var n = document.getElementById(id);
+  if(n){ n.focus(); try{ n.setSelectionRange(pos,pos); }catch(err){} }
+}
+
 var wired = false;
 function wire(){
   paintSaveState();
@@ -1046,7 +1104,11 @@ function wire(){
 
 function onClick(e){
   var cell = e.target.closest && e.target.closest('.cell.editable');
-  if(cell && UI.view==='schedule' && !e.target.closest('.block')){ openCellEdit(cell); return; }
+  if(cell && UI.view==='schedule' && !e.target.closest('.block')){
+    var cr0 = cell.getBoundingClientRect();
+    openCellEdit(cell, (e.clientY > cr0.top + cr0.height/2) ? 1 : 0);
+    return;
+  }
   var t = e.target.closest('[data-act]'); if(!t) return;
   var act = t.dataset.act, id = t.dataset.id, st = cur();
   switch(act){
@@ -1121,6 +1183,8 @@ function onClick(e){
       try{localStorage.setItem(LSKEY+':sel',id);}catch(err){} render(); break;
     case 'lm': UI.listMentor = (id===UI.listMentor ? '' : id);
       try{localStorage.setItem(LSKEY+':lm',UI.listMentor);}catch(err){} render(); break;
+    case 'ls': UI.listStatus = (id===UI.listStatus ? '' : id);
+      try{localStorage.setItem(LSKEY+':lst',UI.listStatus);}catch(err){} render(); break;
     case 'list': case 'list-close': UI.listOpen = (act==='list') ? !UI.listOpen : false;
       try{localStorage.setItem(LSKEY+':list',UI.listOpen?'1':'0');}catch(err){} render(); break;
     case 'rail': UI.railOpen=!UI.railOpen;
@@ -1147,27 +1211,18 @@ function onClick(e){
 function onChange(e){
   var t = e.target;
   if(t.dataset && t.dataset.act==='setmonth'){ cur().startMonth = parseInt(t.value,10); mark(); render(); return; }
-  if(t.dataset && t.dataset.act==='lactive'){ UI.listActive = t.checked;
-    try{localStorage.setItem(LSKEY+':lact',UI.listActive?'1':'0');}catch(err){} render(); return; }
+
   var row = t.closest && t.closest('[data-row]');
   if(row && t.dataset.f){ applyField(row.dataset.row, t.dataset.f, t.value, true); }
 }
 function onInput(e){
   var t = e.target;
-  if(t.id==='listq'){
-    UI.listQ = t.value;
-    var p0 = t.selectionStart;
-    render();
-    var n0 = document.getElementById('listq');
-    if(n0){ n0.focus(); try{ n0.setSelectionRange(p0,p0); }catch(err){} }
-    return;
-  }
-  if(t.id==='q'){
-    UI.q = t.value;
-    var pos = t.selectionStart;
-    render();
-    var n = document.getElementById('q');
-    if(n){ n.focus(); try{ n.setSelectionRange(pos,pos); }catch(err){} }
+  if(t.id==='listq' || t.id==='q'){
+    if(composing || e.isComposing){
+      if(t.id==='q') UI.q = t.value; else UI.listQ = t.value;
+      return;                      /* 한글 조합 중에는 그대로 둔다 */
+    }
+    redrawSearch(t);
     return;
   }
   if(t.dataset && t.dataset.act==='setname'){
@@ -1207,6 +1262,12 @@ function bindDrag(){
     var blk = e.target.closest('.block');
     if(blk){
       var st = cur(), b = byId(st.blocks, blk.dataset.block); if(!b) return;
+      if(e.target.closest('[data-addlane]')){
+        e.preventDefault();
+        var cell0 = document.querySelector('.cell[data-slot="'+b.slot+'"][data-m="'+b.start+'"]');
+        if(cell0) openCellEdit(cell0, (b.lane||0)===0 ? 1 : 0);
+        return;
+      }
       if(e.target.closest('[data-grip]')) start(e, {mode:'resize', block:b, el:blk});
       else {
         var rect = blk.getBoundingClientRect(), per = rect.width / Math.max(1,b.span);
@@ -1222,20 +1283,56 @@ function start(e, spec){
   document.addEventListener('pointerup', onDragUp);
   e.preventDefault();
 }
-function cellAt(x,y){ var el=document.elementFromPoint(x,y); return el?el.closest('.cell'):null; }
+function cellAt(x,y){
+  var el = document.elementFromPoint(x,y);
+  if(!el) return null;
+  var c = el.closest('.cell');
+  if(c) return c;
+  var blk = el.closest('.block');
+  if(blk){
+    var keep = blk.style.pointerEvents;
+    blk.style.pointerEvents = 'none';
+    var el2 = document.elementFromPoint(x,y);
+    blk.style.pointerEvents = keep;
+    return el2 ? el2.closest('.cell') : null;
+  }
+  return null;
+}
 function colAt(x){
   var grid=document.getElementById('grid'); if(!grid) return null;
   var cells=grid.querySelectorAll('.cell[data-slot="0"]');
   for(var i=0;i<cells.length;i++){ if(x < cells[i].getBoundingClientRect().right) return i; }
   return cells.length-1;
 }
-function collides(st, slot, s0, span, skip){
+var LANES = 2;   /* 한 칸에 들어갈 수 있는 과목 수 */
+function laneBusy(st, slot, s0, span, lane, skip){
   for(var i=0;i<st.blocks.length;i++){
     var b=st.blocks[i];
-    if(b.id===skip || b.slot!==slot) continue;
+    if(b.id===skip || b.slot!==slot || (b.lane||0)!==lane) continue;
     if(s0 < b.start+b.span && b.start < s0+span) return true;
   }
   return false;
+}
+/* 비어 있는 레인을 찾는다. prefer 를 먼저 본다. 없으면 -1 */
+function freeLane(st, slot, s0, span, skip, prefer){
+  var order = (prefer===1) ? [1,0] : [0,1];
+  for(var i=0;i<order.length;i++){
+    if(!laneBusy(st, slot, s0, span, order[i], skip)) return order[i];
+  }
+  return -1;
+}
+function collides(st, slot, s0, span, skip, prefer){
+  return freeLane(st, slot, s0, span, skip, prefer) < 0;
+}
+/* 같은 구간에 다른 레인이 걸쳐 있으면 반높이로 그린다 */
+function laneCls(st, b){
+  var mine = b.lane||0;
+  var other = st.blocks.some(function(x){
+    return x.id!==b.id && x.slot===b.slot && (x.lane||0)!==mine &&
+           b.start < x.start+x.span && x.start < b.start+b.span;
+  });
+  if(!other) return '';
+  return mine===1 ? ' half bottom' : ' half top';
 }
 function showGhost(text, cls, x, y, catId){
   var g=document.getElementById('dragghost');
@@ -1252,11 +1349,19 @@ function showGhost(text, cls, x, y, catId){
   g.style.left=x+'px'; g.style.top=(y-24)+'px';
 }
 function clearPreview(){ var p=document.getElementById('dragprev'); if(p) p.remove(); }
-function showPreview(slot,s0,span,bad){
+function showPreview(slot,s0,span,bad,lane){
   var grid=document.getElementById('grid'); if(!grid) return;
+  var st0=cur();
   var p=document.getElementById('dragprev');
   if(!p){ p=document.createElement('div'); p.id='dragprev'; grid.appendChild(p); }
-  p.className='preview'+(bad?' bad':'');
+  var half = '';
+  if(lane!==undefined && st0){
+    var other = st0.blocks.some(function(x){
+      return x.slot===slot && (x.lane||0)!==lane && s0 < x.start+x.span && x.start < s0+span;
+    });
+    if(other) half = lane===1 ? ' half bottom' : ' half top';
+  }
+  p.className='preview'+(bad?' bad':'')+half;
   p.style.setProperty('--gr',(ROWMAP[slot]||4));
   p.style.setProperty('--gc',(s0+2)+'/span '+span);
 }
@@ -1272,9 +1377,9 @@ function onDragMove(e){
   if(drag.mode==='resize'){
     var b=drag.block, c=colAt(e.clientX); if(c==null) return;
     var span=Math.max(1, Math.min(st.monthCount-b.start, c-b.start+1));
-    while(span>1 && collides(st,b.slot,b.start,span,b.id)) span--;
+    while(span>1 && laneBusy(st,b.slot,b.start,span,(b.lane||0),b.id)) span--;
     drag.span=span; drag.ok=true;
-    showPreview(b.slot,b.start,span,false);
+    showPreview(b.slot,b.start,span,false,(b.lane||0));
     showGhost(span+'개월','',e.clientX,e.clientY,catOf(subj(b.subject).cat).id);
     return;
   }
@@ -1298,9 +1403,13 @@ function onDragMove(e){
   var span = drag.mode==='new' ? 1 : drag.block.span;
   var s0 = drag.mode==='new' ? m : Math.max(0, m - drag.off);
   if(s0+span > st.monthCount) s0 = Math.max(0, st.monthCount-span);
-  var bad = collides(st, slot, s0, span, drag.mode==='move' ? drag.block.id : null);
-  showPreview(slot,s0,span,bad);
-  drag.target={slot:slot,start:s0,span:span}; drag.ok=!bad;
+  var cr = cell.getBoundingClientRect();
+  var prefer = (e.clientY > cr.top + cr.height/2) ? 1 : 0;
+  var skipId = drag.mode==='move' ? drag.block.id : null;
+  var lane = freeLane(st, slot, s0, span, skipId, prefer);
+  var bad = lane < 0;
+  showPreview(slot,s0,span,bad,bad?prefer:lane);
+  drag.target={slot:slot,start:s0,span:span,lane:(bad?0:lane)}; drag.ok=!bad;
   showGhost(s.name,'',e.clientX,e.clientY,catOf(s.cat).id);
 }
 function onDragUp(e){
@@ -1337,8 +1446,10 @@ function onDragUp(e){
   }
   if(d.mode==='new'){
     st.blocks.push({id:uid('b'), slot:d.target.slot, start:d.target.start, span:1,
-      subject:d.subject, startNo:null, numbered:false, note:''});
-  } else { d.block.slot=d.target.slot; d.block.start=d.target.start; }
+      lane:d.target.lane||0, subject:d.subject, startNo:null, numbered:false, note:''});
+  } else {
+    d.block.slot=d.target.slot; d.block.start=d.target.start; d.block.lane=d.target.lane||0;
+  }
   mark(); render();
 }
 
@@ -1377,27 +1488,34 @@ function closeCellEdit(commit){
   var parsed = parseTyped(val);
   if(!parsed) return;
   var st = cur();
-  if(collides(st, at.slot, at.m, 1, null)) return toast('그 자리에는 이미 수업이 있습니다.', true);
-  st.blocks.push({id:uid('b'), slot:at.slot, start:at.m, span:1,
+  var lane = freeLane(st, at.slot, at.m, 1, null, at.lane||0);
+  if(lane < 0) return toast('이 칸에는 이미 두 과목이 있습니다.', true);
+  st.blocks.push({id:uid('b'), slot:at.slot, start:at.m, span:1, lane:lane,
     subject:parsed.subject, startNo:parsed.startNo, numbered:parsed.numbered, note:''});
   mark(); render();
   if(parsed.isNew) toast('과목 목록에 추가했습니다. 색은 과목 편집에서 바꿉니다.');
 }
-function openCellEdit(cell){
+function openCellEdit(cell, wantLane){
   closeCellEdit(false); closePop();
   var st = cur(); if(!st) return;
   var slot = parseInt(cell.dataset.slot,10), m = parseInt(cell.dataset.m,10);
   var grid = document.getElementById('grid'); if(!grid) return;
-  editing = {slot:slot, m:m};
+  var lane = freeLane(st, slot, m, 1, null, wantLane||0);
+  if(lane < 0) return toast('이 칸에는 이미 두 과목이 있습니다.', true);
+  editing = {slot:slot, m:m, lane:lane};
   var box = document.createElement('div');
   box.className = 'celledit'; box.id = 'celledit';
   box.style.setProperty('--gr', ROWMAP[slot]||4);
   box.style.setProperty('--gc', (m+2)+'/span 1');
+  var other = st.blocks.some(function(x){
+    return x.slot===slot && (x.lane||0)!==lane && x.start<=m && m<x.start+x.span; });
+  if(other) box.className += lane===1 ? ' half bottom' : ' half top';
   box.innerHTML = '<input list="subjlist" placeholder="과목명" autocomplete="off" spellcheck="false">';
   grid.appendChild(box);
   var inp = box.querySelector('input');
   inp.focus();
   function hop(dSlot, dM){
+    var lane = editing ? (editing.lane||0) : 0;
     closeCellEdit(true);
     var vis = visibleSlots(cur());
     var pos = vis.indexOf(slot);
@@ -1412,7 +1530,7 @@ function openCellEdit(cell){
       if(nm < 0 || nm >= cur().monthCount) return;
     }
     var nx = document.querySelector('.cell[data-slot="'+ns+'"][data-m="'+nm+'"]');
-    if(nx) openCellEdit(nx);
+    if(nx) openCellEdit(nx, lane);
   }
   inp.addEventListener('keydown', function(e){
     if(e.key==='Enter'){ e.preventDefault(); hop(e.shiftKey ? -1 : 1, 0); }
@@ -1445,6 +1563,8 @@ function openBlockPop(b, el){
       '<input type="number" id="bp-span" min="1" max="'+(st.monthCount-b.start)+'" value="'+b.span+'" style="width:66px">' +
       '<span class="pt">개월</span></div>' +
     '<input type="text" id="bp-note" placeholder="메모" value="'+esc(b.note||'')+'">' +
+    (freeLane(st, b.slot, b.start, 1, null, (b.lane||0)===0?1:0) >= 0
+      ? '<button class="btn sm" id="bp-add" style="justify-content:center">이 칸에 과목 하나 더</button>' : '') +
     '<div class="prow"><button class="btn sm dg" id="bp-del" style="flex:1;justify-content:center">삭제</button>' +
       '<button class="btn sm pri" id="bp-ok" style="flex:1;justify-content:center">적용</button></div>';
   document.body.appendChild(p);
@@ -1452,12 +1572,18 @@ function openBlockPop(b, el){
   p.style.left = Math.min(window.innerWidth-p.offsetWidth-12, Math.max(12, r.left))+'px';
   p.querySelector('#bp-num').addEventListener('change', function(ev){
     p.querySelector('#bp-no').disabled = !ev.target.checked; });
+  var addBtn = p.querySelector('#bp-add');
+  if(addBtn) addBtn.addEventListener('click', function(){
+    closePop();
+    var cell = document.querySelector('.cell[data-slot="'+b.slot+'"][data-m="'+b.start+'"]');
+    if(cell) openCellEdit(cell, (b.lane||0)===0 ? 1 : 0);
+  });
   p.querySelector('#bp-del').addEventListener('click', function(){
     st.blocks = st.blocks.filter(function(x){ return x.id!==b.id; });
     closePop(); mark(); render(); });
   p.querySelector('#bp-ok').addEventListener('click', function(){
     var span = Math.max(1, Math.min(st.monthCount-b.start, parseInt(p.querySelector('#bp-span').value,10)||1));
-    if(collides(st,b.slot,b.start,span,b.id)) return toast('기간이 다른 수업과 겹칩니다.', true);
+    if(laneBusy(st,b.slot,b.start,span,(b.lane||0),b.id)) return toast('기간이 다른 수업과 겹칩니다.', true);
     b.subject = p.querySelector('#bp-subject').value;
     b.numbered = p.querySelector('#bp-num').checked;
     b.startNo = b.numbered ? (parseInt(p.querySelector('#bp-no').value,10)||1) : null;
@@ -1679,8 +1805,17 @@ function openSubjectManager(){
   box.querySelector('#sk-new').addEventListener('keydown', function(e){
     if(e.key==='Enter'){ e.preventDefault(); addNow(); }
   });
-  box.querySelector('#sk-filter').addEventListener('input', function(){
-    filter = this.value; draw();
+  var fEl = box.querySelector('#sk-filter');
+  fEl._redraw = function(){
+    var pos = fEl.selectionStart;
+    filter = fEl.value; draw();
+    var n = box.querySelector('#sk-filter');
+    if(n){ n.focus(); try{ n.setSelectionRange(pos,pos); }catch(e){} n._redraw = fEl._redraw; }
+  };
+  fEl.addEventListener('input', function(e){
+    filter = this.value;
+    if(composing || e.isComposing) return;
+    this._redraw();
   });
   box.querySelector('#sk-unused').addEventListener('change', function(){
     unusedOnly = this.checked; draw();
@@ -1821,10 +1956,13 @@ function mentorName(st){
 function toAssigned(st){
   var ms = months(st), out = [], n = 0;
   var meta = st.cellMeta || {};
-  st.blocks.forEach(function(b){
+  var ordered = st.blocks.slice().sort(function(a,b){
+    return (a.slot-b.slot) || (a.start-b.start) || ((a.lane||0)-(b.lane||0));
+  });
+  ordered.forEach(function(b){
     for(var k=0;k<b.span;k++){
       var mm = ms[b.start+k]; if(!mm) continue;
-      var mk = meta[b.slot + ':' + (b.start + k)] || {};
+      var mk = meta[b.slot + ':' + (b.start + k) + ':' + (b.lane||0)] || {};
       out.push({
         id: mk.id || ('a' + Date.now() + (n++)),
         year: String(mm.y),
@@ -1884,12 +2022,15 @@ function fromAssigned(rec){
     startYear: sy, startMonth: sm, monthCount: span, blocks: [], orphans: orphans, cellMeta: meta
   };
   /* 같은 시간대에서 이어지는 같은 과목은 한 블록으로 합친다 */
-  var grid = {};
+  var grid = {}, laneUsed = {};
   pts.forEach(function(p){
     var col = (p.y*12 + (p.m-1)) - (sy*12 + (sm-1));
     if(col < 0 || col >= span){ orphans.push(p.src); return; }
-    var key = p.slot+':'+col;
-    if(grid[key] !== undefined){ orphans.push(p.src); return; }  /* 한 칸에 두 과목이면 두 번째는 보관 */
+    var base = p.slot+':'+col;
+    var lane = laneUsed[base] || 0;
+    if(lane >= LANES){ orphans.push(p.src); return; }  /* 세 개째부터는 보관 */
+    laneUsed[base] = lane + 1;
+    var key = base+':'+lane;
     grid[key] = p.subject;
     meta[key] = { confirmed: !!(p.src && p.src.confirmed),
                   room: (p.src && p.src.room) || 'A',
@@ -1898,13 +2039,13 @@ function fromAssigned(rec){
   var seen = {};
   Object.keys(grid).forEach(function(key){
     if(seen[key]) return;
-    var parts = key.split(':'), slot = +parts[0], col = +parts[1];
+    var parts = key.split(':'), slot = +parts[0], col = +parts[1], lane = +parts[2];
     var label = grid[key], base = label, no = null;
     var m2 = label.match(/^(.*?)\s*(\d+)$/);
     if(m2 && m2[1].trim() && !m2[1].trim().endsWith('-')){ base = m2[1].trim(); no = parseInt(m2[2],10); }
     var len = 1; seen[key] = 1;
     while(true){
-      var nk = slot+':'+(col+len), nv = grid[nk];
+      var nk = slot+':'+(col+len)+':'+lane, nv = grid[nk];
       if(!nv) break;
       var ok = false;
       if(no!=null){
@@ -1916,7 +2057,7 @@ function fromAssigned(rec){
     }
     var sub = subjectByName(base) || subjectByName(label);
     if(!sub){ sub = {id:uid('s'), name:base, cat:'etc'}; D.subjects.push(sub); }
-    st.blocks.push({id:uid('b'), slot:slot, start:col, span:len,
+    st.blocks.push({id:uid('b'), slot:slot, start:col, span:len, lane:lane,
       subject:sub.id, startNo:no, numbered:(no!=null), note:''});
   });
   return st;
