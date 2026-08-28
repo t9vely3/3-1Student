@@ -162,7 +162,7 @@ select.inp{
   box-shadow:var(--shadow-sm);
   scrollbar-width:thin;scrollbar-color:var(--line-3) transparent;
 }
-.grid{display:grid;width:max-content;min-width:100%;--slotw:120px;--colw:89px}
+.grid{display:grid;width:100%;--slotw:120px;--colw:82px}
 .gh{text-align:center;color:var(--ink-2)}
 .gh.yr{
   font-size:11px;font-weight:600;letter-spacing:.24em;color:var(--ink-4);
@@ -450,6 +450,38 @@ table.tt td.d{font-variant-numeric:tabular-nums;color:var(--ink-2)}
 .frow textarea{resize:vertical;min-height:60px}
 .frow2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .note-p{font-size:12px;color:var(--ink-4);margin:0;line-height:1.65}
+.modal.wide{width:min(620px,100%)}
+.sm-add{display:flex;gap:8px;align-items:center}
+.sm-add input{flex:1;padding:9px 12px;border:1px solid var(--line-2);border-radius:var(--r);
+  background:var(--surface);color:var(--ink);font-size:13.5px}
+.sm-add select{padding:9px 10px;border:1px solid var(--line-2);border-radius:var(--r);
+  background:var(--surface);color:var(--ink);font-size:13px}
+.sm-add input:focus,.sm-add select:focus{outline:none;border-color:var(--accent)}
+.sm-search{
+  width:100%;padding:8px 12px;border:1px solid var(--line-2);border-radius:var(--r);
+  background:var(--bg);color:var(--ink);font-size:13px;
+}
+.sm-search:focus{outline:none;border-color:var(--accent)}
+.sm-list{max-height:46vh;overflow-y:auto;border:1px solid var(--line);border-radius:10px;
+  padding:10px 12px;background:var(--surface);
+  scrollbar-width:thin;scrollbar-color:var(--line-2) transparent}
+.sm-cat{font-size:10.5px;font-weight:600;letter-spacing:.12em;color:var(--ink-4);
+  margin:14px 0 6px;display:flex;align-items:center;gap:6px}
+.sm-cat:first-child{margin-top:0}
+.sm-cat span{opacity:.7;font-variant-numeric:tabular-nums}
+.sm-row{display:flex;align-items:center;gap:8px;padding:3px 0}
+.sm-dot{width:8px;height:8px;border-radius:2px;flex:none}
+.sm-name{flex:1;min-width:0;padding:6px 9px;border:1px solid transparent;border-radius:6px;
+  background:transparent;color:var(--ink);font-size:13px;font-weight:500}
+.sm-name:hover{border-color:var(--line-2)}
+.sm-name:focus{outline:none;border-color:var(--accent);background:var(--bg)}
+.sm-cat-sel{padding:5px 8px;border:1px solid var(--line-2);border-radius:6px;
+  background:var(--surface-2);color:var(--ink-2);font-size:12px;max-width:140px}
+.sm-used{font-size:11px;color:var(--ink-4);font-variant-numeric:tabular-nums;
+  min-width:34px;text-align:right}
+.sm-empty{font-size:13px;color:var(--ink-4);text-align:center;padding:20px 0;margin:0}
+.sm-note{font-size:12px;color:var(--ink-4);margin-right:auto}
+.modal footer{align-items:center}
 
 .pop{
   position:fixed;z-index:120;background:var(--surface-2);border:1px solid var(--line-2);
@@ -484,6 +516,17 @@ table.tt td.d{font-variant-numeric:tabular-nums;color:var(--ink-2)}
 
 .shell.norail .rail{display:none}
 .shell.nolist .stulist{display:none}
+.edge-open{
+  position:fixed;left:0;top:50%;transform:translateY(-50%);z-index:30;
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  padding:14px 6px;border-radius:0 10px 10px 0;
+  background:var(--surface-3);border:1px solid var(--line-2);border-left:none;
+  color:var(--ink-3);font-size:13px;box-shadow:var(--shadow-sm);
+  transition:background .14s,color .14s;
+}
+.edge-open:hover{background:var(--line-2);color:var(--ink)}
+.edge-open.right{left:auto;right:0;border-radius:10px 0 0 10px;border-left:1px solid var(--line-2);border-right:none}
+.eo-t{writing-mode:vertical-rl;font-size:10.5px;letter-spacing:.16em;font-weight:600}
 @media (max-width:900px){
   .work{flex-direction:column}
   .rail,.stulist{width:100%;position:static;max-height:none;border-left:none;border-right:none;
@@ -593,7 +636,13 @@ function render(){
   app.className = 'shell' + (UI.railOpen ? '' : ' norail') + (UI.listOpen ? '' : ' nolist');
   app.innerHTML = UI.view==='roster'
     ? topbar() + '<div class="roster">' + rosterPane() + '</div>'
-    : topbar() + '<div class="work">' + stuList() + schedulePane() + rail() + '</div>';
+    : topbar() + '<div class="work">' + stuList() + schedulePane() + rail() + '</div>' +
+      (UI.view==='schedule' && !UI.listOpen
+        ? '<button class="edge-open" data-act="list" title="수강생 목록 열기">' +
+          '<span>›</span><span class="eo-t">수강생</span></button>' : '') +
+      (UI.view==='schedule' && !UI.railOpen
+        ? '<button class="edge-open right" data-act="rail" title="과목 패널 열기">' +
+          '<span>‹</span><span class="eo-t">과목</span></button>' : '');
   wire();
 }
 
@@ -786,8 +835,8 @@ function rail(){
     });
     h += '</div>';
   });
-  h += '<div style="margin-top:18px"><button class="btn sm" data-act="add-subject" ' +
-    'style="width:100%;justify-content:center">＋ 과목 추가</button></div>' +
+  h += '<div style="margin-top:18px"><button class="btn sm" data-act="manage-subjects" ' +
+    'style="width:100%;justify-content:center">과목 관리</button></div>' +
     '<div class="trash" id="trash">여기로 끌면 삭제</div></aside>';
   return h;
 }
@@ -1027,6 +1076,7 @@ function onClick(e){
       try{localStorage.setItem(LSKEY+':rail',UI.railOpen?'1':'0');}catch(err){} render(); break;
     case 'orphans': openOrphans(); break;
     case 'add-subject': openSubject(null); break;
+    case 'manage-subjects': openSubjectManager(); break;
     case 'edit-subject': e.stopPropagation(); openSubject(byId(D.subjects,id)); break;
     case 'fb': {
       var r = openFbLogin();
@@ -1511,6 +1561,104 @@ function openSubject(sb){
     D.subjects = D.subjects.filter(function(x){ return x.id!==sb.id; });
     root.remove(); mark(); render();
   });
+}
+
+
+/* ============ 과목 관리 창 ============ */
+function openSubjectManager(){
+  var filter = '';
+  var s0 = document.createElement('div'); s0.className = 'scrim';
+  s0.innerHTML = '<div class="modal wide"><header>과목 관리</header>' +
+    '<div class="mbody" id="sm-body"></div>' +
+    '<footer><span class="sm-note" id="sm-count"></span>' +
+    '<button class="btn" data-x="c">닫기</button></footer></div>';
+  document.body.appendChild(s0);
+
+  function cats(){ return D.categories; }
+  function usage(id){
+    var n = 0;
+    D.students.forEach(function(st){ st.blocks.forEach(function(b){ if(b.subject===id) n += b.span; }); });
+    return n;
+  }
+  function draw(){
+    var q = filter.trim().toLowerCase();
+    var list = D.subjects.filter(function(x){ return !q || x.name.toLowerCase().indexOf(q)>=0; });
+    var byCat = {};
+    list.forEach(function(x){ (byCat[x.cat] = byCat[x.cat] || []).push(x); });
+    var h = '<div class="sm-add">' +
+      '<input id="sm-new" placeholder="새 과목명" autocomplete="off">' +
+      '<select id="sm-newcat">' + cats().map(function(c){
+        return '<option value="'+c.id+'">'+esc(c.name)+'</option>'; }).join('') + '</select>' +
+      '<button class="btn sm pri" id="sm-addbtn">추가</button></div>' +
+      '<input class="sm-search" id="sm-filter" placeholder="과목 검색" value="'+esc(filter)+'">' +
+      '<div class="sm-list">';
+    if(!list.length) h += '<p class="sm-empty">해당하는 과목이 없습니다.</p>';
+    cats().forEach(function(c){
+      var arr = byCat[c.id]; if(!arr || !arr.length) return;
+      h += '<p class="sm-cat">'+esc(c.name)+' <span>'+arr.length+'</span></p>';
+      arr.forEach(function(x){
+        var used = usage(x.id);
+        h += '<div class="sm-row" data-s="'+x.id+'">' +
+          '<span class="sm-dot" style="background:var(--c-'+c.id+'-br)"></span>' +
+          '<input class="sm-name" value="'+esc(x.name)+'">' +
+          '<select class="sm-cat-sel">' + cats().map(function(c2){
+            return '<option value="'+c2.id+'"'+(c2.id===x.cat?' selected':'')+'>'+esc(c2.name)+'</option>';
+          }).join('') + '</select>' +
+          '<span class="sm-used"'+(used?'':' style="opacity:.35"')+'>'+used+'회</span>' +
+          '<button class="ibtn dg sm-del" title="삭제">✕</button></div>';
+      });
+    });
+    h += '</div>';
+    s0.querySelector('#sm-body').innerHTML = h;
+    s0.querySelector('#sm-count').textContent = '과목 ' + D.subjects.length + '개';
+    bind();
+  }
+  function bind(){
+    var f = s0.querySelector('#sm-filter');
+    f.addEventListener('input', function(){
+      filter = f.value; var p = f.selectionStart; draw();
+      var n = s0.querySelector('#sm-filter'); if(n){ n.focus(); try{ n.setSelectionRange(p,p); }catch(e){} }
+    });
+    function addNow(){
+      var inp = s0.querySelector('#sm-new'), nm = inp.value.trim();
+      if(!nm) return;
+      if(subjectByName(nm)) return toast('같은 이름의 과목이 이미 있습니다.', true);
+      D.subjects.push({id:uid('s'), name:nm, cat:s0.querySelector('#sm-newcat').value});
+      mark(); render(); draw();
+      var n2 = s0.querySelector('#sm-new'); if(n2) n2.focus();
+    }
+    s0.querySelector('#sm-addbtn').addEventListener('click', addNow);
+    s0.querySelector('#sm-new').addEventListener('keydown', function(e){
+      if(e.key==='Enter'){ e.preventDefault(); addNow(); }
+    });
+    Array.prototype.forEach.call(s0.querySelectorAll('.sm-row'), function(row){
+      var id = row.dataset.s, sub = byId(D.subjects, id);
+      row.querySelector('.sm-name').addEventListener('change', function(){
+        var v = this.value.trim();
+        if(!v){ this.value = sub.name; return; }
+        sub.name = v; mark(); render();
+      });
+      row.querySelector('.sm-cat-sel').addEventListener('change', function(){
+        sub.cat = this.value; mark(); render(); draw();
+      });
+      row.querySelector('.sm-del').addEventListener('click', function(){
+        var used = usage(id);
+        if(used && !confirm(sub.name + ' 과목이 배치된 수업 ' + used + '건도 함께 삭제됩니다. 계속할까요?')) return;
+        D.students.forEach(function(st){
+          st.blocks = st.blocks.filter(function(b){ return b.subject!==id; });
+        });
+        D.subjects = D.subjects.filter(function(x){ return x.id!==id; });
+        mark(); render(); draw();
+      });
+    });
+  }
+  function close(){ s0.remove(); document.removeEventListener('keydown', key); }
+  function key(ev){ if(ev.key==='Escape') close(); }
+  document.addEventListener('keydown', key);
+  s0.addEventListener('click', function(e){
+    if(e.target===s0 || e.target.closest('[data-x="c"]')) close();
+  });
+  draw();
 }
 
 /* ================= export ================= */
