@@ -570,6 +570,8 @@ function schedulePane(){
         '<span class="val">'+st.monthCount+'개월</span><button data-act="len+">＋</button></div>' +
         '<span class="endhint">→ '+last.y+'.'+String(last.m).padStart(2,'0')+'</span></div>' +
       '<div class="toggles">' +
+        (orphanCount(st) ? '<button class="btn sm gh" data-act="orphans" ' +
+          'title="관리파일에는 있지만 표에 못 올린 배정">보류 ' + orphanCount(st) + '건</button>' : '') +
         '<button class="btn sm gh" data-act="quick-add">＋ 새 수강생</button>' +
         '<button class="btn sm gh'+(UI.railOpen?' on':'')+'" data-act="rail">과목 패널</button>' +
       '</div>' +
@@ -810,7 +812,7 @@ function onClick(e){
       var target = id ? byId(D.students,id) : st;
       if(!target) return;
       var warn = (FB.user && FB.db)
-        ? target.name+' 수강생을 삭제할까요? 관리파일에서도 함께 지워집니다.'
+        ? target.name+' 수강생을 삭제할까요? 관리파일의 휴지통으로 옮겨집니다.'
         : target.name+' 수강생을 삭제할까요? 시간표도 함께 지워집니다.';
       if(!confirm(warn)) return;
       if(FB.user && FB.db) fbDeleteStudent(target.id);
@@ -850,6 +852,7 @@ function onClick(e){
     case 'len+': if(st.monthCount>=36) return; st.monthCount++; mark(); render(); break;
     case 'rail': UI.railOpen=!UI.railOpen;
       try{localStorage.setItem(LSKEY+':rail',UI.railOpen?'1':'0');}catch(err){} render(); break;
+    case 'orphans': openOrphans(); break;
     case 'add-subject': openSubject(null); break;
     case 'edit-subject': e.stopPropagation(); openSubject(byId(D.subjects,id)); break;
     case 'fb': {
@@ -1176,7 +1179,7 @@ function modal(title, bodyHtml, onOk, okLabel){
     '<footer><button class="btn" data-x="c">취소</button>' +
     '<button class="btn pri" data-x="o">'+esc(okLabel||'저장')+'</button></footer></div>';
   document.body.appendChild(s);
-  function close(){ s.remove(); document.removeEventListener('keydown', key); }
+  function close(){ s.remove(); document.removeEventListener('keydown', key); setTimeout(fbFlushPending, 150); }
   function key(ev){ if(ev.key==='Escape') close(); }
   document.addEventListener('keydown', key);
   s.addEventListener('click', function(e){
@@ -1351,33 +1354,50 @@ function mentorName(st){
 /* 보드 블록 → 관리파일 assignedClasses */
 function toAssigned(st){
   var ms = months(st), out = [], n = 0;
+  var meta = st.cellMeta || {};
   st.blocks.forEach(function(b){
     for(var k=0;k<b.span;k++){
       var mm = ms[b.start+k]; if(!mm) continue;
+      var mk = meta[b.slot + ':' + (b.start + k)] || {};
       out.push({
-        id: 'a' + Date.now() + (n++),
+        id: mk.id || ('a' + Date.now() + (n++)),
         year: String(mm.y),
         month: mm.m + '월',
         time: D.slots[b.slot] || '',
         subject: segLabel(b,k),
-        confirmed: false,
-        room: 'A'
+        confirmed: !!mk.confirmed,
+        room: mk.room || 'A'
       });
     }
   });
+  if(Array.isArray(st.orphans)) out = out.concat(st.orphans);
   return out;
+}
+function orphanCount(st){ return (st && Array.isArray(st.orphans)) ? st.orphans.length : 0; }
+function openOrphans(){
+  var st = cur(); if(!st || !orphanCount(st)) return;
+  var rows = st.orphans.map(function(a){
+    return '<tr><td class="d">' + esc((a.year||'') + ' ' + (a.month||'')) + '</td>' +
+           '<td class="d">' + esc(a.time||'') + '</td><td>' + esc(a.subject||'') + '</td></tr>';
+  }).join('');
+  modal('보드가 표에 못 올린 배정',
+    '<p class="note-p">관리파일에는 있지만 이 표의 시간대·기간에 맞지 않아 칸을 잡지 못한 배정입니다. ' +
+    '한 칸에 두 과목이 들어간 경우도 여기로 옵니다. <b>지워지지 않고 그대로 보관되며</b>, 보드가 저장할 때 관리파일로 다시 돌아갑니다.</p>' +
+    '<div style="overflow-x:auto"><table class="tt" style="width:100%"><thead><tr>' +
+    '<th>연월</th><th>시간대</th><th>과목</th></tr></thead><tbody>' + rows + '</tbody></table></div>',
+    function(){ return true; }, '확인');
 }
 /* 관리파일 assignedClasses → 보드 학생 한 명 */
 function fromAssigned(rec){
   var list = Array.isArray(rec.assignedClasses) ? rec.assignedClasses.slice()
            : (function(){ try{ var a=JSON.parse(rec.assignedClasses||'[]'); return Array.isArray(a)?a:[]; }catch(e){ return []; } })();
-  var pts = [];
+  var pts = [], orphans = [], meta = {};
   list.forEach(function(a){
-    var y = parseInt(a.year || '2026', 10);
+    var y = parseInt(a.year || String(defStart().y), 10);
     var mo = parseInt(String(a.month||'').replace(/[^0-9]/g,''), 10);
     var si = D.slots.indexOf(a.time);
-    if(si < 0 || !mo || !y) return;
-    pts.push({y:y, m:mo, slot:si, subject:String(a.subject||'').trim()});
+    if(si < 0 || !mo || !y){ orphans.push(a); return; }
+    pts.push({y:y, m:mo, slot:si, subject:String(a.subject||'').trim(), src:a});
   });
   var ds = defStart(), sy = ds.y, sm = ds.m, span = 12;
   if(pts.length){
@@ -1395,14 +1415,19 @@ function fromAssigned(rec){
     phone: String(rec.contact||'').trim(),
     course: String(rec.course||'').trim(),
     enrolledAt: '', note: '',
-    startYear: sy, startMonth: sm, monthCount: span, blocks: []
+    startYear: sy, startMonth: sm, monthCount: span, blocks: [], orphans: orphans, cellMeta: meta
   };
   /* 같은 시간대에서 이어지는 같은 과목은 한 블록으로 합친다 */
   var grid = {};
   pts.forEach(function(p){
     var col = (p.y*12 + (p.m-1)) - (sy*12 + (sm-1));
-    if(col < 0 || col >= span) return;
-    grid[p.slot+':'+col] = p.subject;
+    if(col < 0 || col >= span){ orphans.push(p.src); return; }
+    var key = p.slot+':'+col;
+    if(grid[key] !== undefined){ orphans.push(p.src); return; }  /* 한 칸에 두 과목이면 두 번째는 보관 */
+    grid[key] = p.subject;
+    meta[key] = { confirmed: !!(p.src && p.src.confirmed),
+                  room: (p.src && p.src.room) || 'A',
+                  id: (p.src && p.src.id) || null };
   });
   var seen = {};
   Object.keys(grid).forEach(function(key){
@@ -1467,7 +1492,9 @@ function importMgmtRecords(arr){
   if(!D.students.length) D.students.push(blankStudent());
   UI.studentId = D.students[0].id;
   mark(); render();
-  toast('불러왔습니다. 새로 ' + added + '명, 갱신 ' + updated + '명');
+  var held = D.students.reduce(function(a,s){ return a + orphanCount(s); }, 0);
+  toast('불러왔습니다. 새로 ' + added + '명, 갱신 ' + updated + '명' +
+    (held ? ' · 표에 못 올린 배정 ' + held + '건은 보관됨' : ''));
   if(FB.user && FB.db) setTimeout(fbPushAll, 400);
 }
 function openMgmtImport(){
@@ -1680,7 +1707,14 @@ function fbPushAll(){
 }
 function fbDeleteStudent(id){
   if(!FB.user || !FB.db) return;
-  FB.db.collection('students').doc(id).delete().catch(function(){});
+  var ref = FB.db.collection('students').doc(id);
+  ref.get().then(function(doc){
+    var data = doc.exists ? doc.data() : {};
+    data.deletedAt = new Date().toISOString();
+    data._updatedBy = (FB.user && FB.user.email) || '학사일정 보드';
+    return FB.db.collection('trash').doc(id).set(data);
+  }).then(function(){ return ref.delete(); })
+    .catch(function(e){ toast('삭제 실패: ' + (e.message||''), true); });
 }
 
 function openFbLogin(){
@@ -1706,6 +1740,8 @@ function openFbLogin(){
     if(!em || !pw){ r.querySelector('#fb-msg').textContent = '이메일과 비밀번호를 넣어주세요.'; return false; }
     FB.auth.signInWithEmailAndPassword(em, pw).then(function(){
       toast('연결됐습니다.');
+      r.remove();
+      setTimeout(fbFlushPending, 200);
     }).catch(function(e){
       var m = e.code === 'auth/invalid-credential' ? '이메일이나 비밀번호가 맞지 않습니다.'
             : e.code === 'auth/unauthorized-domain' ? '이 주소가 Firebase 승인 도메인에 없습니다. 콘솔에서 추가하세요.'
@@ -1754,6 +1790,7 @@ function doPublish(){
 }
 
 fbInit();
+setInterval(fbFlushPending, 1500);
 var hasRuntime = !!(window.claude && typeof window.claude.use === 'function');
 UI.standalone = !hasRuntime;
 render();
