@@ -267,7 +267,7 @@ select.inp{
 
 /* ---------------- student list ---------------- */
 .stulist{
-  width:178px;flex:none;align-self:stretch;background:var(--surface);
+  width:196px;flex:none;align-self:stretch;background:var(--surface);
   border-right:1px solid var(--line);padding:22px 12px 72px;
   position:sticky;top:60px;max-height:calc(100vh - 60px);overflow-y:auto;
   scrollbar-width:thin;scrollbar-color:var(--line-2) transparent;
@@ -280,12 +280,21 @@ select.inp{
   background:var(--bg);color:var(--ink);font-size:12.5px;margin-bottom:14px;
 }
 .sl-q::placeholder{color:var(--ink-4)}
-.sl-m{
-  font-size:10.5px;font-weight:600;letter-spacing:.1em;color:var(--ink-4);
-  margin:16px 0 6px;display:flex;align-items:center;gap:6px;
+.sl-tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px}
+.sl-tab{
+  display:inline-flex;align-items:center;gap:4px;padding:5px 9px;border-radius:6px;
+  border:1px solid var(--line-2);background:var(--surface-2);color:var(--ink-3);
+  font-size:11.5px;font-weight:500;transition:background .12s,color .12s,border-color .12s;
 }
-.sl-m:first-of-type{margin-top:0}
-.sl-m span{font-variant-numeric:tabular-nums;opacity:.7}
+.sl-tab:hover{background:var(--surface-3);color:var(--ink)}
+.sl-tab span{font-size:10px;color:var(--ink-4);font-variant-numeric:tabular-nums}
+.sl-tab.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.sl-tab.on span{color:var(--accent);opacity:.8}
+.sl-tab.zero{opacity:.45}
+.sl-chk{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--ink-3);
+  margin-bottom:10px;cursor:pointer}
+.sl-count{font-size:10.5px;color:var(--ink-4);margin:0 0 6px;font-variant-numeric:tabular-nums}
+.sl-items{display:flex;flex-direction:column;gap:1px}
 .sl-i{
   display:flex;flex-direction:column;align-items:flex-start;gap:1px;width:100%;
   padding:6px 9px;border-radius:6px;text-align:left;color:var(--ink-2);
@@ -450,37 +459,56 @@ table.tt td.d{font-variant-numeric:tabular-nums;color:var(--ink-2)}
 .frow textarea{resize:vertical;min-height:60px}
 .frow2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .note-p{font-size:12px;color:var(--ink-4);margin:0;line-height:1.65}
-.modal.wide{width:min(620px,100%)}
-.sm-add{display:flex;gap:8px;align-items:center}
-.sm-add input{flex:1;padding:9px 12px;border:1px solid var(--line-2);border-radius:var(--r);
-  background:var(--surface);color:var(--ink);font-size:13.5px}
-.sm-add select{padding:9px 10px;border:1px solid var(--line-2);border-radius:var(--r);
-  background:var(--surface);color:var(--ink);font-size:13px}
-.sm-add input:focus,.sm-add select:focus{outline:none;border-color:var(--accent)}
-.sm-search{
-  width:100%;padding:8px 12px;border:1px solid var(--line-2);border-radius:var(--r);
-  background:var(--bg);color:var(--ink);font-size:13px;
+.modal.kanban{width:min(1100px,96vw);display:flex;flex-direction:column}
+.sk-top{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:12px 24px 4px}
+.sk-top input,.sk-top select{
+  padding:8px 11px;border:1px solid var(--line-2);border-radius:var(--r);
+  background:var(--surface);color:var(--ink);font-size:13px;
 }
-.sm-search:focus{outline:none;border-color:var(--accent)}
-.sm-list{max-height:46vh;overflow-y:auto;border:1px solid var(--line);border-radius:10px;
-  padding:10px 12px;background:var(--surface);
+.sk-top input:focus,.sk-top select:focus{outline:none;border-color:var(--accent)}
+#sk-new{width:190px}
+#sk-filter{width:150px;margin-left:12px;background:var(--bg)}
+.sk-chk{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-3);cursor:pointer}
+.sk-wrap{
+  display:flex;gap:10px;padding:14px 24px 6px;overflow-x:auto;align-items:flex-start;
+  scrollbar-width:thin;scrollbar-color:var(--line-2) transparent;
+}
+.sk-col{
+  flex:1 1 0;min-width:148px;background:var(--surface);border:1px solid var(--line);
+  border-radius:10px;padding:10px 9px 12px;max-height:52vh;display:flex;flex-direction:column;
+  transition:border-color .12s,background .12s;
+}
+.sk-col.hot{border-color:var(--accent);background:var(--accent-soft)}
+.sk-h{
+  display:flex;align-items:center;gap:6px;margin:0 0 9px;padding:0 3px;
+  font-size:10.5px;font-weight:600;letter-spacing:.08em;color:var(--ink-3);
+}
+.sk-dot{width:7px;height:7px;border-radius:2px;flex:none}
+.sk-cnt{margin-left:auto;color:var(--ink-4);font-variant-numeric:tabular-nums}
+.sk-body{display:flex;flex-direction:column;gap:5px;overflow-y:auto;
   scrollbar-width:thin;scrollbar-color:var(--line-2) transparent}
-.sm-cat{font-size:10.5px;font-weight:600;letter-spacing:.12em;color:var(--ink-4);
-  margin:14px 0 6px;display:flex;align-items:center;gap:6px}
-.sm-cat:first-child{margin-top:0}
-.sm-cat span{opacity:.7;font-variant-numeric:tabular-nums}
-.sm-row{display:flex;align-items:center;gap:8px;padding:3px 0}
-.sm-dot{width:8px;height:8px;border-radius:2px;flex:none}
-.sm-name{flex:1;min-width:0;padding:6px 9px;border:1px solid transparent;border-radius:6px;
-  background:transparent;color:var(--ink);font-size:13px;font-weight:500}
-.sm-name:hover{border-color:var(--line-2)}
-.sm-name:focus{outline:none;border-color:var(--accent);background:var(--bg)}
-.sm-cat-sel{padding:5px 8px;border:1px solid var(--line-2);border-radius:6px;
-  background:var(--surface-2);color:var(--ink-2);font-size:12px;max-width:140px}
-.sm-used{font-size:11px;color:var(--ink-4);font-variant-numeric:tabular-nums;
-  min-width:34px;text-align:right}
-.sm-empty{font-size:13px;color:var(--ink-4);text-align:center;padding:20px 0;margin:0}
-.sm-note{font-size:12px;color:var(--ink-4);margin-right:auto}
+.sk-chip{
+  display:flex;align-items:center;gap:6px;padding:6px 6px 6px 9px;border-radius:6px;
+  background:var(--cb);color:var(--ct);box-shadow:inset 2px 0 0 var(--cr);
+  font-size:12.5px;font-weight:600;cursor:grab;user-select:none;touch-action:none;
+  transition:transform .1s,opacity .1s;
+}
+.sk-chip:hover{transform:translateY(-1px)}
+.sk-chip.dragging{opacity:.3}
+.sk-n{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sk-u{font-size:10px;font-weight:500;opacity:.65;font-variant-numeric:tabular-nums}
+.sk-x{width:18px;height:18px;display:grid;place-items:center;border-radius:4px;
+  font-size:10px;color:inherit;opacity:0;transition:opacity .12s,background .12s}
+.sk-chip:hover .sk-x{opacity:.6}
+.sk-x:hover{background:rgba(0,0,0,.18);opacity:1}
+.sk-edit{
+  flex:1;min-width:0;padding:2px 5px;border:1px solid var(--cr);border-radius:4px;
+  background:var(--surface);color:var(--ink);font-size:12.5px;font-weight:600;
+}
+.sk-edit:focus{outline:none}
+.sk-none{font-size:11px;color:var(--ink-4);text-align:center;padding:10px 0;margin:0}
+.sm-note{font-size:11.5px;color:var(--ink-4)}
+.modal.kanban footer{gap:14px}
 .modal footer{align-items:center}
 
 .pop{
@@ -545,7 +573,8 @@ var BOOT = JSON.parse(document.getElementById('app-data').textContent);
 var D = BOOT;
 var UI = { view:'schedule', studentId:null, q:'', mentorFilter:'', dirty:false, saving:false,
            savedOnce:false, railOpen:true, mode:'dark', standalone:false,
-           listOpen:true, touched:{}, syncing:false, syncedAt:0 };
+           listOpen:true, touched:{}, syncing:false, syncedAt:0,
+           listMentor:'', listActive:true, listQ:'' };
 var LSKEY = 'sched:' + location.pathname;
 var artifactApi = null, downloadsApi = null;
 
@@ -570,6 +599,8 @@ try{
 try{ UI.studentId = localStorage.getItem(LSKEY+':sel') || null;
      UI.railOpen = localStorage.getItem(LSKEY+':rail')!=='0';
      UI.listOpen = localStorage.getItem(LSKEY+':list')!=='0';
+     UI.listMentor = localStorage.getItem(LSKEY+':lm') || '';
+     UI.listActive = localStorage.getItem(LSKEY+':lact')!=='0';
      UI.mode = localStorage.getItem(LSKEY+':mode')==='light' ? 'light' : 'dark'; }catch(e){}
 function defStart(){
   var ds = D.defaultStart || [2026,8];
@@ -669,31 +700,48 @@ function topbar(){
 function stuList(){
   if(!UI.listOpen) return '';
   var q = (UI.listQ||'').trim().toLowerCase();
-  var groups = D.mentors.map(function(m){
-    var list = D.students.filter(function(s){
-      if(s.mentorId !== m.id) return false;
+  var RESTED = {'수료':1,'중도이탈':1};
+  function pool(mid){
+    return D.students.filter(function(s){
+      if(mid && s.mentorId !== mid) return false;
       if(!s.name.trim() && s.id !== UI.studentId) return false;
-      if(q && s.name.toLowerCase().indexOf(q) < 0) return false;
+      if(UI.listActive && RESTED[s.status] && s.id !== UI.studentId) return false;
       return true;
     });
-    return {m:m, list:list};
-  }).filter(function(g){ return g.list.length; });
+  }
   var h = '<aside class="stulist"><div class="sl-head">' +
     '<span class="sl-t">수강생</span>' +
     '<button class="ibtn" data-act="list-close" title="목록 접기">‹</button></div>' +
     '<input class="sl-q" id="listq" placeholder="이름 검색" value="'+esc(UI.listQ||'')+'">';
-  if(!groups.length) h += '<p class="sl-empty">해당하는 수강생이 없습니다.</p>';
-  groups.forEach(function(g){
-    h += '<p class="sl-m">'+esc(g.m.name)+' <span>'+g.list.length+'</span></p>';
-    g.list.forEach(function(s){
-      var e = endOf(s);
-      h += '<button class="sl-i'+(s.id===UI.studentId?' on':'')+'" data-act="pick-stu" data-id="'+s.id+'">' +
-        '<span class="sl-n">'+esc(s.name || '이름 없음')+'</span>' +
-        '<span class="sl-d">'+String(s.startYear).slice(2)+'.'+String(s.startMonth).padStart(2,'0')+
-        '–'+String(e.y).slice(2)+'.'+String(e.m).padStart(2,'0')+'</span></button>';
-    });
+
+  /* 멘토 버튼 */
+  h += '<div class="sl-tabs">' +
+    '<button class="sl-tab'+(UI.listMentor?'':' on')+'" data-act="lm" data-id="">' +
+      '전체 <span>'+pool('').length+'</span></button>';
+  D.mentors.forEach(function(m){
+    var n = pool(m.id).length;
+    h += '<button class="sl-tab'+(UI.listMentor===m.id?' on':'')+(n?'':' zero')+
+      '" data-act="lm" data-id="'+m.id+'">'+esc(m.name)+' <span>'+n+'</span></button>';
   });
-  h += '<button class="btn sm" data-act="quick-add" style="width:100%;justify-content:center;margin-top:14px">＋ 새 수강생</button>';
+  h += '</div>';
+  h += '<label class="sl-chk"><input type="checkbox" data-act="lactive"'+(UI.listActive?' checked':'')+'> 수강중만</label>';
+
+  var list = pool(UI.listMentor);
+  if(q) list = list.filter(function(s){ return s.name.toLowerCase().indexOf(q)>=0; });
+  list.sort(function(a,b){ return a.name.localeCompare(b.name,'ko'); });
+
+  h += '<p class="sl-count">'+list.length+'명</p><div class="sl-items">';
+  if(!list.length) h += '<p class="sl-empty">해당하는 수강생이 없습니다.</p>';
+  list.forEach(function(s){
+    var e = endOf(s);
+    h += '<button class="sl-i'+(s.id===UI.studentId?' on':'')+'" data-act="pick-stu" data-id="'+s.id+'" ' +
+      'title="'+esc(s.name+' · '+(s.status||''))+'">' +
+      '<span class="sl-n">'+esc(s.name || '이름 없음')+'</span>' +
+      '<span class="sl-d">'+String(s.startYear).slice(2)+'.'+String(s.startMonth).padStart(2,'0')+
+      '–'+String(e.y).slice(2)+'.'+String(e.m).padStart(2,'0')+'</span></button>';
+  });
+  h += '</div>';
+  h += '<button class="btn sm" data-act="quick-add" style="width:100%;justify-content:center;margin-top:12px">＋ 새 수강생</button>';
   h += '</aside>';
   return h;
 }
@@ -1007,6 +1055,7 @@ function onClick(e){
     case 'view-roster': navPush(); UI.view='roster'; render(); break;
     case 'view-schedule': navPush(); UI.view='schedule'; render(); break;
     case 'open-schedule': navPush(); UI.studentId=id; UI.view='schedule';
+      (function(){ var t2=byId(D.students,id); if(t2) UI.listMentor = t2.mentorId; })();
       try{localStorage.setItem(LSKEY+':sel',id);}catch(err){} render(); break;
     case 'quick-add': {
       if(st && !st.name.trim() && !st.blocks.length && UI.view==='schedule'){
@@ -1070,6 +1119,8 @@ function onClick(e){
     case 'len+': if(st.monthCount>=36) return; st.monthCount++; mark(); render(); break;
     case 'pick-stu': navPush(); UI.studentId=id;
       try{localStorage.setItem(LSKEY+':sel',id);}catch(err){} render(); break;
+    case 'lm': UI.listMentor = (id===UI.listMentor ? '' : id);
+      try{localStorage.setItem(LSKEY+':lm',UI.listMentor);}catch(err){} render(); break;
     case 'list': case 'list-close': UI.listOpen = (act==='list') ? !UI.listOpen : false;
       try{localStorage.setItem(LSKEY+':list',UI.listOpen?'1':'0');}catch(err){} render(); break;
     case 'rail': UI.railOpen=!UI.railOpen;
@@ -1096,7 +1147,8 @@ function onClick(e){
 function onChange(e){
   var t = e.target;
   if(t.dataset && t.dataset.act==='setmonth'){ cur().startMonth = parseInt(t.value,10); mark(); render(); return; }
-  if(t.dataset && t.dataset.act==='mfilter'){ UI.mentorFilter = t.value; render(); return; }
+  if(t.dataset && t.dataset.act==='lactive'){ UI.listActive = t.checked;
+    try{localStorage.setItem(LSKEY+':lact',UI.listActive?'1':'0');}catch(err){} render(); return; }
   var row = t.closest && t.closest('[data-row]');
   if(row && t.dataset.f){ applyField(row.dataset.row, t.dataset.f, t.value, true); }
 }
@@ -1564,17 +1616,26 @@ function openSubject(sb){
 }
 
 
-/* ============ 과목 관리 창 ============ */
+/* ============ 과목 관리 창 (칸반) ============ */
 function openSubjectManager(){
-  var filter = '';
-  var s0 = document.createElement('div'); s0.className = 'scrim';
-  s0.innerHTML = '<div class="modal wide"><header>과목 관리</header>' +
-    '<div class="mbody" id="sm-body"></div>' +
-    '<footer><span class="sm-note" id="sm-count"></span>' +
+  var filter = '', unusedOnly = false;
+  var box = document.createElement('div'); box.className = 'scrim';
+  box.innerHTML = '<div class="modal kanban"><header>과목 관리</header>' +
+    '<div class="sk-top">' +
+      '<input id="sk-new" placeholder="새 과목명" autocomplete="off">' +
+      '<select id="sk-newcat"></select>' +
+      '<button class="btn sm pri" id="sk-add">추가</button>' +
+      '<input id="sk-filter" placeholder="검색">' +
+      '<label class="sk-chk"><input type="checkbox" id="sk-unused"> 안 쓰는 과목만</label>' +
+    '</div>' +
+    '<div class="sk-wrap" id="sk-wrap"></div>' +
+    '<footer><span class="sm-note" id="sk-count"></span>' +
+    '<span class="sm-note">칩을 다른 칸으로 끌면 분류가 바뀝니다. 이름을 누르면 고칠 수 있습니다.</span>' +
     '<button class="btn" data-x="c">닫기</button></footer></div>';
-  document.body.appendChild(s0);
+  document.body.appendChild(box);
+  box.querySelector('#sk-newcat').innerHTML = D.categories.map(function(c){
+    return '<option value="'+c.id+'">'+esc(c.name)+'</option>'; }).join('');
 
-  function cats(){ return D.categories; }
   function usage(id){
     var n = 0;
     D.students.forEach(function(st){ st.blocks.forEach(function(b){ if(b.subject===id) n += b.span; }); });
@@ -1582,83 +1643,140 @@ function openSubjectManager(){
   }
   function draw(){
     var q = filter.trim().toLowerCase();
-    var list = D.subjects.filter(function(x){ return !q || x.name.toLowerCase().indexOf(q)>=0; });
-    var byCat = {};
-    list.forEach(function(x){ (byCat[x.cat] = byCat[x.cat] || []).push(x); });
-    var h = '<div class="sm-add">' +
-      '<input id="sm-new" placeholder="새 과목명" autocomplete="off">' +
-      '<select id="sm-newcat">' + cats().map(function(c){
-        return '<option value="'+c.id+'">'+esc(c.name)+'</option>'; }).join('') + '</select>' +
-      '<button class="btn sm pri" id="sm-addbtn">추가</button></div>' +
-      '<input class="sm-search" id="sm-filter" placeholder="과목 검색" value="'+esc(filter)+'">' +
-      '<div class="sm-list">';
-    if(!list.length) h += '<p class="sm-empty">해당하는 과목이 없습니다.</p>';
-    cats().forEach(function(c){
-      var arr = byCat[c.id]; if(!arr || !arr.length) return;
-      h += '<p class="sm-cat">'+esc(c.name)+' <span>'+arr.length+'</span></p>';
+    var h = '';
+    D.categories.forEach(function(c){
+      var arr = D.subjects.filter(function(x){
+        if(x.cat !== c.id) return false;
+        if(q && x.name.toLowerCase().indexOf(q) < 0) return false;
+        if(unusedOnly && usage(x.id) > 0) return false;
+        return true;
+      });
+      h += '<div class="sk-col" data-cat="'+c.id+'">' +
+        '<p class="sk-h"><span class="sk-dot" style="background:var(--c-'+c.id+'-br)"></span>' +
+        esc(c.name)+' <span class="sk-cnt">'+arr.length+'</span></p><div class="sk-body">';
       arr.forEach(function(x){
-        var used = usage(x.id);
-        h += '<div class="sm-row" data-s="'+x.id+'">' +
-          '<span class="sm-dot" style="background:var(--c-'+c.id+'-br)"></span>' +
-          '<input class="sm-name" value="'+esc(x.name)+'">' +
-          '<select class="sm-cat-sel">' + cats().map(function(c2){
-            return '<option value="'+c2.id+'"'+(c2.id===x.cat?' selected':'')+'>'+esc(c2.name)+'</option>';
-          }).join('') + '</select>' +
-          '<span class="sm-used"'+(used?'':' style="opacity:.35"')+'>'+used+'회</span>' +
-          '<button class="ibtn dg sm-del" title="삭제">✕</button></div>';
+        var u = usage(x.id);
+        h += '<div class="sk-chip" data-s="'+x.id+'" style="'+catVars(c.id)+'">' +
+          '<span class="sk-n">'+esc(x.name)+'</span>' +
+          '<span class="sk-u"'+(u?'':' style="opacity:.3"')+'>'+u+'</span>' +
+          '<button class="sk-x" title="삭제">✕</button></div>';
       });
+      if(!arr.length) h += '<p class="sk-none">비어 있음</p>';
+      h += '</div></div>';
     });
-    h += '</div>';
-    s0.querySelector('#sm-body').innerHTML = h;
-    s0.querySelector('#sm-count').textContent = '과목 ' + D.subjects.length + '개';
-    bind();
+    box.querySelector('#sk-wrap').innerHTML = h;
+    box.querySelector('#sk-count').textContent = '과목 ' + D.subjects.length + '개';
   }
-  function bind(){
-    var f = s0.querySelector('#sm-filter');
-    f.addEventListener('input', function(){
-      filter = f.value; var p = f.selectionStart; draw();
-      var n = s0.querySelector('#sm-filter'); if(n){ n.focus(); try{ n.setSelectionRange(p,p); }catch(e){} }
-    });
-    function addNow(){
-      var inp = s0.querySelector('#sm-new'), nm = inp.value.trim();
-      if(!nm) return;
-      if(subjectByName(nm)) return toast('같은 이름의 과목이 이미 있습니다.', true);
-      D.subjects.push({id:uid('s'), name:nm, cat:s0.querySelector('#sm-newcat').value});
+
+  function addNow(){
+    var inp = box.querySelector('#sk-new'), nm = inp.value.trim();
+    if(!nm) return;
+    if(subjectByName(nm)) return toast('같은 이름의 과목이 이미 있습니다.', true);
+    D.subjects.push({id:uid('s'), name:nm, cat:box.querySelector('#sk-newcat').value});
+    inp.value = ''; mark(); render(); draw(); inp.focus();
+  }
+  box.querySelector('#sk-add').addEventListener('click', addNow);
+  box.querySelector('#sk-new').addEventListener('keydown', function(e){
+    if(e.key==='Enter'){ e.preventDefault(); addNow(); }
+  });
+  box.querySelector('#sk-filter').addEventListener('input', function(){
+    filter = this.value; draw();
+  });
+  box.querySelector('#sk-unused').addEventListener('change', function(){
+    unusedOnly = this.checked; draw();
+  });
+
+  /* 칩 드래그로 분류 이동 · 클릭으로 이름 편집 · ✕ 로 삭제 */
+  var sd = null;
+  box.addEventListener('pointerdown', function(e){
+    var x = e.target.closest('.sk-x');
+    if(x){
+      var id0 = x.closest('.sk-chip').dataset.s, sb0 = byId(D.subjects, id0);
+      var u = usage(id0);
+      if(u && !confirm(sb0.name + ' 과목이 배치된 수업 ' + u + '건도 함께 삭제됩니다. 계속할까요?')) return;
+      D.students.forEach(function(st){
+        st.blocks = st.blocks.filter(function(b){ return b.subject!==id0; });
+      });
+      D.subjects = D.subjects.filter(function(y){ return y.id!==id0; });
       mark(); render(); draw();
-      var n2 = s0.querySelector('#sm-new'); if(n2) n2.focus();
+      return;
     }
-    s0.querySelector('#sm-addbtn').addEventListener('click', addNow);
-    s0.querySelector('#sm-new').addEventListener('keydown', function(e){
-      if(e.key==='Enter'){ e.preventDefault(); addNow(); }
+    var chip = e.target.closest('.sk-chip');
+    if(!chip || e.button!==0) return;
+    sd = { id: chip.dataset.s, el: chip, x0: e.clientX, y0: e.clientY, moved: false };
+    document.addEventListener('pointermove', onMove);
+    document.addEventListener('pointerup', onUp);
+    e.preventDefault();
+  });
+  function onMove(e){
+    if(!sd) return;
+    if(!sd.moved){
+      if(Math.abs(e.clientX-sd.x0)<4 && Math.abs(e.clientY-sd.y0)<4) return;
+      sd.moved = true; sd.el.classList.add('dragging');
+    }
+    var el = document.elementFromPoint(e.clientX, e.clientY);
+    var col = el && el.closest ? el.closest('.sk-col') : null;
+    Array.prototype.forEach.call(box.querySelectorAll('.sk-col'), function(c){
+      c.classList.toggle('hot', c===col);
     });
-    Array.prototype.forEach.call(s0.querySelectorAll('.sm-row'), function(row){
-      var id = row.dataset.s, sub = byId(D.subjects, id);
-      row.querySelector('.sm-name').addEventListener('change', function(){
-        var v = this.value.trim();
-        if(!v){ this.value = sub.name; return; }
-        sub.name = v; mark(); render();
+    sd.col = col;
+    var g = document.getElementById('skghost');
+    if(!g){
+      g = document.createElement('div'); g.id='skghost'; g.className='dghost';
+      document.body.appendChild(g);
+      var sb = byId(D.subjects, sd.id);
+      g.textContent = sb ? sb.name : '';
+      var cv = catVars(sb ? sb.cat : 'etc').split(';');
+      cv.forEach(function(pair){
+        var kv = pair.split(':'); if(kv.length===2) g.style.setProperty(kv[0], kv[1]);
       });
-      row.querySelector('.sm-cat-sel').addEventListener('change', function(){
-        sub.cat = this.value; mark(); render(); draw();
-      });
-      row.querySelector('.sm-del').addEventListener('click', function(){
-        var used = usage(id);
-        if(used && !confirm(sub.name + ' 과목이 배치된 수업 ' + used + '건도 함께 삭제됩니다. 계속할까요?')) return;
-        D.students.forEach(function(st){
-          st.blocks = st.blocks.filter(function(b){ return b.subject!==id; });
-        });
-        D.subjects = D.subjects.filter(function(x){ return x.id!==id; });
-        mark(); render(); draw();
-      });
-    });
+    }
+    g.style.left = e.clientX+'px'; g.style.top = (e.clientY-22)+'px';
   }
-  function close(){ s0.remove(); document.removeEventListener('keydown', key); }
-  function key(ev){ if(ev.key==='Escape') close(); }
+  function onUp(){
+    document.removeEventListener('pointermove', onMove);
+    document.removeEventListener('pointerup', onUp);
+    var g = document.getElementById('skghost'); if(g) g.remove();
+    Array.prototype.forEach.call(box.querySelectorAll('.sk-col'), function(c){ c.classList.remove('hot'); });
+    var d = sd; sd = null;
+    if(!d) return;
+    d.el.classList.remove('dragging');
+    var sb = byId(D.subjects, d.id); if(!sb) return;
+    if(!d.moved){ editName(d.el, sb); return; }
+    if(d.col && d.col.dataset.cat !== sb.cat){
+      sb.cat = d.col.dataset.cat;
+      mark(); render(); draw();
+    }
+  }
+  function editName(chip, sb){
+    var span = chip.querySelector('.sk-n'); if(!span) return;
+    var inp = document.createElement('input');
+    inp.className = 'sk-edit'; inp.value = sb.name;
+    span.replaceWith(inp); inp.focus(); inp.select();
+    function done(save){
+      var v = inp.value.trim();
+      if(save && v && v !== sb.name){
+        var dup = subjectByName(v);
+        if(dup && dup.id !== sb.id){ toast('같은 이름의 과목이 있습니다.', true); }
+        else { sb.name = v; mark(); render(); }
+      }
+      draw();
+    }
+    inp.addEventListener('keydown', function(e){
+      if(e.key==='Enter'){ e.preventDefault(); done(true); }
+      else if(e.key==='Escape'){ e.preventDefault(); done(false); }
+    });
+    inp.addEventListener('blur', function(){ done(true); });
+  }
+
+  function close(){ box.remove(); document.removeEventListener('keydown', key); }
+  function key(ev){ if(ev.key==='Escape' && !box.querySelector('.sk-edit')) close(); }
   document.addEventListener('keydown', key);
-  s0.addEventListener('click', function(e){
-    if(e.target===s0 || e.target.closest('[data-x="c"]')) close();
+  box.addEventListener('click', function(e){
+    if(e.target===box || e.target.closest('[data-x="c"]')) close();
   });
   draw();
+  box.querySelector('#sk-new').focus();
 }
 
 /* ================= export ================= */
