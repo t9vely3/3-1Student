@@ -1111,7 +1111,7 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
 .master-subj-count { background: var(--brand); color: #fff; border-radius: 999px; padding: 0 6px; font-size: 9px; cursor: pointer; font-weight: 800; }
 
 /* MODALS */
-.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(15,23,42,.55); backdrop-filter: blur(4px); z-index: 100; align-items: center; justify-content: center; padding: 20px; }
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(15,23,42,.55); backdrop-filter: blur(4px); z-index: 200; align-items: center; justify-content: center; padding: 20px; }
 .modal-overlay.show { display: flex; animation: fadeIn .2s; }
 /* alert/confirm은 다른 모달 위에 떠야 함 (모달 위에서 작업할 때 alert/confirm 사용 가능하도록) */
 #customAlert.modal-overlay, #customConfirm.modal-overlay { z-index: 250; }
@@ -1128,7 +1128,7 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
 .toast.error { background: var(--danger); }
 .toast.brand { background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%); }
 
-.cmd-palette { position: fixed; inset: 0; background: rgba(15,23,42,.45); backdrop-filter: blur(6px); z-index: 150; display: none; align-items: flex-start; justify-content: center; padding-top: 12vh; }
+.cmd-palette { position: fixed; inset: 0; background: rgba(15,23,42,.45); backdrop-filter: blur(6px); z-index: 210; display: none; align-items: flex-start; justify-content: center; padding-top: 12vh; }
 .cmd-palette.show { display: flex; }
 .cmd-box { background: var(--bg-surface); border-radius: var(--r-lg); width: 100%; max-width: 580px; box-shadow: var(--shadow-lg); overflow: hidden; animation: slideUp .2s ease; border: 1px solid var(--border); }
 .cmd-input-wrap { position: relative; border-bottom: 1px solid var(--border); }
@@ -1467,7 +1467,7 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
   position: absolute; top: calc(100% + 6px); right: 0; min-width: 208px;
   background: var(--bg-surface); border: 1px solid var(--border);
   border-radius: var(--r-md); box-shadow: var(--shadow-md);
-  padding: 5px; display: none; z-index: 150;
+  padding: 5px; display: none; z-index: 220;
 }
 .more-menu.open { display: block; }
 .mm-label {
@@ -2166,6 +2166,10 @@ body.layout-editing .panel-card .panel-ctrl select { pointer-events: auto; }
           <button type="button" class="mm-item" onclick="closeMoreMenu(); exportSheetCSV()">
             <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             CSV 내보내기
+          </button>
+          <button type="button" class="mm-item" onclick="closeMoreMenu(); exportForSchedule()">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            학사일정 보드용 JSON
           </button>
           <button type="button" class="mm-item" onclick="closeMoreMenu(); requireManageAuth('trash')">
             <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
@@ -3560,6 +3564,35 @@ function loadFromStorage() {
   } catch (e) { globalStudentData = []; }
 }
 function saveToStorage() { localStorage.setItem(STORAGE_KEY, JSON.stringify(globalStudentData)); }
+
+/* ===== 학사일정 보드 연동: 학생 데이터를 JSON 파일로 내보낸다 ===== */
+function exportForSchedule() {
+  try {
+    var out = (globalStudentData || []).map(function (s) {
+      return {
+        id: s.id, name: s.name || '', appNum: s.appNum || '',
+        contact: s.contact || '', mentor: s.mentor || '',
+        course: s.course || '', regDate: s.regDate || '',
+        isOnLeave: !!s.isOnLeave, isCompleted: !!s.isCompleted,
+        assignedClasses: Array.isArray(s.assignedClasses) ? s.assignedClasses : []
+      };
+    });
+    var txt = JSON.stringify(out, null, 1);
+    var blob = new Blob([txt], { type: 'application/json;charset=utf-8' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    var d = new Date();
+    var stamp = d.getFullYear() + String(d.getMonth() + 1).padStart(2, '0') + String(d.getDate()).padStart(2, '0');
+    a.href = url; a.download = '학사일정_연동_' + stamp + '.json';
+    document.body.appendChild(a); a.click();
+    setTimeout(function () { a.remove(); URL.revokeObjectURL(url); }, 1500);
+    if (typeof showToast === 'function') showToast('학사일정 보드용 JSON을 내려받았습니다.', 'success');
+  } catch (e) {
+    if (typeof customAlert === 'function') customAlert('내보내기에 실패했습니다: ' + e.message);
+    else alert('내보내기에 실패했습니다: ' + e.message);
+  }
+}
+
 function saveSubjectsToStorage() { localStorage.setItem(SUBJECTS_KEY, JSON.stringify(COURSE_SUBJECTS)); }
 function saveMentorsToStorage() { localStorage.setItem(MENTORS_KEY, JSON.stringify(MENTORS)); }
 function saveDepartmentsToStorage() { localStorage.setItem(DEPARTMENTS_KEY, JSON.stringify(DEPARTMENTS)); }
